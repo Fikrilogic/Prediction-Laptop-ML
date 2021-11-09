@@ -12,7 +12,7 @@ python, Django, and React project
 
 ## Installation Step:
 
-- make virtual environtment with venv
+- make virtual environtment with venv with `python -m venv`
 - activate env file with `source {name_folder environtment}/Scripts/activate`
 - make sure your virtual environtment active before install library
 - install library using requirements.txt file with pip=> `pip install -r requirements.txt`
