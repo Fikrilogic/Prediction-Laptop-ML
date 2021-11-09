@@ -1,0 +1,29 @@
+import axios from "axios";
+import { URL } from "../../Context/action";
+import { RequestData, UserSuccess, FailRequest, DeleteUser } from "./action";
+
+export const fetchUser = () => {
+  return (dispatch) => {
+    dispatch(RequestData());
+
+    setTimeout(async () => {
+      try {
+        const req = await axios.get(URL + "user", { withCredentials: true });
+        dispatch(UserSuccess(req.data));
+      } catch (e) {
+        dispatch(FailRequest());
+      }
+    }, 500);
+  };
+};
+
+export const deleteUser = (id) => {
+  return async (dispatch) => {
+    try {
+      await axios.delete(URL + `user/${id}`, { withCredentials: true });
+      dispatch(DeleteUser());
+    } catch (e) {
+      dispatch(FailRequest());
+    }
+  };
+};
