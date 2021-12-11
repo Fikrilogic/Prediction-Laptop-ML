@@ -15,7 +15,9 @@ SECRET_KEY = 'django-insecure-w5wl@v7&n0kqnyypuh0qp+h85y@6#5cjx4e@77=36_s(d!=v6i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = ['*']
+CORS_ALLOW_CREDENTIALS = True
 AUTH_USER_MODEL = 'user.User'
 
 
@@ -50,9 +52,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['*']
-CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'backend_controller.urls'
 
 TEMPLATES = [
@@ -80,10 +79,10 @@ WSGI_APPLICATION = 'backend_controller.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'backend',
-        'USER': 'postgres',
-        'PASSWORD': '3010',
-        'HOST': 'localhost',
+        'NAME': 'database',
+        'USER': 'user',
+        'PASSWORD': '12345678',
+        'HOST': 'postgres',
         'PORT': 5432
     }
 }
