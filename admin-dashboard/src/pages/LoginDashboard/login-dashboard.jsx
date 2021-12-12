@@ -51,7 +51,7 @@ export default function LoginDashboard(props) {
       return navigate("/dashboard/user");
     } catch (e) {
       setLoading(false);
-      return;
+
     }
   };
 
