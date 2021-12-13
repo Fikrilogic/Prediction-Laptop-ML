@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (
-    Profile
+    Profile,
+    Dataset,
+    Kebutuhan,
+    Specification
 )
 
 User = get_user_model()
@@ -39,6 +42,7 @@ class UserSerializers(serializers.ModelSerializer):
     def admin_create(self, validate_data):
         self.instance = User.objects.create_admin(**validate_data)
         return self.instance
+
     def getData(self, id):
         try:
             self.instance = User.objects.get(id=id)
@@ -47,4 +51,14 @@ class UserSerializers(serializers.ModelSerializer):
             return self.instance
         except:
             return None
+
+class DatasetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dataset
+        fields = "__all__"
+
+class KebutuhanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Kebutuhan
+        fields = "__all__"
 

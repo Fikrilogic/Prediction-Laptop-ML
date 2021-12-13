@@ -4,30 +4,35 @@ from django.contrib.auth import get_user_model
 from .serializers import (
     UserSerializers,
     ProfileSerializers,
+    DatasetSerializer,
+    KebutuhanSerializer
 )
 from .models import (
-    Profile
+    Profile,
+    Dataset,
+    Kebutuhan
 )
+from .pagination import StandardPagination
 from django.conf import settings
 from django.views.decorators.csrf import (
     csrf_exempt
 )
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.exceptions import (
     AuthenticationFailed,
     PermissionDenied,
     NotAcceptable,
     NotAuthenticated,
-    NotFound
+    NotFound,
 )
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.parsers import MultiPartParser, FormParser
 
 import jwt
 import datetime
+import pandas as pd
 
 User = get_user_model()
 
@@ -226,4 +231,66 @@ class UserCustomerView(APIView):
             raise NotFound()
         user.delete()
         return Response(status=status.HTTP_200_OK)
+
+class DatasetView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    @csrf_exempt
+    def post(self, request):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed("Unauthorized!")
+        try:
+            payload = jwt.decode(
+                token, settings.SECRET_KEY, algorithms='HS256')
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthorized!')
+        except:
+            raise AuthenticationFailed('Unauthorized!')
+        verif = User.objects.get(id=payload['id'])
+        if verif.user_type != 'admin':
+            raise NotAuthenticated()
+        data = request.data
+        data['user'] = verif.id
+        serializer = DatasetSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            dataset = pd.DataFrame(request.FILES)
+            print(dataset)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class KebutuhanView(generics.GenericAPIView):
+    serializer_class = KebutuhanSerializer
+    pagination_class = StandardPagination
+
+    def post(self, request):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed("Unauthorized!")
+        try:
+            payload = jwt.decode(
+                token, settings.SECRET_KEY, algorithms='HS256')
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthorized!')
+        except:
+            raise AuthenticationFailed('Unauthorized!')
+        verif = User.objects.get(id=payload['id'])
+        if verif.user_type != 'admin':
+            raise NotAuthenticated()
+
+        data = request.data
+        serialize = self.get_serializer(data=data)
+        if serialize.is_valid(raise_exception=True):
+            serialize.save()
+            return Response(serialize.data, status=status.HTTP_201_CREATED)
+
+    def get(self,request):
+        queryset = Kebutuhan.objects.all()
+        serialize = self.get_serializer(queryset, many=True)
+        return Response(serialize.data, status=status.HTTP_200_OK)
+
+
+
 

@@ -7,6 +7,8 @@ from .views import (
     UserCustomerView,
     LoginAdmin,
     UserView,
+    DatasetView,
+    KebutuhanView
 )
 from django.views.decorators.csrf import (
     csrf_exempt
@@ -24,5 +26,7 @@ urlpatterns = [
     path('staff/login', LoginAdmin.as_view()),
     path('profile', UserView.as_view()),
     path('user', UserCustomerView.as_view()),
-    path('user/<str:id>',UserCustomerView.as_view())
+    path('user/<str:id>',UserCustomerView.as_view()),
+    path('dataset', DatasetView.as_view()),
+    path('kebutuhan', KebutuhanView.as_view())
 ]
