@@ -1,16 +1,18 @@
 from django.shortcuts import render
 from django.http import request
 from django.contrib.auth import get_user_model
+from django.conf import settings
+from asgiref.sync import sync_to_async
 from .serializers import (
     UserSerializers,
     ProfileSerializers,
     DatasetSerializer,
-    KebutuhanSerializer
+    SpecificationSerializers
 )
 from .models import (
     Profile,
     Dataset,
-    Kebutuhan
+    Specification
 )
 from .pagination import StandardPagination
 from django.conf import settings
@@ -35,6 +37,7 @@ import datetime
 import pandas as pd
 
 User = get_user_model()
+
 
 # Create your views here.
 
@@ -148,6 +151,7 @@ class UserView(APIView):
 
 
 class UserCustomerView(APIView):
+
     def get(self, request, id=None):
         token = request.COOKIES.get('jwt')
 
@@ -180,7 +184,7 @@ class UserCustomerView(APIView):
         if profile is None:
             return NotFound()
         serialize = ProfileSerializers(profile, many=True)
-        return Response({"user": serialize.data,  "message": "ini pesan"}, status=status.HTTP_200_OK)
+        return Response({"user": serialize.data, "message": "ini pesan"}, status=status.HTTP_200_OK)
 
     def patch(self, request, id=None):
         token = request.COOKIES.get('jwt')
@@ -232,8 +236,30 @@ class UserCustomerView(APIView):
         user.delete()
         return Response(status=status.HTTP_200_OK)
 
-class DatasetView(APIView):
+
+class DatasetView(generics.GenericAPIView):
     parser_classes = [MultiPartParser, FormParser]
+    serializer_class = DatasetSerializer
+    queryset = Dataset.objects.all()
+
+    # function for save data from excel to database
+    def _save_excel_data(self, excel, dataset_id):
+        for data in excel.itertuples():
+            data_obj = Specification.objects.create(
+                dataset=dataset_id,
+                budget=data.budget,
+                cpu=data.cpu,
+                gpu=data.gpu,
+                ram=data.ram,
+                memory_type=data.memory_type,
+                company=data.company,
+                screen_type=data.screen_type,
+                screen_resolution=data.screen_resolution,
+                weight=data.weight,
+                type_laptop=data.type_laptop,
+                kebutuhan=data.kebutuhan
+            )
+            data_obj.save()
 
     @csrf_exempt
     def post(self, request):
@@ -248,23 +274,30 @@ class DatasetView(APIView):
             raise AuthenticationFailed('Unauthorized!')
         except:
             raise AuthenticationFailed('Unauthorized!')
+
         verif = User.objects.get(id=payload['id'])
         if verif.user_type != 'admin':
             raise NotAuthenticated()
+
+        file = pd.read_excel(request.FILES['path'].read())
+        columns_name = [f.name for f in Specification._meta.get_fields()]
+        for col in file.columns:
+            if columns_name.count(col) > 1:
+                continue
+            else:
+                break
+                return Response({"message": "DATA IS REJECTED"}, status.HTTP_403_FORBIDDEN)
+
         data = request.data
         data['user'] = verif.id
-        serializer = DatasetSerializer(data=data)
+        serializer = self.get_serializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            dataset = pd.DataFrame(request.FILES)
-            print(dataset)
+            spek = Dataset.objects.get(pk=serializer.data['id'])
+            sync_to_async(self._save_excel_data(file, spek), thread_sensitive=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class KebutuhanView(generics.GenericAPIView):
-    serializer_class = KebutuhanSerializer
-    pagination_class = StandardPagination
-
-    def post(self, request):
+    def get(self, request):
         token = request.COOKIES.get('jwt')
 
         if not token:
@@ -276,21 +309,60 @@ class KebutuhanView(generics.GenericAPIView):
             raise AuthenticationFailed('Unauthorized!')
         except:
             raise AuthenticationFailed('Unauthorized!')
+
         verif = User.objects.get(id=payload['id'])
         if verif.user_type != 'admin':
             raise NotAuthenticated()
 
+        try:
+            query = self.paginate_queryset(self.queryset)
+            serializer = self.get_serializer(query, many=True)
+            return self.get_paginated_response(serializer.data)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class SpecificationView(generics.GenericAPIView):
+    serializer_class = SpecificationSerializers
+    queryset = Specification.objects.all()
+    pagination_class = StandardPagination
+
+    def get(self, request, page=1):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed("Unauthorized!")
+        try:
+            payload = jwt.decode(
+                token, settings.SECRET_KEY, algorithms='HS256')
+        except:
+            raise AuthenticationFailed('Unauthorized!')
+        verif = User.objects.get(id=payload['id'])
+        if verif.user_type != 'admin':
+            raise NotAuthenticated()
+
+        try:
+            query = self.paginate_queryset(self.queryset)
+            serializer = self.get_serializer(query, many=True)
+            return self.get_paginated_response(serializer.data)
+        except ValueError:
+            print(ValueError)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @csrf_exempt
+    def post(self):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed("Unauthorized!")
+        try:
+            jwt.decode(
+                token, settings.SECRET_KEY, algorithms='HS256')
+        except:
+            raise AuthenticationFailed('Unauthorized!')
+
         data = request.data
-        serialize = self.get_serializer(data=data)
-        if serialize.is_valid(raise_exception=True):
-            serialize.save()
-            return Response(serialize.data, status=status.HTTP_201_CREATED)
-
-    def get(self,request):
-        queryset = Kebutuhan.objects.all()
-        serialize = self.get_serializer(queryset, many=True)
-        return Response(serialize.data, status=status.HTTP_200_OK)
-
-
-
-
+        serializer = self.get_serializer(data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)

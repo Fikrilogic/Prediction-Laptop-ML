@@ -87,16 +87,28 @@ WSGI_APPLICATION = 'backend_controller.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'postgres',
+#         'USER': 'user',
+#         'PASSWORD': '12345678',
+#         'HOST': 'postgres',
+#         'PORT': 5432
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'database',
-        'USER': 'user',
-        'PASSWORD': '12345678',
-        'HOST': 'postgres',
+        'NAME': 'backend',
+        'USER': 'postgres',
+        'PASSWORD': '3010',
+        'HOST': 'localhost',
         'PORT': 5432
     }
 }
+
 
 
 # Password validation

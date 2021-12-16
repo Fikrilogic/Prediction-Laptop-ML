@@ -42,24 +42,14 @@ class Dataset(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(verbose_name=_("Name"), max_length=100, blank=False, null=False)
     path = models.FileField(verbose_name=_("path"),
-                            upload_to=dataset_path,
-                            validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'csv'])]
+                            upload_to="file/dataset",
+                            validators=[FileExtensionValidator(allowed_extensions=['xlsx'])]
                             )
 
     class Meta:
         verbose_name = _("Dataset")
         verbose_name_plural = _("Datasets")
         db_table = _("dataset")
-
-
-class Kebutuhan(models.Model):
-    id = models.UUIDField(verbose_name=_("id"), default=uuid.uuid4, unique=True, primary_key=True)
-    name = models.CharField(verbose_name=_("name"), max_length=255, blank=False, null=False)
-    kode = models.CharField(verbose_name=_("kode"), max_length=3, blank=False, null=False)
-
-    class Meta:
-        verbose_name = _("Kebutuhan")
-        db_table = _("kebutuhan")
 
 
 class Specification(models.Model):
@@ -76,9 +66,11 @@ class Specification(models.Model):
     screen_resolution = models.CharField(verbose_name=_("screen_resolution"), max_length=255, null=True, blank=True)
     weight = models.DecimalField(verbose_name=_("weight"), max_digits=3, decimal_places=2, null=True, blank=True)
     type_laptop = models.CharField(verbose_name=_("type_laptop"), max_length=255, null=True, blank=True)
+    kebutuhan = models.CharField(verbose_name=_("kebutuhan"), max_length=255, null=False, blank=False)
 
     class Meta:
         verbose_name=_("Specification")
         verbose_name_plural = _("Specifications")
         db_table = _("specification")
+        ordering = ['-id']
 

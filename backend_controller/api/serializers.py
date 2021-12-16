@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from .models import (
     Profile,
     Dataset,
-    Kebutuhan,
     Specification
 )
 
@@ -57,8 +56,8 @@ class DatasetSerializer(serializers.ModelSerializer):
         model = Dataset
         fields = "__all__"
 
-class KebutuhanSerializer(serializers.ModelSerializer):
+class SpecificationSerializers(serializers.ModelSerializer):
     class Meta:
-        model = Kebutuhan
-        fields = "__all__"
+        model = Specification
+        fields= "__all__"
 
