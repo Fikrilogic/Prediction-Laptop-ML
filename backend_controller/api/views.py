@@ -42,11 +42,12 @@ User = get_user_model()
 # Create your views here.
 
 
-class Register(APIView):
+class Register(generics.GenericAPIView):
     queryset = User.objects.all()
+    serializer_class = UserSerializers
 
     def post(self, request):
-        serializers = UserSerializers(data=request.data)
+        serializers = self.get_serializer(data=request.data)
         valid = serializers.is_valid(raise_exception=True)
         if not valid:
             return Response({"message": "failed to register user"}, status=status.HTTP_400_BAD_REQUEST)
@@ -54,16 +55,20 @@ class Register(APIView):
         return Response(serializers.data, status=status.HTTP_201_CREATED)
 
 
-class RegisterAdminView(APIView):
+class RegisterAdminView(generics.GenericAPIView):
+    serializer_class = UserSerializers
     def post(self, request):
-        serializers = UserSerializers(data=request.data)
-        serializers.is_valid(raise_exception=True)
-        serializers.admin_create(request.data)
-        return Response(serializers.data, status=status.HTTP_201_CREATED)
+        serializers = self.get_serializer(data=request.data)
+        if serializers.is_valid(raise_exception=True):
+            serializers.admin_create(request.data)
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
 
 
-class LoginUser(APIView):
+class LoginUser(generics.GenericAPIView):
+    serializer_class = UserSerializers
+
     def post(self, request):
+
         email = request.data['email']
         password = request.data['password']
 
@@ -91,7 +96,9 @@ class LoginUser(APIView):
         return res
 
 
-class LoginAdmin(APIView):
+class LoginAdmin(generics.GenericAPIView):
+    serializer_class = UserSerializers
+
     def post(self, request):
         email = request.data['email']
         password = request.data['password']
@@ -128,9 +135,10 @@ class LogoutUser(APIView):
         return res
 
 
-class UserView(APIView):
-    def get(self, request):
-        token = request.COOKIES.get('jwt')
+class UserView(generics.GenericAPIView):
+    serializer_class = UserSerializers
+    def get(self):
+        token = self.request.COOKIES.get('jwt')
 
         if not token:
             raise AuthenticationFailed("Unauthorized!")
@@ -142,18 +150,19 @@ class UserView(APIView):
         except:
             raise AuthenticationFailed('Unauthorized!')
 
-        user = UserSerializers().getData(id=payload['id'])
+        id = payload['id']
+        user = User.objects.filter(id=id)
         if user is None:
             return NotFound()
-        serialize = UserSerializers(user)
-
+        serialize = self.get_serializer(user)
         return Response(serialize.data)
 
 
-class UserCustomerView(APIView):
+class UserCustomerView(generics.GenericAPIView):
+    serializer_class = UserSerializers
 
-    def get(self, request, id=None):
-        token = request.COOKIES.get('jwt')
+    def get(self):
+        token = self.request.COOKIES.get('jwt')
 
         if not token:
             raise AuthenticationFailed("Unauthorized!")
@@ -168,13 +177,12 @@ class UserCustomerView(APIView):
         if verif.user_type != 'admin':
             raise NotAuthenticated()
 
-        if id:
+        if self.kwargs['id']:
             try:
-
                 profile = Profile.objects.get(user_id=id)
                 if profile is None:
                     return NotFound()
-                serialize = ProfileSerializers(profile)
+                serialize = self.get_serializer(profile)
                 return Response({"user": serialize.data}, status=status.HTTP_200_OK)
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -183,39 +191,39 @@ class UserCustomerView(APIView):
         )
         if profile is None:
             return NotFound()
-        serialize = ProfileSerializers(profile, many=True)
-        return Response({"user": serialize.data, "message": "ini pesan"}, status=status.HTTP_200_OK)
+        serialize = self.get_serializer(profile, many=True)
+        return Response({"user": serialize.data}, status=status.HTTP_200_OK)
 
-    def patch(self, request, id=None):
-        token = request.COOKIES.get('jwt')
+    def patch(self):
+        token = self.request.COOKIES.get('jwt')
 
         if not token:
             raise AuthenticationFailed("Unauthorized!")
+
         try:
             payload = jwt.decode(
                 token, settings.SECRET_KEY, algorithms='HS256')
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthorized!')
         except:
             raise AuthenticationFailed('Unauthorized!')
         verif = User.objects.get(id=payload['id'])
         if verif.is_staff != True:
             raise NotAuthenticated("gagal")
+
         try:
-            user = User.objects.get(id=id)
+            user_id = self.kwargs['id']
+            user = User.objects.get(id=user_id)
             if user is None:
                 raise NotFound()
-            serialize = UserSerializers(user, data=request.data, partial=True)
+            data = self.request.data
+            serialize = self.get_serializer(user, data=data, partial=True)
             if serialize.is_valid():
                 serialize.save()
                 return Response({"user": serialize.data}, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id=None):
-        token = request.COOKIES.get('jwt')
-
-        token = request.COOKIES.get('jwt')
+    def delete(self):
+        token = self.request.COOKIES.get('jwt')
 
         if not token:
             raise AuthenticationFailed("Unauthorized!")
@@ -230,7 +238,8 @@ class UserCustomerView(APIView):
         if verif.user_type != 'admin':
             raise NotAuthenticated()
 
-        user = User.objects.get(id=id)
+        user_id = self.kwargs['id']
+        user = User.objects.get(id=user_id)
         if user is None:
             raise NotFound()
         user.delete()
