@@ -1,0 +1,17 @@
+
+// Action type
+export const GET_DATASET = 'GET_DATASET'
+export const POST_DATASET = 'POST_DATASET'
+export const DELETE_ALL_DATASET = 'DELETE_ALL_DATA'
+export const UPLOAD_EXCEL = 'UPLOAD_DATASET_EXCEL'
+
+
+// action function for fetch action
+export const getDataset = (Dataset) => ({
+    type: GET_DATASET,
+    payload: Dataset
+})
+
+export const uploadFile = (Dataset) => ({
+    type: UPLOAD_EXCEL,
+})

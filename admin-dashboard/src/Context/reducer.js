@@ -1,5 +1,6 @@
 import * as ACTION from "./action";
 
+// initial state
 export const AUTH_STATE = {
   isAuthenticated: false,
   roles: "",
@@ -7,6 +8,7 @@ export const AUTH_STATE = {
   loading: false,
 };
 
+// store state to localstorage
 export const persistState = () => {
   try {
     const local = localStorage.getItem("auth");
@@ -17,6 +19,7 @@ export const persistState = () => {
   }
 };
 
+// Authentication Reducer
 export const Reducer = (state = AUTH_STATE, action) => {
   switch (action.type) {
     case ACTION.LOGIN_LOADING:

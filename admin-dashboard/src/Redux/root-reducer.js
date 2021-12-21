@@ -1,20 +1,20 @@
 import { combineReducers } from "redux";
 import { UserReducer } from "./User/reducer";
-import { LaptopReducer } from "./laptop/reduce";
+import {DatasetReducer} from "./Dataset/reducer";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { Type_Reducer } from "./laptop-tipe/reducer";
 
+// persistance configuration
 const persistConfig = {
   key: "data",
   storage,
   whitelist: ["user"],
 };
 
+// Group of Reducer
 const reducers = combineReducers({
   user: UserReducer,
-  laptop: LaptopReducer,
-  type_laptop: Type_Reducer,
+  dataset: DatasetReducer
 });
 
 export default persistReducer(persistConfig, reducers);

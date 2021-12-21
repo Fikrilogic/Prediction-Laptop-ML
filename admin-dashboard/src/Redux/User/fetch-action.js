@@ -2,6 +2,8 @@ import axios from "axios";
 import { URL } from "../../Context/action";
 import { RequestData, UserSuccess, FailRequest, DeleteUser } from "./action";
 
+
+// Function for fire API to GET, POST, PATCH, DELETE
 export const fetchUser = () => {
   return (dispatch) => {
     dispatch(RequestData());
@@ -27,3 +29,5 @@ export const deleteUser = (id) => {
     }
   };
 };
+
+// End of function

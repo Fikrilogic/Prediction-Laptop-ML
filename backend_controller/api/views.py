@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import request
 from django.contrib.auth import get_user_model
+import asyncio
 from django.conf import settings
 from asgiref.sync import sync_to_async
 from .serializers import (
@@ -271,7 +272,7 @@ class DatasetView(generics.GenericAPIView):
             data_obj.save()
 
     @csrf_exempt
-    def post(self, request):
+    async def post(self, request):
         token = request.COOKIES.get('jwt')
 
         if not token:
@@ -303,7 +304,8 @@ class DatasetView(generics.GenericAPIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             spek = Dataset.objects.get(pk=serializer.data['id'])
-            sync_to_async(self._save_excel_data(file, spek), thread_sensitive=True)
+            loop = asyncio.get_event_loop()
+            await sync_to_async(self._save_excel_data(file, spek), thread_sensitive=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):

@@ -88,21 +88,6 @@ function SideMenu(props) {
             </Link>
           </ButtonBase>
           <ButtonBase className={classes.btnBase} sx={{ padding: "10px 15px" }}>
-            <Link className={classes.link} to="../dashboard/laptop-type">
-              <ArrowForwardIosIcon className={classes.btnIcon} /> Master Tipe
-              Laptop
-            </Link>
-          </ButtonBase>
-          <ButtonBase
-            className={classes.btnBase}
-            sx={{ padding: "10px 15px" }}
-            centerRipple={true}
-          >
-            <Link className={classes.link} padding="" to="../dashboard/laptop">
-              <ArrowForwardIosIcon className={classes.btnIcon} /> Master Laptop
-            </Link>
-          </ButtonBase>
-          <ButtonBase className={classes.btnBase} sx={{ padding: "10px 15px" }}>
             <Link className={classes.link} to="../dashboard/spesifikasi">
               <ArrowForwardIosIcon className={classes.btnIcon} /> Master
               Spesifikasi

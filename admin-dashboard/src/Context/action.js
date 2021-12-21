@@ -8,6 +8,7 @@ export const SERVER_BREAK = "SERVER_BREAK";
 
 export const URL = "http://localhost:8000/api/";
 
+// Login Action
 export const login = async (dispatch, { email, password }) => {
   try {
     dispatch({ type: LOGIN_LOADING });
@@ -33,6 +34,7 @@ export const login = async (dispatch, { email, password }) => {
   }
 };
 
+// Logout action
 export const logout = (dispatch) => {
   return axios
     .get(URL + "logout", { withCredentials: true })

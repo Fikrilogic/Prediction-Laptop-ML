@@ -1,5 +1,6 @@
 import { REQUEST_USER, GET_USER, FAILED_REQUEST, POST_USER } from "./action";
 
+// initial state
 export const USER_STATE = {
   loading: false,
   users: [],
@@ -7,6 +8,7 @@ export const USER_STATE = {
   status: "",
 };
 
+// Reducer for Data User
 export const UserReducer = (state = USER_STATE, action) => {
   switch (action.type) {
     case REQUEST_USER:
