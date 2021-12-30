@@ -30,7 +30,7 @@ User = get_user_model()
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True)
     first_name = models.CharField(verbose_name=_("First Name"), max_length=70, blank=True, null=True)
     last_name = models.CharField(verbose_name=_("Last Name"), max_length=70, blank=True, null=True)
     phone = models.CharField(verbose_name=_("phone"), max_length=13, blank=True, null=True)
