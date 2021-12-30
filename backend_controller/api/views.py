@@ -115,7 +115,7 @@ class LoginAdmin(generics.GenericAPIView):
             raise AuthenticationFailed("user not found")
         if not user.check_password(password):
             raise AuthenticationFailed("password failed")
-        if user.user_type != 'admin':
+        if not user.is_staff:
             raise PermissionDenied("User Cannot Access this route")
 
         payload = {
