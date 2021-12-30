@@ -47,7 +47,7 @@ class Register(generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializers
 
-    def post(self):
+    def post(self, request):
         data = self.request.data
         serializers = self.get_serializer(data=data)
         if serializers.is_valid(raise_exception=True):
@@ -59,7 +59,8 @@ class Register(generics.GenericAPIView):
 class RegisterAdminView(generics.GenericAPIView):
     serializer_class = UserSerializers
 
-    def post(self):
+    def post(self, request):
+        print(self.request.data)
         data = self.request.data
         serializers = self.get_serializer(data=data)
         if serializers.is_valid(raise_exception=True):
@@ -71,7 +72,7 @@ class RegisterAdminView(generics.GenericAPIView):
 class LoginUser(generics.GenericAPIView):
     serializer_class = UserSerializers
 
-    def post(self):
+    def post(self, request):
 
         email = self.request.data['email']
         password = self.request.data['password']
@@ -327,7 +328,7 @@ class SpecificationView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @csrf_exempt
-    def post(self):
+    def post(self, request):
         status = AuthenticationJwt.get_user_authentication()
         if status is None:
             raise NotAuthenticated()
