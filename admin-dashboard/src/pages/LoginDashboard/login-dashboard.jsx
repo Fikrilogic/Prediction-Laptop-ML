@@ -24,8 +24,7 @@ const useStyle = makeStyles({
         flexWrap: "nowrap",
         padding: "15px 0px",
         position: "absolute",
-        marginLeft: "30%",
-        marginTop: "10%",
+        margin: "10% 35%",
         border: "1px solid rgb(0,0,0,0.3)",
     },
     textfield: {

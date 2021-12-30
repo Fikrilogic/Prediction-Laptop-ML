@@ -4,16 +4,19 @@ import {connect} from "react-redux";
 import {makeStyles} from "@mui/styles";
 import {Container, Box, Card, Typography} from "@mui/material";
 
-import SideMenu from "../../components/SideMenuDashboard/side-menu";
+import SideMenuComponent from "../../components/SideMenuDashboard/side-menu.component";
 import {fetchUser} from "../../Redux/User/fetch-action";
-import UserTable from "../../components/TableComponent/user-table";
+import UserTableComponent from "../../components/TableComponent/user-table.component";
+import AppBarCustome from "../../components/AppBar/appbar-custome.component";
 
 const useStyle = makeStyles((theme) => ({
+    containerDashboard: {
+        display: 'flex'
+    },
     mainDashboard: {
-        width: "80%",
+        width: "75%",
         boxShadow: 3,
-        padding: "10px 15px",
-        marginLeft: "10px",
+        padding: "10px 15px"
     },
 }));
 
@@ -25,13 +28,13 @@ const UserDashboard = ({dispatch, user, status, theme}) => {
     }, [dispatch]);
 
     return (
-        <Container maxWidth="lg" sx={{display: "flex", margin: "5px 0px"}}>
-            <SideMenu/>
+        <Container maxWidth="xl" disableGutters  sx={{display: 'flex', height: '100vh'}}>
+            <SideMenuComponent/>
             <Box className={classes.mainDashboard}>
-                <Typography variant="h4">Data User</Typography>
+                <AppBarCustome MenuName='Master User'/>
 
                 <Card sx={{mt: 5}}>
-                    <UserTable data={user} dispatch={dispatch}/>
+                    <UserTableComponent data={user} dispatch={dispatch}/>
                 </Card>
             </Box>
         </Container>

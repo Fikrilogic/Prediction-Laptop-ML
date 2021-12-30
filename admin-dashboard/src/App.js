@@ -9,7 +9,7 @@ import {Reducer, AUTH_STATE} from "./Context/reducer";
 import LoginDashboard from "./pages/LoginDashboard/login-dashboard";
 import UserDashboard from "./pages/Dashboard/user-dashboard.jsx"
 import DatasetDashboard from './pages/Dashboard/dataset-dashboard.jsx'
-import PrivateRoute from "./components/ProtectedRoute/protect-route";
+import PrivateRoute from "./components/ProtectedRoute/protect-route.component";
 
 function App(props) {
     const [user, dispatch] = useReducer(Reducer, AUTH_STATE);
@@ -22,22 +22,25 @@ function App(props) {
                     <Routes>
                         <Route path="/" element={<Navigate to="/login"/>}/>
                         <Route path="login" element={<LoginDashboard/>}/>
-                        <Route
-                            path="dashboard/user/*"
-                            element={
-                                <PrivateRoute>
-                                    <UserDashboard/>
-                                </PrivateRoute>
-                            }
-                        />
-                        <Route
-                            path='dashboard/dataset/*'
-                            element={
-                                <PrivateRoute>
-                                    <DatasetDashboard></DatasetDashboard>
-                                </PrivateRoute>
-                            }
-                        />
+
+                        <Route path="dashboard">
+                            <Route
+                                path="user/*"
+                                element={
+                                    <PrivateRoute>
+                                        <UserDashboard/>
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path='dataset/*'
+                                element={
+                                    <PrivateRoute>
+                                        <DatasetDashboard></DatasetDashboard>
+                                    </PrivateRoute>
+                                }
+                            />
+                        </Route>
                     </Routes>
                 </BrowserRouter>
             </AuthContext.Provider>

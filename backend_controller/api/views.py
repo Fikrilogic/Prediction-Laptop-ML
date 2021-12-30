@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import request
 from django.contrib.auth import get_user_model
 import asyncio
-from django.conf import settings
 from asgiref.sync import sync_to_async
 from .serializers import (
     UserSerializers,
@@ -16,11 +15,12 @@ from .models import (
     Specification
 )
 from .pagination import StandardPagination
+from .middleware import AuthenticationJwt
+
 from django.conf import settings
 from django.views.decorators.csrf import (
     csrf_exempt
 )
-from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.exceptions import (
@@ -42,36 +42,39 @@ User = get_user_model()
 
 # Create your views here.
 
-
+# Register Member
 class Register(generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializers
 
-    def post(self, request):
-        serializers = self.get_serializer(data=request.data)
-        valid = serializers.is_valid(raise_exception=True)
-        if not valid:
-            return Response({"message": "failed to register user"}, status=status.HTTP_400_BAD_REQUEST)
-        serializers.create(request.data)
-        return Response(serializers.data, status=status.HTTP_201_CREATED)
-
-
-class RegisterAdminView(generics.GenericAPIView):
-    serializer_class = UserSerializers
-    def post(self, request):
-        serializers = self.get_serializer(data=request.data)
+    def post(self):
+        data = self.request.data
+        serializers = self.get_serializer(data=data)
         if serializers.is_valid(raise_exception=True):
-            serializers.admin_create(request.data)
+            serializers.create()
             return Response(serializers.data, status=status.HTTP_201_CREATED)
 
 
+# Register Admin
+class RegisterAdminView(generics.GenericAPIView):
+    serializer_class = UserSerializers
+
+    def post(self):
+        data = self.request.data
+        serializers = self.get_serializer(data=data)
+        if serializers.is_valid(raise_exception=True):
+            serializers.admin_create()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+
+
+# User login
 class LoginUser(generics.GenericAPIView):
     serializer_class = UserSerializers
 
-    def post(self, request):
+    def post(self):
 
-        email = request.data['email']
-        password = request.data['password']
+        email = self.request.data['email']
+        password = self.request.data['password']
 
         user = User.objects.filter(email=email).first()
 
@@ -79,7 +82,7 @@ class LoginUser(generics.GenericAPIView):
             raise AuthenticationFailed("user not found")
         if not user.check_password(password):
             raise AuthenticationFailed("password failed")
-        if user.is_staff == True:
+        if user.is_staff:
             raise AuthenticationFailed("Admin Cannot Access this route")
 
         payload = {
@@ -97,12 +100,13 @@ class LoginUser(generics.GenericAPIView):
         return res
 
 
+# admin login
 class LoginAdmin(generics.GenericAPIView):
     serializer_class = UserSerializers
 
     def post(self, request):
-        email = request.data['email']
-        password = request.data['password']
+        email = self.request.data['email']
+        password = self.request.data['password']
 
         user = User.objects.filter(email=email).first()
 
@@ -129,15 +133,18 @@ class LoginAdmin(generics.GenericAPIView):
         return res
 
 
-class LogoutUser(APIView):
-    def get(self, request):
+# all user logout
+class LogoutUser(generics.GenericAPIView):
+    def get(self):
         res = Response()
         res.delete_cookie('jwt')
         return res
 
 
+# get profile user
 class UserView(generics.GenericAPIView):
     serializer_class = UserSerializers
+
     def get(self):
         token = self.request.COOKIES.get('jwt')
 
@@ -159,28 +166,18 @@ class UserView(generics.GenericAPIView):
         return Response(serialize.data)
 
 
+# User Customer Data view
 class UserCustomerView(generics.GenericAPIView):
-    serializer_class = UserSerializers
+    serializer_class = ProfileSerializers
 
     def get(self):
-        token = self.request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-        try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthorized!')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
-        verif = User.objects.get(id=payload['id'])
-        if verif.user_type != 'admin':
+        status = AuthenticationJwt.get_admin_authentication(self.request)
+        if status is None:
             raise NotAuthenticated()
 
         if self.kwargs['id']:
             try:
-                profile = Profile.objects.get(user_id=id)
+                profile = Profile.objects.get(user_id=self.kwargs['id'])
                 if profile is None:
                     return NotFound()
                 serialize = self.get_serializer(profile)
@@ -188,7 +185,7 @@ class UserCustomerView(generics.GenericAPIView):
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         profile = Profile.objects.filter(
-            user__user_type='customer'
+            user__is_staff=False
         )
         if profile is None:
             return NotFound()
@@ -196,57 +193,38 @@ class UserCustomerView(generics.GenericAPIView):
         return Response({"user": serialize.data}, status=status.HTTP_200_OK)
 
     def patch(self):
-        token = self.request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-
-        try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
-        verif = User.objects.get(id=payload['id'])
-        if verif.is_staff != True:
-            raise NotAuthenticated("gagal")
+        status = AuthenticationJwt.get_admin_authentication(self.request)
+        if status is None:
+            raise NotAuthenticated()
 
         try:
             user_id = self.kwargs['id']
-            user = User.objects.get(id=user_id)
-            if user is None:
+            profile = Profile.objects.get(user_id=user_id)
+            if profile is None:
                 raise NotFound()
             data = self.request.data
-            serialize = self.get_serializer(user, data=data, partial=True)
-            if serialize.is_valid():
+            serialize = self.get_serializer(profile, data=data, partial=True)
+            if serialize.is_valid(raise_exception=True):
                 serialize.save()
                 return Response({"user": serialize.data}, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self):
-        token = self.request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-        try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthorized!')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
-        verif = User.objects.get(id=payload['id'])
-        if verif.user_type != 'admin':
+        status = AuthenticationJwt.get_admin_authentication(self.request)
+        if status is None:
             raise NotAuthenticated()
 
         user_id = self.kwargs['id']
         user = User.objects.get(id=user_id)
-        if user is None:
+        profile = Profile.objects.get(user_id=user_id)
+        if user is None and profile is None:
             raise NotFound()
         user.delete()
+        profile.delete()
         return Response(status=status.HTTP_200_OK)
 
-
+# FOR CRUD Dataset File
 class DatasetView(generics.GenericAPIView):
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = DatasetSerializer
@@ -273,20 +251,8 @@ class DatasetView(generics.GenericAPIView):
 
     @csrf_exempt
     async def post(self, request):
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-        try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthorized!')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
-
-        verif = User.objects.get(id=payload['id'])
-        if verif.user_type != 'admin':
+        status = AuthenticationJwt.get_admin_authentication(request)
+        if status is None:
             raise NotAuthenticated()
 
         file = pd.read_excel(request.FILES['path'].read())
@@ -299,30 +265,17 @@ class DatasetView(generics.GenericAPIView):
                 return Response({"message": "DATA IS REJECTED"}, status.HTTP_403_FORBIDDEN)
 
         data = request.data
-        data['user'] = verif.id
+        data['user'] = status.id
         serializer = self.get_serializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            spek = Dataset.objects.get(pk=serializer.data['id'])
-            loop = asyncio.get_event_loop()
-            await sync_to_async(self._save_excel_data(file, spek), thread_sensitive=True)
+            dataset = Dataset.objects.get(pk=serializer.data['id'])
+            self._save_excel_data(file, dataset)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def get(self, request):
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-        try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthorized!')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
-
-        verif = User.objects.get(id=payload['id'])
-        if verif.user_type != 'admin':
+    def get(self):
+        status = AuthenticationJwt.get_admin_authentication(self.request)
+        if status is None:
             raise NotAuthenticated()
 
         try:
@@ -332,48 +285,77 @@ class DatasetView(generics.GenericAPIView):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self):
+        status = AuthenticationJwt.get_admin_authentication(self.request)
+        if status is None:
+            raise NotAuthenticated()
 
+        if self.kwargs['id']:
+            try:
+                id = self.kwargs['id']
+                query = Dataset.objects.filter(id=id).delete()
+                if query is None:
+                    raise NotFound()
+                return Response({"message": "File is Deleted"}, status=status.HTTP_200_OK)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            query = self.get_queryset()
+            query.delete()
+            return Response({"message": "All File is Deleted"}, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# FOR Dataset Table Specification
 class SpecificationView(generics.GenericAPIView):
     serializer_class = SpecificationSerializers
     queryset = Specification.objects.all()
     pagination_class = StandardPagination
 
-    def get(self, request, page=1):
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-        try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
-        verif = User.objects.get(id=payload['id'])
-        if verif.user_type != 'admin':
+    def get(self):
+        status = AuthenticationJwt.get_admin_authentication(self.request)
+        if status is None:
             raise NotAuthenticated()
 
         try:
             query = self.paginate_queryset(self.queryset)
             serializer = self.get_serializer(query, many=True)
             return self.get_paginated_response(serializer.data)
-        except ValueError:
-            print(ValueError)
+        except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @csrf_exempt
     def post(self):
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-        try:
-            jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
+        status = AuthenticationJwt.get_user_authentication()
+        if status is None:
+            raise NotAuthenticated()
 
         data = request.data
         serializer = self.get_serializer(data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+
+    def delete(self):
+        status = AuthenticationJwt.get_admin_authentication()
+        if status is None:
+            raise NotAuthenticated()
+
+        if self.kwargs['id']:
+            try:
+                id = self.kwargs['id']
+                query = Specification.objects.filter(id=id).delete()
+                if query is None:
+                    raise NotFound()
+                return Response({"message": "Data Deleted"}, status=status.HTTP_200_OK)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            query = self.get_queryset()
+            query.delete()
+            return Response({"message": "All File is Deleted"}, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

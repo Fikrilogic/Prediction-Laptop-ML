@@ -7,6 +7,7 @@ from django.conf import settings
 
 import uuid
 
+
 # Profile image path function
 
 
@@ -27,8 +28,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('User Must Have Username')
         if not password:
             raise ValueError("User Must have password")
-        
-        extra_fields.setdefault("user_type", "customer")
 
         user = self.model(
             email=self.normalize_email(email),
@@ -39,7 +38,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         user
         return user
-    
+
     def create_admin(self, email, username, password=None, **extra_fields):
         if not email:
             raise ValueError('User Must Have Email')
@@ -47,8 +46,8 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('User Must Have Username')
         if not password:
             raise ValueError("User Must have password")
-        
-        extra_fields.setdefault("user_type", "admin")
+
+        extra_fields.setdefault("is_staff", True)
 
         user = self.model(
             email=self.normalize_email(email),
@@ -65,9 +64,8 @@ class CustomUserManager(BaseUserManager):
         if not username:
             raise ValueError('Username required')
 
-
-        extra_fields.setdefault("user_type", "admin")
         extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
 
         superuser = self.model(
             email=self.normalize_email(email),
@@ -79,12 +77,7 @@ class CustomUserManager(BaseUserManager):
         return superuser
 
 
-class User(AbstractBaseUser):
-    USER_TYPE = (
-        ('customer', 'customer'),
-        ('admin', 'admin'),
-    )
-
+class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     username = models.CharField(
         max_length=60,
@@ -114,7 +107,6 @@ class User(AbstractBaseUser):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    user_type = models.CharField(max_length=40, choices=USER_TYPE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     objects = CustomUserManager()
@@ -124,9 +116,3 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.username
-
-    def get_full_name(self):
-        return f'{self.first_name} {self.last_name}'
-
-    def get_address(self):
-        return self.address

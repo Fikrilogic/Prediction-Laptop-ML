@@ -31,25 +31,18 @@ class UserSerializers(serializers.ModelSerializer):
             'id': {"read_only": True},
             'password': {"write_only": True}
         }
-    def create(self, validated_data):
-        data = validated_data.pop('profile')
-        self.instance = User.objects.create_user(**validated_data)
-        profile = Profile.objects.create(**data, user_id=self.instance.id)
-        self.instance.profile = profile
-        return self.instance
-
-    def admin_create(self, validate_data):
-        self.instance = User.objects.create_admin(**validate_data)
-        return self.instance
-
-    def getData(self, id):
-        try:
-            self.instance = User.objects.get(id=id)
-            profile = Profile.objects.get(user_id=self.instance.id)
+    def create(self):
+        data = self.validated_data.pop('profile')
+        self.instance = User.objects.create_user(**self.validated_data)
+        data['user_id'] = self.instance.id
+        profile = ProfileSerializers(data=data)
+        if profile.is_valid(raise_exception=True):
             self.instance.profile = profile
             return self.instance
-        except:
-            return None
+
+    def admin_create(self):
+        self.instance = User.objects.create_admin(**self.validated_data)
+        return self.instance
 
 class DatasetSerializer(serializers.ModelSerializer):
     class Meta:

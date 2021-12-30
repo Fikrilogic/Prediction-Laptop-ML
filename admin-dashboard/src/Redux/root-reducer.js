@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import { UserReducer } from "./User/reducer";
-import {DatasetReducer} from "./Dataset/reducer";
+import { DatasetReducer} from "./Dataset/reducer";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 

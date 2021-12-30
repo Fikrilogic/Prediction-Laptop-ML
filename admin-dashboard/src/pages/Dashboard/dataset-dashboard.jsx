@@ -2,28 +2,28 @@ import React, {useEffect} from "react";
 import {connect} from "react-redux";
 
 import {makeStyles} from "@mui/styles";
-import {Container, Box, Card, Typography} from "@mui/material";
+import {Container, Box, Card, Typography, AppBar, Toolbar} from "@mui/material";
 
-import SideMenu from "../../components/SideMenuDashboard/side-menu";
+import SideMenuComponent from "../../components/SideMenuDashboard/side-menu.component";
+import DatasetTable from "../../components/TableComponent/dataset-table.component";
+import AppBarCustome from "../../components/AppBar/appbar-custome.component";
 
 const useStyle = makeStyles((theme) => ({
     mainDashboard: {
-        width: "80%",
+        width: "75%",
         boxShadow: 3,
         padding: "10px 15px",
-        marginLeft: "10px",
-    },
+    }
 }));
 
 const DatasetDashboard = ({dispatch, dataset, status, loading,theme}) => {
     const classes = useStyle(theme);
 
     return (
-        <Container maxWidth="lg" sx={{display: "flex", margin: "5px 0px"}}>
-            <SideMenu/>
+        <Container maxWidth="xl" disableGutters sx={{display: "flex", height: '100vh'}}>
+            <SideMenuComponent/>
             <Box className={classes.mainDashboard}>
-
-
+                <AppBarCustome MenuName='Master Dataset'/>
             </Box>
         </Container>
     );

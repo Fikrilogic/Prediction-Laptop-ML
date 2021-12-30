@@ -15,7 +15,7 @@ import {
 
 import { deleteUser } from "../../Redux/User/fetch-action";
 
-function UserTable({ data, dispatch }) {
+function UserTableComponent({ data, dispatch }) {
   const [id, setId] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -100,4 +100,4 @@ function UserTable({ data, dispatch }) {
   );
 }
 
-export default UserTable;
+export default UserTableComponent;

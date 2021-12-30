@@ -19,6 +19,7 @@ const theme = createTheme({
     fontFamily: ["Fira Sans", "Open Sans Condensed", "sans-serif"].join(","),
     fontSize: "1rem",
   },
+
 });
 
 export default theme;

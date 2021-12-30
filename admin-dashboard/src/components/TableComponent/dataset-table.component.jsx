@@ -10,7 +10,7 @@ import {
   Button,
 } from "@mui/material";
 
-function LaptopTypeTable({ data }) {
+function DatasetTable({ data }) {
   return (
     <Table
       size="small"
@@ -54,4 +54,4 @@ function LaptopTypeTable({ data }) {
   );
 }
 
-export default LaptopTypeTable;
+export default DatasetTable;

@@ -39,7 +39,6 @@ export const UserReducer = (state = USER_STATE, action) => {
         status: "FAILED",
       };
     default:
-      console.log("payload", action.user);
       return state;
   }
 };
