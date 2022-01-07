@@ -39,9 +39,9 @@ class AuthenticationJwt(MiddlewareMixin):
 
     @staticmethod
     def get_admin_authentication(request):
-        user = get_user_model(request)
+        user = AuthenticationJwt.get_user_authentication(request)
         return user if user.is_staff else None
 
     @staticmethod
     def get_user_authentication(request):
-        return get_user_model(request)
+        return AuthenticationJwt.get_user_authentication(request)

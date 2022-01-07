@@ -1,50 +1,71 @@
-from django.shortcuts import render
-from django.http import request
 from django.contrib.auth import get_user_model
-import asyncio
-from asgiref.sync import sync_to_async
-from .serializers import (
-    UserSerializers,
-    ProfileSerializers,
-    DatasetSerializer,
-    SpecificationSerializers
-)
-from .models import (
-    Profile,
-    Dataset,
-    Specification
-)
-from .pagination import StandardPagination
-from .middleware import AuthenticationJwt
-
+from django.contrib.auth.models import Group
 from django.conf import settings
+from rest_framework.generics import get_object_or_404
 from django.views.decorators.csrf import (
     csrf_exempt
 )
+
 from rest_framework import generics
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import (
     AuthenticationFailed,
     PermissionDenied,
-    NotAcceptable,
-    NotAuthenticated,
     NotFound,
 )
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, \
+    classification_report
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import DecisionTreeClassifier
+
+from .serializers import (
+    UserSerializers,
+    ProfileSerializers,
+    CpuSerializers,
+    GpuSerializers,
+    ScreenSerializers,
+    CompanySerializers,
+    MemoryTypeSerializers,
+    ResolutionSerializers,
+    TypeLaptopSerializers,
+    DatasetSerializers
+
+)
+from .models import (
+    Profile,
+    MasterCpu,
+    MasterGpu,
+    MasterCompany,
+    MasterScreen,
+    MasterMemory,
+    MasterTypeLaptop,
+    MasterScreenResolution,
+    MasterDataset
+)
+from .permissions import isAdminUser, isAdminOrMemberUser, isMemberUser
+
+from .pagination import StandardPagination
+
 import jwt
 import datetime
 import pandas as pd
+import joblib
 
 User = get_user_model()
 
 
 # Create your views here.
 
+# presave
+
+
 # Register Member
 class Register(generics.GenericAPIView):
-    queryset = User.objects.all()
     serializer_class = UserSerializers
 
     def post(self, request):
@@ -70,12 +91,11 @@ class RegisterAdminView(generics.GenericAPIView):
 
 # User login
 class LoginUser(generics.GenericAPIView):
-    serializer_class = UserSerializers
 
     def post(self, request):
 
-        email = self.request.data['email']
-        password = self.request.data['password']
+        email = request.data['email']
+        password = request.data['password']
 
         user = User.objects.filter(email=email).first()
 
@@ -83,7 +103,7 @@ class LoginUser(generics.GenericAPIView):
             raise AuthenticationFailed("user not found")
         if not user.check_password(password):
             raise AuthenticationFailed("password failed")
-        if user.is_staff:
+        if not Group.objects.get(name='member').user_set.filter(pk=user.id).exists():
             raise AuthenticationFailed("Admin Cannot Access this route")
 
         payload = {
@@ -103,11 +123,10 @@ class LoginUser(generics.GenericAPIView):
 
 # admin login
 class LoginAdmin(generics.GenericAPIView):
-    serializer_class = UserSerializers
 
     def post(self, request):
-        email = self.request.data['email']
-        password = self.request.data['password']
+        email = request.data['email']
+        password = request.data['password']
 
         user = User.objects.filter(email=email).first()
 
@@ -115,7 +134,7 @@ class LoginAdmin(generics.GenericAPIView):
             raise AuthenticationFailed("user not found")
         if not user.check_password(password):
             raise AuthenticationFailed("password failed")
-        if not user.is_staff:
+        if not Group.objects.get(name='admin').user_set.filter(pk=user.id).exists():
             raise PermissionDenied("User Cannot Access this route")
 
         payload = {
@@ -136,227 +155,311 @@ class LoginAdmin(generics.GenericAPIView):
 
 # all user logout
 class LogoutUser(generics.GenericAPIView):
-    def get(self):
+    def get(self, request):
         res = Response()
         res.delete_cookie('jwt')
         return res
 
 
-# get profile user
+# get profile user **NOT FIXED YET
 class UserView(generics.GenericAPIView):
     serializer_class = UserSerializers
+    permission_classes = [isMemberUser]
 
-    def get(self):
-        token = self.request.COOKIES.get('jwt')
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
 
-        if not token:
-            raise AuthenticationFailed("Unauthorized!")
-        try:
-            payload = jwt.decode(
-                token, settings.SECRET_KEY, algorithms='HS256')
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthorized!')
-        except:
-            raise AuthenticationFailed('Unauthorized!')
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
 
-        id = payload['id']
-        user = User.objects.filter(id=id)
+        user = User.objects.get(pk=payload['id'])
+
         if user is None:
             return NotFound()
-        serialize = self.get_serializer(user)
+        serialize = self.get_serializer(user).get_profile()
         return Response(serialize.data)
 
 
 # User Customer Data view
-class UserCustomerView(generics.GenericAPIView):
+class UserCustomerView(viewsets.GenericViewSet):
     serializer_class = ProfileSerializers
+    queryset = Profile.objects.all()
+    permission_classes = [isAdminUser]
+    pagination_class = StandardPagination
 
-    def get(self):
-        status = AuthenticationJwt.get_admin_authentication(self.request)
-        if status is None:
-            raise NotAuthenticated()
+    def get_permissions(self):
+        if self.action == 'partial_update':
+            self.permission_classes = [isMemberUser]
+        else:
+            self.permission_classes = [isAdminOrMemberUser]
+        return super(self.__class__, self).get_permissions()
 
-        if self.kwargs['id']:
-            try:
-                profile = Profile.objects.get(user_id=self.kwargs['id'])
-                if profile is None:
-                    return NotFound()
-                serialize = self.get_serializer(profile)
-                return Response({"user": serialize.data}, status=status.HTTP_200_OK)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-        profile = Profile.objects.filter(
-            user__is_staff=False
-        )
-        if profile is None:
-            return NotFound()
+    def list(self, id=None):
+        profile = self.get_queryset()
+        if profile.count() < 20:
+            serialize = self.get_serializer(profile, many=True)
+            return Response(serialize.data)
         serialize = self.get_serializer(profile, many=True)
-        return Response({"user": serialize.data}, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serialize.data)
 
-    def patch(self):
-        status = AuthenticationJwt.get_admin_authentication(self.request)
-        if status is None:
-            raise NotAuthenticated()
+    def retrieve(self, request, pk=None):
+        query = self.get_queryset()
+        profile = get_object_or_404(query, pk=pk)
+        serializer = self.get_serializer(profile)
+        return Response({"user": serializer.data})
 
-        try:
-            user_id = self.kwargs['id']
-            profile = Profile.objects.get(user_id=user_id)
-            if profile is None:
-                raise NotFound()
-            data = self.request.data
-            serialize = self.get_serializer(profile, data=data, partial=True)
-            if serialize.is_valid(raise_exception=True):
-                serialize.save()
-                return Response({"user": serialize.data}, status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    def partial_update(self, request, pk):
+        query = self.get_queryset()
+        profile = get_object_or_404(query, pk=pk)
+        data = self.request.data
+        serialize = self.get_serializer(profile, data=data, partial=True)
+        if serialize.is_valid(raise_exception=True):
+            serialize.save()
+            return Response({"user": serialize.data}, status=status.HTTP_200_OK)
 
-    def delete(self):
-        status = AuthenticationJwt.get_admin_authentication(self.request)
-        if status is None:
-            raise NotAuthenticated()
-
-        user_id = self.kwargs['id']
-        user = User.objects.get(id=user_id)
-        profile = Profile.objects.get(user_id=user_id)
+    def destroy(self, pk):
+        query = self.get_queryset()
+        profile = get_object_or_404(query, pk=pk)
+        user = User.objects.get(id=profile.user_id)
         if user is None and profile is None:
             raise NotFound()
         user.delete()
         profile.delete()
         return Response(status=status.HTTP_200_OK)
 
-# FOR CRUD Dataset File
-class DatasetView(generics.GenericAPIView):
-    parser_classes = [MultiPartParser, FormParser]
-    serializer_class = DatasetSerializer
-    queryset = Dataset.objects.all()
 
-    # function for save data from excel to database
-    def _save_excel_data(self, excel, dataset_id):
-        for data in excel.itertuples():
-            data_obj = Specification.objects.create(
-                dataset=dataset_id,
-                budget=data.budget,
-                cpu=data.cpu,
-                gpu=data.gpu,
-                ram=data.ram,
-                memory_type=data.memory_type,
-                company=data.company,
-                screen_type=data.screen_type,
-                screen_resolution=data.screen_resolution,
-                weight=data.weight,
-                type_laptop=data.type_laptop,
-                kebutuhan=data.kebutuhan
-            )
-            data_obj.save()
+class CpuView(viewsets.ModelViewSet):
+    queryset = MasterCpu.objects.all()
+    serializer_class = CpuSerializers
 
-    @csrf_exempt
-    async def post(self, request):
-        status = AuthenticationJwt.get_admin_authentication(request)
-        if status is None:
-            raise NotAuthenticated()
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
 
-        file = pd.read_excel(request.FILES['path'].read())
-        columns_name = [f.name for f in Specification._meta.get_fields()]
-        for col in file.columns:
-            if columns_name.count(col) > 1:
-                continue
-            else:
-                break
-                return Response({"message": "DATA IS REJECTED"}, status.HTTP_403_FORBIDDEN)
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
 
-        data = request.data
-        data['user'] = status.id
-        serializer = self.get_serializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            dataset = Dataset.objects.get(pk=serializer.data['id'])
-            self._save_excel_data(file, dataset)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        user = User.objects.get(pk=payload['id'])
+        cpu = MasterCpu.objects.create(created_by_id=user.id, **data)
+        serializer = self.get_serializer(cpu)
+        return Response(serializer.data)
 
-    def get(self):
-        status = AuthenticationJwt.get_admin_authentication(self.request)
-        if status is None:
-            raise NotAuthenticated()
-
-        try:
-            query = self.paginate_queryset(self.queryset)
-            serializer = self.get_serializer(query, many=True)
-            return self.get_paginated_response(serializer.data)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self):
-        status = AuthenticationJwt.get_admin_authentication(self.request)
-        if status is None:
-            raise NotAuthenticated()
-
-        if self.kwargs['id']:
-            try:
-                id = self.kwargs['id']
-                query = Dataset.objects.filter(id=id).delete()
-                if query is None:
-                    raise NotFound()
-                return Response({"message": "File is Deleted"}, status=status.HTTP_200_OK)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            query = self.get_queryset()
-            query.delete()
-            return Response({"message": "All File is Deleted"}, status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
 
 
-# FOR Dataset Table Specification
-class SpecificationView(generics.GenericAPIView):
-    serializer_class = SpecificationSerializers
-    queryset = Specification.objects.all()
-    pagination_class = StandardPagination
+class GpuView(viewsets.ModelViewSet):
+    queryset = MasterGpu.objects.all()
+    serializer_class = GpuSerializers
+    permission_classes = [isAdminOrMemberUser]
 
-    def get(self):
-        status = AuthenticationJwt.get_admin_authentication(self.request)
-        if status is None:
-            raise NotAuthenticated()
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
 
-        try:
-            query = self.paginate_queryset(self.queryset)
-            serializer = self.get_serializer(query, many=True)
-            return self.get_paginated_response(serializer.data)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
 
-    @csrf_exempt
-    def post(self, request):
-        status = AuthenticationJwt.get_user_authentication()
-        if status is None:
-            raise NotAuthenticated()
+        user = User.objects.get(pk=payload['id'])
+        cpu = MasterGpu.objects.create(created_by_id=user.id, **data)
+        serializer = self.get_serializer(cpu)
+        return Response(serializer.data)
 
-        data = request.data
-        serializer = self.get_serializer(data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
 
-    def delete(self):
-        status = AuthenticationJwt.get_admin_authentication()
-        if status is None:
-            raise NotAuthenticated()
 
-        if self.kwargs['id']:
-            try:
-                id = self.kwargs['id']
-                query = Specification.objects.filter(id=id).delete()
-                if query is None:
-                    raise NotFound()
-                return Response({"message": "Data Deleted"}, status=status.HTTP_200_OK)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+class CompanyView(viewsets.ModelViewSet):
+    queryset = MasterCompany.objects.all()
+    serializer_class = CompanySerializers
+    permission_classes = [isAdminOrMemberUser]
 
-        try:
-            query = self.get_queryset()
-            query.delete()
-            return Response({"message": "All File is Deleted"}, status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
+
+        user = User.objects.get(pk=payload['id'])
+        cpu = MasterCompany.objects.create(created_by_id=user.id, **data)
+        serializer = self.get_serializer(cpu)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
+
+
+class ScreenView(viewsets.ModelViewSet):
+    queryset = MasterScreen.objects.all()
+    serializer_class = ScreenSerializers
+    permission_classes = [isAdminOrMemberUser]
+
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
+
+        user = User.objects.get(pk=payload['id'])
+        cpu = MasterScreen.objects.create(created_by_id=user.id, **data)
+        serializer = self.get_serializer(cpu)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
+
+
+class ResolutionView(viewsets.ModelViewSet):
+    queryset = MasterScreenResolution.objects.all()
+    serializer_class = ResolutionSerializers
+    permission_classes = [isAdminOrMemberUser]
+
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
+
+        user = User.objects.get(pk=payload['id'])
+        screen_type = MasterScreen.objects.get(pk=data['screen'])
+        cpu = MasterScreenResolution.objects.create(created_by_id=user.id, screen_id=screen_type.id,
+                                                    resolusi=data['resolusi'])
+        serializer = self.get_serializer(cpu)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
+
+
+class MemoryTypeView(viewsets.ModelViewSet):
+    queryset = MasterMemory.objects.all()
+    serializer_class = MemoryTypeSerializers
+    permission_classes = [isAdminOrMemberUser]
+
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
+
+        user = User.objects.get(pk=payload['id'])
+        cpu = MasterMemory.objects.create(created_by_id=user.id, **data)
+        serializer = self.get_serializer(cpu)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
+
+
+class LaptopTypeView(viewsets.ModelViewSet):
+    queryset = MasterTypeLaptop.objects.all()
+    serializer_class = TypeLaptopSerializers
+    permission_classes = [isAdminOrMemberUser]
+
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
+
+        user = User.objects.get(pk=payload['id'])
+        cpu = MasterTypeLaptop.objects.create(created_by_id=user.id, **data)
+        serializer = self.get_serializer(cpu)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
+
+
+class DatasetView(viewsets.ModelViewSet):
+    queryset = MasterDataset.objects.all()
+    serializer_class = DatasetSerializers
+
+    def get_permissions(self):
+        if self.action == 'retrieve' or self.action == 'list':
+            self.permission_classes = [isAdminUser]
+        else:
+            self.permission_classes = [isAdminOrMemberUser]
+        return super(self.__class__, self).get_permissions()
+
+    def create(self, request):
+        token = self.request.COOKIES.get('jwt')
+        data = self.request.data
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
+
+        user = User.objects.get(pk=payload['id'])
+        cpu = MasterCpu.objects.get(pk=data['cpu'])
+        gpu = MasterGpu.objects.get(pk=data['gpu'])
+        memory = MasterMemory.objects.get(pk=data['memory'])
+        company = MasterCompany.objects.get(pk=data['company'])
+        screen = MasterScreen.objects.get(pk=data['screen'])
+        sc_res = MasterScreenResolution.objects.get(pk=data['sc_res'])
+        type = MasterTypeLaptop.objects.get(pk=data['type'])
+        dataset = MasterDataset.objects.create(
+            created_by_id=user.id,
+            cpu_id=cpu.id,
+            gpu_id=gpu.id,
+            memory_id=memory.id,
+            sc_res_id=sc_res.id,
+            company_id=company.id,
+            screen_id=screen.id,
+            type_id=type.id,
+            **data
+        )
+
+        serializer = self.get_serializer(dataset)
+        return Response(serializer.data)
+
+    def list(self, request):
+        dataset = self.get_queryset().values('id', 'budget', 'cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type', 'company_id__name',
+                       'screen_id__type', 'sc_res_id__resolusi', 'weight', 'type_id__name', 'predict')
+        if dataset.count() < 20:
+            serialize = self.get_serializer(dataset, many=True)
+            return Response(serialize.data)
+        serialize = self.get_serializer(dataset, many=True)
+        return self.get_paginated_response(serialize.data)
+
+# def get_dataset():
+#     dataset = pd.DataFrame(Specification.objects.all().values())
+#     dataset.drop(['id', 'dataset_id'], inplace=True, axis=1)
+#     dataset['gpu_merk'] = dataset['gpu'].str.split(" ", 1).map(lambda x: x[0])
+#     dataset['gpu'] = dataset['gpu'].str.split(" ", 1).map(lambda x: x[1])
+#     chunk_data = dataset.pop('gpu_merk')
+#     dataset.insert(2, 'gpu_merk', chunk_data)
+#
+#     return dataset

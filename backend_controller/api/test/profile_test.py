@@ -8,7 +8,8 @@ class ProfileTestCase(TestCase):
     def setUp(self):
         user = get_user_model().objects.create_user(email='fikrisandi@gmail.com', username='fikrilogic',
                                                     password='30303030')
-        Profile.objects.create(user=user, first_name='Fikri', last_name='Harya Sandi', phone='081222222222')
+        Profile.objects.create(user=user, first_name='Fikri',
+                               last_name='Harya Sandi', phone='081222222222')
 
     def test_profile_user_created(self):
         user = get_user_model().objects.get(username='fikrilogic')
@@ -27,7 +28,7 @@ class ProfileTestCase(TestCase):
         self.assertEquals(profile.first_name, 'fikri')
         self.assertEquals(profile.last_name, 'harya sandi')
 
-    def delete_user(self):
+    def test_delete_user(self):
         user_id = get_user_model().objects.get(username='fikrilogic')
         get_user_model().objects.get(username='fikrilogic').delete()
         profile = Profile.objects.get(user=user_id)

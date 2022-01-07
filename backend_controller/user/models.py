@@ -1,9 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin, UserManager
-from django.urls import reverse
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin, Group
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
 import uuid
 
@@ -34,9 +32,9 @@ class CustomUserManager(BaseUserManager):
             username=username,
             **extra_fields
         )
+        user.groups = Group.objects.get(pk=1)
         user.password = make_password(password)
         user.save(using=self._db)
-        user
         return user
 
     def create_admin(self, email, username, password=None, **extra_fields):
@@ -55,6 +53,7 @@ class CustomUserManager(BaseUserManager):
             **extra_fields
         )
         user.password = make_password(password)
+        user.groups = Group.objects.get(pk=2)
         user.save(using=self._db)
         return user
 
@@ -67,14 +66,15 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
-        superuser = self.model(
+        user = self.model(
             email=self.normalize_email(email),
             username=username,
             **extra_fields
         )
-        superuser.password = make_password(password)
-        superuser.save(using=self._db)
-        return superuser
+        user.groups = Group.objects.get_or_create(name='admin')
+        user.password = make_password(password)
+        user.save(using=self._db)
+        return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -108,11 +108,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         ),
     )
 
+    groups = models.ForeignKey(Group, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'groups_id']
 
     def __str__(self):
         return self.username
+

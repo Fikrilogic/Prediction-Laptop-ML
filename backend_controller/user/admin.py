@@ -1,7 +1,4 @@
 from django.contrib import admin
-from .models import User
-
+from django.contrib.contenttypes.admin import InlineModelAdmin
 
 # Register your models here.
-
-admin.site.register(User)
