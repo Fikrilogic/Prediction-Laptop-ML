@@ -1,23 +1,23 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import (
-    Profile,
-    Dataset,
-    Specification
-)
+from . import models
 
 User = get_user_model()
 
+
 class ProfileSerializers(serializers.ModelSerializer):
     class Meta:
-        model = Profile
+        model = models.Profile
         fields = [
-            "user_id",'first_name', 'last_name', 'phone'
+            "user_id", 'first_name', 'last_name', 'phone'
         ]
+
+        depth = 1
 
 
 class UserSerializers(serializers.ModelSerializer):
     profile = ProfileSerializers()
+
     class Meta:
         model = get_user_model()
         fields = [
@@ -31,26 +31,71 @@ class UserSerializers(serializers.ModelSerializer):
             'id': {"read_only": True},
             'password': {"write_only": True}
         }
-    def create(self):
-        data = self.validated_data.pop('profile')
-        self.instance = User.objects.create_user(**self.validated_data)
-        data['user_id'] = self.instance.id
-        profile = ProfileSerializers(data=data)
-        if profile.is_valid(raise_exception=True):
-            self.instance.profile = profile
-            return self.instance
 
-    def admin_create(self):
-        self.instance = User.objects.create_admin(**self.validated_data)
+    def create(self):
+        profile_data = self.validated_data.pop('profile')
+        self.instance = User.objects.create_user(**self.validated_data)
+        profile = models.Profile.objects.create(user_id=self.instance.id, **profile_data)
+        self.instance.profile = ProfileSerializers(profile).data
         return self.instance
 
-class DatasetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Dataset
-        fields = "__all__"
+    def admin_create(self):
+        data = self.validated_data.pop('profile')
+        self.instance = User.objects.create_admin(**self.validated_data)
+        profile = models.Profile.objects.create(user_id=self.instance.id, **data)
+        self.instance.profile = ProfileSerializers(profile).data
+        return self.instance
 
-class SpecificationSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = Specification
-        fields= "__all__"
+    def get_profile(self):
+        self.instance.profile = models.Profile.objects.get(pk=self.instance.id)
+        return self.instance
 
+
+class CpuSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterCpu
+        fields = '__all__'
+
+
+class GpuSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterGpu
+        fields = '__all__'
+
+
+class CompanySerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterCompany
+        fields = '__all__'
+
+
+class ScreenSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterScreen
+        fields = '__all__'
+
+
+class ResolutionSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterScreenResolution
+        fields = '__all__'
+
+
+class TypeLaptopSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterTypeLaptop
+        fields = '__all__'
+
+
+class MemoryTypeSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterMemory
+        fields = '__all__'
+
+
+class DatasetSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterDataset
+        fields = [
+            'id', 'budget', 'cpu', 'gpu', 'ram', 'memory', 'company','screen', 'sc_res', 'weight', 'type', 'predict',
+        ]
