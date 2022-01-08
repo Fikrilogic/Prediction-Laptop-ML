@@ -91,6 +91,7 @@ class RegisterAdminView(generics.GenericAPIView):
 
 # User login
 class LoginUser(generics.GenericAPIView):
+    serializer_class = UserSerializers
 
     def post(self, request):
 
@@ -123,6 +124,7 @@ class LoginUser(generics.GenericAPIView):
 
 # admin login
 class LoginAdmin(generics.GenericAPIView):
+    serializer_class = UserSerializers
 
     def post(self, request):
         email = request.data['email']

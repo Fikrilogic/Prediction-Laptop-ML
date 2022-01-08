@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     Register,
     LoginUser,
@@ -21,8 +21,6 @@ from rest_framework.routers import DefaultRouter
 from django.views.decorators.csrf import (
     csrf_exempt
 )
-from django.conf import settings
-from django.conf.urls.static import static
 
 app_name = "api"
 
@@ -44,6 +42,7 @@ urlpatterns = [
     path('staff/register', RegisterAdminView.as_view(), name='staff-register'),
     path('staff/login', LoginAdmin.as_view(), name='staff-login'),
     path('profile', UserView.as_view(), name='user-profile'),
+    path('ml/', include('ml.urls'))
 ]
 
 urlpatterns += router.urls
