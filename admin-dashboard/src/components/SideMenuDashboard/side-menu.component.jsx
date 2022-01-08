@@ -8,6 +8,7 @@ import {
   Stack,
   Divider,
   ButtonBase,
+  Button,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -18,8 +19,8 @@ import { logout } from "../../Context/action";
 
 const useStyle = makeStyles((theme) => ({
   container: {
-    width: "18.75em",
-    height: "auto",
+    width: "20.75em",
+    height: "90vh",
     padding: "15px 10px",
     border: `1px solid ${theme.palette.neutral.transparent}`,
     backgroundColor: theme.palette.primary["300"],
@@ -34,9 +35,6 @@ const useStyle = makeStyles((theme) => ({
     marginBlock: "2rem",
     padding: '20px 0px'
   },
-  icon: {
-    margin: "0 auto"
-  },
   btnIcon: {
     marginRight: "2px",
   },
@@ -45,7 +43,7 @@ const useStyle = makeStyles((theme) => ({
     color: theme.palette.neutral.main,
     display: "flex",
     cursor: "pointer",
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
     fontSize: 15,
     fontWeight: "bold",
@@ -63,6 +61,7 @@ function SideMenuComponent(props) {
 
   const handleLogoutClick = async (e) => {
     e.preventDefault();
+    console.log('clicked')
     const req = await logout(dispatch);
     if (req === 200) return navigate("/login");
   };
@@ -70,19 +69,11 @@ function SideMenuComponent(props) {
   return (
     <Box component="div" className={classes.container} boxShadow={5}>
       <Box>
-        <Typography className={classes.boxName} sx={{mb: 2}} variant='h5'>Admin Dashboard</Typography>
-
-        <Box component="div" className={classes.profile}>
-          <Avatar className={classes.icon} sx={{ width: '60px', height: '60px'}}>
-            {/* <SupervisedUserCircleRoundedIcon /> */}
-          </Avatar>
-          <Typography variant='h6'>ADMIN</Typography>
-        </Box>
 
         <Stack
           spacing={2}
-          sx={{ mt: 5, px: 4 }}
-          divider={<Divider orientation="horizontal" />}
+          sx={{ mt: 3, px: 4 }}
+          divider={<Divider orientation="horizontal" light={true}/>}
         >
           <Link to='../user' className={classes.link}>
             <Typography variant='h5'>Master User</Typography>
@@ -91,6 +82,10 @@ function SideMenuComponent(props) {
           <Link to='../dataset' className={classes.link}>
             <Typography variant='h5'>Master Dataset</Typography>
             <ArrowForwardIosIcon/>
+          </Link>
+          <Link onClick={handleLogoutClick} className={classes.link} to="">
+            <Typography variant='h5'>Logout</Typography>
+            <LogoutIcon/>
           </Link>
         </Stack>
       </Box>
