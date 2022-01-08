@@ -36,7 +36,7 @@ function App(props) {
                                 path='dataset/*'
                                 element={
                                     <PrivateRoute>
-                                        <DatasetDashboard></DatasetDashboard>
+                                        <DatasetDashboard/>
                                     </PrivateRoute>
                                 }
                             />
