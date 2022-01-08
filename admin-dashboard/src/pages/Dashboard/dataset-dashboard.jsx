@@ -7,23 +7,42 @@ import {Container, Box, Card, Typography, AppBar, Toolbar} from "@mui/material";
 import SideMenuComponent from "../../components/SideMenuDashboard/side-menu.component";
 import DatasetTable from "../../components/TableComponent/dataset-table.component";
 import AppBarCustome from "../../components/AppBar/appbar-custome.component";
+import { FetchDataset } from '../../Redux/Dataset/fetch-action.js'
 
 const useStyle = makeStyles((theme) => ({
+    containerDashboard: {
+        display: 'flex',
+        width: '100vw'
+    },
+    sideComponent:{
+        flexGrow: 0,
+    },
     mainDashboard: {
-        width: "75%",
+        width: "100%",
         boxShadow: 3,
-        padding: "10px 15px",
-    }
+        flexGrow: 1
+    },
 }));
 
-const DatasetDashboard = ({dispatch, dataset, status, loading,theme}) => {
+const DatasetDashboard = ({dispatch, dataset, status, loading, theme}) => {
+    
+    useEffect(() => {
+        dispatch(FetchDataset());
+    }, [dispatch]);
+
     const classes = useStyle(theme);
 
     return (
-        <Container maxWidth="xl" disableGutters sx={{display: "flex", height: '100vh'}}>
-            <SideMenuComponent/>
-            <Box className={classes.mainDashboard}>
-                <AppBarCustome MenuName='Master Dataset'/>
+        <Container maxWidth="100%" disableGutters>
+            <AppBarCustome/>
+            <Box className={classes.containerDashboard}>
+                <SideMenuComponent/>
+                <Box className={classes.mainDashboard}>
+
+                    <Card sx={{mx: 'auto', my: '20px', width: '75%'}}>
+                        <DatasetTable data={dataset} dispatch={dispatch}/>
+                    </Card>
+                </Box>
             </Box>
         </Container>
     );

@@ -11,12 +11,16 @@ import AppBarCustome from "../../components/AppBar/appbar-custome.component";
 
 const useStyle = makeStyles((theme) => ({
     containerDashboard: {
-        display: 'flex'
+        display: 'flex',
+        width: '100vw'
+    },
+    sideComponent:{
+        flexGrow: 0,
     },
     mainDashboard: {
-        width: "75%",
+        width: "100%",
         boxShadow: 3,
-        padding: "10px 15px"
+        flexGrow: 1
     },
 }));
 
@@ -28,14 +32,16 @@ const UserDashboard = ({dispatch, user, status, theme}) => {
     }, [dispatch]);
 
     return (
-        <Container maxWidth="xl" disableGutters  sx={{display: 'flex', height: '100vh'}}>
-            <SideMenuComponent/>
-            <Box className={classes.mainDashboard}>
-                <AppBarCustome MenuName='Master User'/>
+        <Container maxWidth="100%" disableGutters className={classes.containerDashboard}>
+            <AppBarCustome/>
+            <Box className={classes.containerDashboard}>
+                <SideMenuComponent/>
+                <Box className={classes.mainDashboard}>
 
-                <Card sx={{mt: 5}}>
-                    <UserTableComponent data={user} dispatch={dispatch}/>
-                </Card>
+                    <Card sx={{mx: 'auto', my: '20px', width: '75%'}}>
+                        <UserTableComponent data={user} dispatch={dispatch}/>
+                    </Card>
+                </Box>
             </Box>
         </Container>
     );

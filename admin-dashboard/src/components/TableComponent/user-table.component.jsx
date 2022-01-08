@@ -9,6 +9,7 @@ import {
   Button,
   Modal,
   Box,
+  Skeleton,
   ButtonGroup,
   Typography,
 } from "@mui/material";
@@ -76,7 +77,26 @@ function UserTableComponent({ data, dispatch }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((data, index) => (
+        {data.length === 0 ? (
+          <TableRow>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+          </TableRow>
+        ) : (
+          data.map((data, index) => (
             <TableRow>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{data.first_name}</TableCell>
@@ -92,7 +112,8 @@ function UserTableComponent({ data, dispatch }) {
                 </Button>
               </TableCell>
             </TableRow>
-          ))}
+          ))
+        )}
         </TableBody>
       </Table>
       <div></div>

@@ -18,14 +18,40 @@ function DatasetTable({ data }) {
     >
       <TableHead size="small">
         <TableRow>
-          <TableCell size="small">Code</TableCell>
-          <TableCell size="small">Name</TableCell>
-          <TableCell size="small">action</TableCell>
+          {["Budget", "CPU", "GPU", "RAM", "Memory Type", "Company", "Screen Type", "Resolution", "Weight", "Type", "Prediction"].map(
+              (label) => (
+                <TableCell>{label}</TableCell>
+              )
+            )}
         </TableRow>
       </TableHead>
       <TableBody size="small">
         {data.length === 0 ? (
           <TableRow>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
             <TableCell>
               <Skeleton variant="rectangular" />
             </TableCell>
