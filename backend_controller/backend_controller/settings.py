@@ -5,7 +5,6 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -19,7 +18,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_CREDENTIALS = True
 AUTH_USER_MODEL = 'user.User'
-
 
 # Application definition
 
@@ -35,6 +33,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'huey.contrib.djhuey',
     # apps
     'api',
     'user',
@@ -86,7 +85,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend_controller.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -101,17 +99,33 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'backend',
-#         'USER': 'postgres',
-#         'PASSWORD': '3010',
-#         'HOST': 'localhost',
-#         'PORT': 5432
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379/0",  # Local Link provided by the redis-server command
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
+HUEY = {
+    'huey_class': 'huey.RedisHuey',  # Huey implementation to use.
+    'name': 'ml',  # Use db name for huey.
+    'immediate': False,  # If DEBUG=True, run synchronously.
+    'connection': {
+        'host': 'localhost',
+        'port': 6379,
+        'db': 0
+    },
+    'consumer': {
+        'workers': 4,
+        'worker_type': 'thread',
+        'periodic': True,  # Enable crontab feature.
+        'check_worker_health': True,  # Enable worker health checks.
+        'health_check_interval': 20,  # Check worker health every second.
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -144,7 +158,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -152,11 +165,10 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#url
-APPEND_SLASH=False
+# url
+APPEND_SLASH = False

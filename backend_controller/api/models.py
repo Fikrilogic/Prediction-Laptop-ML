@@ -1,10 +1,7 @@
 from django.db import models
-import django
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.utils.deconstruct import deconstructible
-from django.apps import apps
 
 import uuid
 import os
@@ -52,125 +49,133 @@ class Profile(models.Model):
 
 
 class MasterCpu(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        get_latest_by = ['-created_at', 'created_by']
-
-    def get_primary_key(self):
-        return self.id
+        get_latest_by = ['-created_at']
 
     def __str__(self):
-        return f"{self.merk} {self.nama}"
+        return self.name
 
 
 class MasterGpu(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False)
-    merk = models.CharField(verbose_name=_('merk'), max_length=30, blank=False, null=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        get_latest_by = ['-created_at', 'created_by']
-
-    def get_primary_key(self):
-        return self.id
+        get_latest_by = ['-created_at']
 
     def __str__(self):
-        return f"{self.merk} {self.nama}"
+        return self.name
 
 
 class MasterCompany(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        get_latest_by = ['-created_at', 'created_by']
+        get_latest_by = ['-created_at']
 
     def __str__(self):
-        return self.nama
+        return self.name
 
 
 class MasterScreen(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    type = models.CharField(verbose_name=_('type'), max_length=50, blank=False, null=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    type = models.CharField(verbose_name=_('type'), max_length=50, blank=False, null=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        get_latest_by = ['-created_at', 'created_by']
+        get_latest_by = ['-created_at']
 
     def __str__(self):
         return self.type
 
 
 class MasterScreenResolution(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    screen = models.ForeignKey(MasterScreen, on_delete=models.CASCADE)
-    resolusi = models.CharField(verbose_name=_('resolusi'), max_length=50, blank=False, null=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    resolution = models.CharField(verbose_name=_('resolusi'), max_length=50, blank=False, null=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        get_latest_by = ['-created_at', 'created_by']
+        get_latest_by = ['-created_at']
 
     def __str__(self):
-        return self.resolusi
+        return self.resolution
 
 
 class MasterTypeLaptop(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        get_latest_by = ['-created_at', 'created_by']
+        get_latest_by = ['-created_at']
 
     def __str__(self):
         return self.name
 
 
 class MasterMemory(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    type = models.CharField(verbose_name=_('type'), max_length=50, blank=False, null=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    type = models.CharField(verbose_name=_('type'), max_length=50, blank=False, null=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        get_latest_by = ['-created_at', 'created_by']
+        get_latest_by = ['-created_at']
 
     def __str__(self):
         return self.type
 
 
-class MasterDataset(models.Model):
-    class Ram(models.IntegerChoices):
-        VL = 2, 'Very Low'
-        LW = 4, 'Low'
-        IM = 8, 'Intermediate'
-        HG = 16, 'High'
-        VHG = 32, 'Very High'
+class MasterKebutuhan(models.Model):
+    """
+            Model for Table Master Dataset
+        """
 
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4())
-    budget = models.CharField(verbose_name=_('budget'), max_length=50, null=False, blank=False)
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        get_latest_by = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+
+class MasterDataset(models.Model):
+    """
+        Model for Table Master Dataset
+    """
+
+    class Ram(models.IntegerChoices):
+        VL = 2, '2GB'
+        LW = 4, '4GB'
+        IM = 8, '8GB'
+        HG = 16, '16GB'
+        VHG = 32, '32GB'
+
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True)
+    kebutuhan = models.ForeignKey(MasterKebutuhan, on_delete=models.SET_NULL, null=True)
+    budget = models.IntegerField()
     cpu = models.ForeignKey(MasterCpu, on_delete=models.SET_NULL, null=True)
     gpu = models.ForeignKey(MasterGpu, on_delete=models.SET_NULL, null=True)
-    ram = models.IntegerField(choices=Ram.choices, default=Ram.IM)
+    ram = models.BigIntegerField(choices=Ram.choices, default=Ram.IM)
     memory = models.ForeignKey(MasterMemory, on_delete=models.SET_NULL, null=True)
     company = models.ForeignKey(MasterCompany, on_delete=models.SET_NULL, null=True)
     screen = models.ForeignKey(MasterScreen, on_delete=models.SET_NULL, verbose_name=_('screen_type'), null=True)
-    sc_res = models.ForeignKey(MasterScreenResolution, on_delete=models.SET_NULL, verbose_name=_('screen_resolution'),
-                               null=True)
+    resolution = models.ForeignKey(MasterScreenResolution, on_delete=models.SET_NULL,
+                                   verbose_name=_('screen_resolution'),
+                                   null=True)
     weight = models.DecimalField(max_digits=3, decimal_places=2)
     type = models.ForeignKey(MasterTypeLaptop, on_delete=models.SET_NULL, verbose_name=_('type_laptop'), null=True)
-    predict = models.CharField(verbose_name=_('prediksi'), max_length=100)
+    price = models.BigIntegerField()
+    name = models.CharField(verbose_name=_('name'), max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -178,4 +183,4 @@ class MasterDataset(models.Model):
         get_latest_by = ['-created_at']
 
     def __str__(self):
-        return self.predict
+        return self.name
