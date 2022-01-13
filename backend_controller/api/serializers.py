@@ -39,16 +39,28 @@ class UserSerializers(serializers.ModelSerializer):
         self.instance.profile = ProfileSerializers(profile).data
         return self.instance
 
-    def admin_create(self):
-        data = self.validated_data.pop('profile')
-        self.instance = User.objects.create_admin(**self.validated_data)
-        profile = models.Profile.objects.create(user_id=self.instance.id, **data)
-        self.instance.profile = ProfileSerializers(profile).data
-        return self.instance
-
     def get_profile(self):
         self.instance.profile = models.Profile.objects.get(pk=self.instance.id)
         return self.instance
+
+
+class AdminSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model(),
+        fields = [
+            'id',
+            'username',
+            'email',
+            'password'
+        ]
+        extra_kwargs = {
+            'id': {"read_only": True},
+            'password': {"write_only": True}
+        }
+
+        def admin_create(self):
+            admin = User.objects.create_admin(**self.validated_data)
+            return admin
 
 
 class CpuSerializers(serializers.ModelSerializer):
@@ -93,9 +105,16 @@ class MemoryTypeSerializers(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class KebutuhanSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterKebutuhan
+        fields = '__all__'
+
+
 class DatasetSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.MasterDataset
         fields = [
-            'id', 'budget', 'cpu', 'gpu', 'ram', 'memory', 'company','screen', 'sc_res', 'weight', 'type', 'predict',
+            'id', 'budget', 'cpu', 'gpu', 'ram', 'memory', 'company', 'screen', 'sc_res', 'weight', 'type', 'predict',
         ]
+        depth = 1

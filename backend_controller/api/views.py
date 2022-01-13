@@ -2,29 +2,21 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.conf import settings
 from rest_framework.generics import get_object_or_404
-from django.views.decorators.csrf import (
-    csrf_exempt
-)
 
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import (
     AuthenticationFailed,
     PermissionDenied,
     NotFound,
 )
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser
-
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix, \
-    classification_report
-from sklearn.preprocessing import LabelEncoder
-from sklearn.tree import DecisionTreeClassifier
 
 from .serializers import (
     UserSerializers,
+    AdminSerializers,
     ProfileSerializers,
     CpuSerializers,
     GpuSerializers,
@@ -33,7 +25,8 @@ from .serializers import (
     MemoryTypeSerializers,
     ResolutionSerializers,
     TypeLaptopSerializers,
-    DatasetSerializers
+    DatasetSerializers,
+    KebutuhanSerializers
 
 )
 from .models import (
@@ -45,7 +38,8 @@ from .models import (
     MasterMemory,
     MasterTypeLaptop,
     MasterScreenResolution,
-    MasterDataset
+    MasterDataset,
+    MasterKebutuhan
 )
 from .permissions import isAdminUser, isAdminOrMemberUser, isMemberUser
 
@@ -54,14 +48,12 @@ from .pagination import StandardPagination
 import jwt
 import datetime
 import pandas as pd
-import joblib
 
 User = get_user_model()
 
 
 # Create your views here.
 
-# presave
 
 
 # Register Member
@@ -78,7 +70,7 @@ class Register(generics.GenericAPIView):
 
 # Register Admin
 class RegisterAdminView(generics.GenericAPIView):
-    serializer_class = UserSerializers
+    serializer_class = AdminSerializers
 
     def post(self, request):
         print(self.request.data)
@@ -234,17 +226,6 @@ class CpuView(viewsets.ModelViewSet):
     queryset = MasterCpu.objects.all()
     serializer_class = CpuSerializers
 
-    def create(self, request):
-        token = self.request.COOKIES.get('jwt')
-        data = self.request.data
-
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
-
-        user = User.objects.get(pk=payload['id'])
-        cpu = MasterCpu.objects.create(created_by_id=user.id, **data)
-        serializer = self.get_serializer(cpu)
-        return Response(serializer.data)
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -259,18 +240,6 @@ class GpuView(viewsets.ModelViewSet):
     serializer_class = GpuSerializers
     permission_classes = [isAdminOrMemberUser]
 
-    def create(self, request):
-        token = self.request.COOKIES.get('jwt')
-        data = self.request.data
-
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
-
-        user = User.objects.get(pk=payload['id'])
-        cpu = MasterGpu.objects.create(created_by_id=user.id, **data)
-        serializer = self.get_serializer(cpu)
-        return Response(serializer.data)
-
     def get_permissions(self):
         if self.action == 'retrieve':
             self.permission_classes = [isAdminOrMemberUser]
@@ -283,18 +252,6 @@ class CompanyView(viewsets.ModelViewSet):
     queryset = MasterCompany.objects.all()
     serializer_class = CompanySerializers
     permission_classes = [isAdminOrMemberUser]
-
-    def create(self, request):
-        token = self.request.COOKIES.get('jwt')
-        data = self.request.data
-
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
-
-        user = User.objects.get(pk=payload['id'])
-        cpu = MasterCompany.objects.create(created_by_id=user.id, **data)
-        serializer = self.get_serializer(cpu)
-        return Response(serializer.data)
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -309,17 +266,6 @@ class ScreenView(viewsets.ModelViewSet):
     serializer_class = ScreenSerializers
     permission_classes = [isAdminOrMemberUser]
 
-    def create(self, request):
-        token = self.request.COOKIES.get('jwt')
-        data = self.request.data
-
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
-
-        user = User.objects.get(pk=payload['id'])
-        cpu = MasterScreen.objects.create(created_by_id=user.id, **data)
-        serializer = self.get_serializer(cpu)
-        return Response(serializer.data)
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -334,19 +280,6 @@ class ResolutionView(viewsets.ModelViewSet):
     serializer_class = ResolutionSerializers
     permission_classes = [isAdminOrMemberUser]
 
-    def create(self, request):
-        token = self.request.COOKIES.get('jwt')
-        data = self.request.data
-
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
-
-        user = User.objects.get(pk=payload['id'])
-        screen_type = MasterScreen.objects.get(pk=data['screen'])
-        cpu = MasterScreenResolution.objects.create(created_by_id=user.id, screen_id=screen_type.id,
-                                                    resolusi=data['resolusi'])
-        serializer = self.get_serializer(cpu)
-        return Response(serializer.data)
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -361,17 +294,6 @@ class MemoryTypeView(viewsets.ModelViewSet):
     serializer_class = MemoryTypeSerializers
     permission_classes = [isAdminOrMemberUser]
 
-    def create(self, request):
-        token = self.request.COOKIES.get('jwt')
-        data = self.request.data
-
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
-
-        user = User.objects.get(pk=payload['id'])
-        cpu = MasterMemory.objects.create(created_by_id=user.id, **data)
-        serializer = self.get_serializer(cpu)
-        return Response(serializer.data)
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -386,17 +308,19 @@ class LaptopTypeView(viewsets.ModelViewSet):
     serializer_class = TypeLaptopSerializers
     permission_classes = [isAdminOrMemberUser]
 
-    def create(self, request):
-        token = self.request.COOKIES.get('jwt')
-        data = self.request.data
 
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
 
-        user = User.objects.get(pk=payload['id'])
-        cpu = MasterTypeLaptop.objects.create(created_by_id=user.id, **data)
-        serializer = self.get_serializer(cpu)
-        return Response(serializer.data)
+class KebutuhanView(viewsets.ModelViewSet):
+    queryset = MasterKebutuhan.objects.all()
+    serializer_class = KebutuhanSerializers
+    permission_classes = [isAdminOrMemberUser]
+
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -409,12 +333,13 @@ class LaptopTypeView(viewsets.ModelViewSet):
 class DatasetView(viewsets.ModelViewSet):
     queryset = MasterDataset.objects.all()
     serializer_class = DatasetSerializers
+    pagination_class = StandardPagination
 
     def get_permissions(self):
-        if self.action == 'retrieve' or self.action == 'list':
-            self.permission_classes = [isAdminUser]
-        else:
+        if self.action == 'create':
             self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
         return super(self.__class__, self).get_permissions()
 
     def create(self, request):
@@ -425,43 +350,65 @@ class DatasetView(viewsets.ModelViewSet):
             token, settings.SECRET_KEY, algorithms='HS256')
 
         user = User.objects.get(pk=payload['id'])
-        cpu = MasterCpu.objects.get(pk=data['cpu'])
-        gpu = MasterGpu.objects.get(pk=data['gpu'])
-        memory = MasterMemory.objects.get(pk=data['memory'])
-        company = MasterCompany.objects.get(pk=data['company'])
-        screen = MasterScreen.objects.get(pk=data['screen'])
-        sc_res = MasterScreenResolution.objects.get(pk=data['sc_res'])
-        type = MasterTypeLaptop.objects.get(pk=data['type'])
+        cpu = MasterCpu.objects.get(name=data['cpu'])
+        gpu = MasterGpu.objects.get(name=data['gpu'])
+        memory = MasterMemory.objects.get(type=data['memory'])
+        company = MasterCompany.objects.get(name=data['company'])
+        screen = MasterScreen.objects.get(type=data['screen'])
+        sc_res = MasterScreenResolution.objects.get(resolution=data['sc_res'])
+        type = MasterTypeLaptop.objects.get(name=data['type']),
+        kebutuhan = MasterKebutuhan.objects.get(name=data['kebutuhan'])
         dataset = MasterDataset.objects.create(
             created_by_id=user.id,
             cpu_id=cpu.id,
             gpu_id=gpu.id,
             memory_id=memory.id,
-            sc_res_id=sc_res.id,
+            resolution_id=sc_res.id,
             company_id=company.id,
             screen_id=screen.id,
             type_id=type.id,
+            kebutuhan_id= kebutuhan.id
             **data
         )
 
         serializer = self.get_serializer(dataset)
         return Response(serializer.data)
 
-    def list(self, request):
-        dataset = self.get_queryset().values('id', 'budget', 'cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type', 'company_id__name',
-                       'screen_id__type', 'sc_res_id__resolusi', 'weight', 'type_id__name', 'predict')
-        if dataset.count() < 20:
-            serialize = self.get_serializer(dataset, many=True)
-            return Response(serialize.data)
-        serialize = self.get_serializer(dataset, many=True)
-        return self.get_paginated_response(serialize.data)
 
-# def get_dataset():
-#     dataset = pd.DataFrame(Specification.objects.all().values())
-#     dataset.drop(['id', 'dataset_id'], inplace=True, axis=1)
-#     dataset['gpu_merk'] = dataset['gpu'].str.split(" ", 1).map(lambda x: x[0])
-#     dataset['gpu'] = dataset['gpu'].str.split(" ", 1).map(lambda x: x[1])
-#     chunk_data = dataset.pop('gpu_merk')
-#     dataset.insert(2, 'gpu_merk', chunk_data)
-#
-#     return dataset
+@api_view(['POST'])
+def add_dataset_with_file_view(request):
+    token = request.COOKIES.get('jwt')
+    file = pd.read_excel(request.FILES.get('file'))
+
+    payload = jwt.decode(
+        token, settings.SECRET_KEY, algorithms='HS256')
+
+    user = User.objects.get(pk=payload['id'])
+    for index, data in file.iterrows():
+        kebutuhan = MasterKebutuhan.objects.get_or_create(name=data[0])
+        cpu = MasterCpu.objects.get_or_create(name=data[2])
+        gpu = MasterGpu.objects.get_or_create(name=data[3])
+        memory = MasterMemory.objects.get_or_create(type=data[5])
+        company = MasterCompany.objects.get_or_create(name=data[6])
+        screen = MasterScreen.objects.get_or_create(type=data[7])
+        resolution = MasterScreenResolution.objects.get_or_create(resolution=data[8])
+        type = MasterTypeLaptop.objects.get_or_create(name=data[10])
+
+        MasterDataset.objects.create(
+            created_by_id=user.id,
+            kebutuhan_id=kebutuhan[0].id,
+            cpu_id=cpu[0].id,
+            gpu_id=gpu[0].id,
+            memory_id=memory[0].id,
+            resolution_id=resolution[0].id,
+            company_id=company[0].id,
+            screen_id=screen[0].id,
+            type_id=type[0].id,
+            budget=data[1],
+            ram=data[4],
+            weight=data[9],
+            price=data[11],
+            name=data[12]
+        )
+
+    return Response({"message": "success add dataset"},status=status.HTTP_200_OK)
