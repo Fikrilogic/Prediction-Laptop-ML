@@ -53,6 +53,7 @@ class MasterKonsultasi(models.Model):
 
     id = models.UUIDField(verbose_name=_('kode_konsultasi'), default=uuid.uuid4, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    kebutuhan = models.CharField(max_length=150, null=False, blank=False)
     budget = models.BigIntegerField()
     cpu = models.CharField(max_length=150, null=False, blank=False)
     gpu = models.CharField(max_length=150, null=False, blank=False)
@@ -64,7 +65,6 @@ class MasterKonsultasi(models.Model):
     weight = models.DecimalField(max_digits=3, decimal_places=2)
     type_laptop = models.CharField(verbose_name=_('type_laptop'), max_length=100, null=False, blank=False)
     price = models.BigIntegerField(null=False, blank=False)
-    name = models.CharField(verbose_name=_('name'), max_length=100, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -89,10 +89,10 @@ class MasterHasil(models.Model):
 class MasterTrainingResult(models.Model):
     id = models.AutoField(primary_key=True)
     method = models.ForeignKey(MasterModel, on_delete=models.CASCADE)
-    accuracy = models.DecimalField(max_digits=4, decimal_places=2)
-    precision = models.DecimalField(max_digits=4, decimal_places=2)
-    recall = models.DecimalField(max_digits=4, decimal_places=2)
-    f1_score = models.DecimalField(max_digits=4, decimal_places=2)
+    accuracy = models.DecimalField(max_digits=10, decimal_places=7)
+    precision = models.DecimalField(max_digits=10, decimal_places=7)
+    recall = models.DecimalField(max_digits=10, decimal_places=7)
+    f1_score = models.DecimalField(max_digits=10, decimal_places=7)
     train_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

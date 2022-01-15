@@ -55,6 +55,7 @@ class KonsultasiView(viewsets.ModelViewSet):
             name=predict,
             **request.data
         )
+
         return Response({'prediction': predict}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
