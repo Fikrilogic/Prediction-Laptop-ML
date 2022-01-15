@@ -1,7 +1,6 @@
 import theme from "./theme";
 import { ThemeProvider } from "@mui/styles";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { RouteObject } from "react-router-dom";
 import { useReducer } from "react";
 
 import { AuthContext } from "./Context/context";
@@ -12,7 +11,6 @@ import UserDashboard from "./pages/Dashboard/User-Dashboard.jsx";
 import DatasetDashboard from "./pages/Dashboard/Dataset-Dashboard.jsx";
 import PrivateRoute from "./components/ProtectedRoute/protect-route.component";
 import Layout from "./pages/Layout";
-import AccountDetail from "./pages/AccountDetail/Account-Detail";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import DatasetTablesDashboard from "./pages/DatasetTables/Dataset-Tables-Dashboard";
 
@@ -56,14 +54,6 @@ function App(props) {
               element={
                 <PrivateRoute>
                   <Layout element={<DatasetDashboard />} />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <PrivateRoute>
-                  <Layout element={<AccountDetail />} />
                 </PrivateRoute>
               }
             />
