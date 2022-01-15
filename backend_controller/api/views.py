@@ -55,7 +55,6 @@ User = get_user_model()
 # Create your views here.
 
 
-
 # Register Member
 class Register(generics.GenericAPIView):
     serializer_class = UserSerializers
@@ -226,7 +225,6 @@ class CpuView(viewsets.ModelViewSet):
     queryset = MasterCpu.objects.all()
     serializer_class = CpuSerializers
 
-
     def get_permissions(self):
         if self.action == 'retrieve':
             self.permission_classes = [isAdminOrMemberUser]
@@ -266,7 +264,6 @@ class ScreenView(viewsets.ModelViewSet):
     serializer_class = ScreenSerializers
     permission_classes = [isAdminOrMemberUser]
 
-
     def get_permissions(self):
         if self.action == 'retrieve':
             self.permission_classes = [isAdminOrMemberUser]
@@ -279,7 +276,6 @@ class ResolutionView(viewsets.ModelViewSet):
     queryset = MasterScreenResolution.objects.all()
     serializer_class = ResolutionSerializers
     permission_classes = [isAdminOrMemberUser]
-
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -294,7 +290,6 @@ class MemoryTypeView(viewsets.ModelViewSet):
     serializer_class = MemoryTypeSerializers
     permission_classes = [isAdminOrMemberUser]
 
-
     def get_permissions(self):
         if self.action == 'retrieve':
             self.permission_classes = [isAdminOrMemberUser]
@@ -308,7 +303,6 @@ class LaptopTypeView(viewsets.ModelViewSet):
     serializer_class = TypeLaptopSerializers
     permission_classes = [isAdminOrMemberUser]
 
-
     def get_permissions(self):
         if self.action == 'retrieve':
             self.permission_classes = [isAdminOrMemberUser]
@@ -316,11 +310,11 @@ class LaptopTypeView(viewsets.ModelViewSet):
             self.permission_classes = [isAdminUser]
         return super(self.__class__, self).get_permissions()
 
+
 class KebutuhanView(viewsets.ModelViewSet):
     queryset = MasterKebutuhan.objects.all()
     serializer_class = KebutuhanSerializers
     permission_classes = [isAdminOrMemberUser]
-
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -367,8 +361,8 @@ class DatasetView(viewsets.ModelViewSet):
             company_id=company.id,
             screen_id=screen.id,
             type_id=type.id,
-            kebutuhan_id= kebutuhan.id
-            **data
+            kebutuhan_id=kebutuhan.id
+                         ** data
         )
 
         serializer = self.get_serializer(dataset)
@@ -411,4 +405,4 @@ def add_dataset_with_file_view(request):
             name=data[12]
         )
 
-    return Response({"message": "success add dataset"},status=status.HTTP_200_OK)
+    return Response({"message": "success add dataset"}, status=status.HTTP_200_OK)

@@ -1,3 +1,5 @@
+import pickle
+
 from django.shortcuts import render
 from api.permissions import isAdminUser, isAdminOrMemberUser, isMemberUser
 from api.models import MasterDataset
@@ -16,14 +18,13 @@ from rest_framework.generics import get_object_or_404
 
 from .serializers import ModelSerializers, KonsultasiSerializers, ResultSerializers, TrainingResultSerializers
 from .models import MasterModel, MasterKonsultasi, MasterHasil, MasterTrainingResult
-from .tasks import get_dataset
+from .tasks import get_dataset, save_result, nb_pipeline, dt_pipeline, knn_pipeline, gb_pipeline
 
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from sklearn.model_selection import KFold, cross_val_score
 import joblib
 import jwt
 
 User = get_user_model()
-
 
 
 # Create your views here.
@@ -31,9 +32,36 @@ class MlModelView(viewsets.ModelViewSet):
     serializer_class = ModelSerializers
     queryset = MasterModel.objects.all()
     permission_classes = [isAdminUser]
-    parser_classes = [MultiPartParser, FormParser]
+    # parser_classes = [MultiPartParser, FormParser]
 
+    @action(detail=True, methods=['post'])
+    def predict_data(self, request, model_id):
+        data = request.data
+        query = self.get_queryset()
+        model = get_object_or_404(query, pk=model_id)
 
+        file = joblib.load(model.path.open('rb'))
+        data = list(data.values())
+        data = [[data for data in data]]
+        predict = file.predict(data)
+
+        return Response({'prediction': predict}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def all_method_predict(self, request):
+        data = request.data
+        query = self.get_queryset()
+
+        data = list(data.values())
+        data = [[data for data in data]]
+        print(query)
+        result = []
+        for model in query:
+            file = joblib.load(model.path.open('rb'))
+            predict = file.predict(data)
+            result.append({"name": model.name, 'predict': predict})
+
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class KonsultasiView(viewsets.ModelViewSet):
@@ -41,11 +69,6 @@ class KonsultasiView(viewsets.ModelViewSet):
     queryset = MasterKonsultasi.objects.all()
     permission_classes = [isAdminOrMemberUser]
 
-
-class ResultView(viewsets.ModelViewSet):
-    serializer_class = ResultSerializers
-    queryset = MasterHasil.objects.all()
-    permission_classes = [isAdminOrMemberUser]
 
 class TrainingResultView(viewsets.GenericViewSet):
     serializer_class = TrainingResultSerializers
@@ -60,53 +83,26 @@ class TrainingResultView(viewsets.GenericViewSet):
         serialize = self.get_serializer(query, many=True)
         return self.get_paginated_response(serialize.data)
 
+def get_model_pipeline(*args):
+    model = []
 
+    for data in args:
+        model.append(data)
 
-@api_view(['POST'])
-def predict_view(request, model_id):
-    token = request.COOKIES.get('jwt')
-    data = request.data
+    return model
 
-    payload = jwt.decode(
-        token, settings.SECRET_KEY, algorithms='HS256')
-
-    user = User.objects.get(pk=payload['id'])
-    model = MasterModel.objects.get(pk=model_id)
-    file = joblib.load(model.path.open('rb'))
-
-    gpu_merk = data['gpu'].split(" ", 1)[0]
-    gpu = data['gpu'].split(" ", 1)[1]
-    data = list(data.values())
-    data[2] = gpu_merk
-    data.insert(3, gpu)
-    data.pop(-1)
-    data = [[data for data in data]]
-    predict = file.predict(data)
-
-    return Response({'prediction': predict[0]}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes([isAdminUser])
-def test_model(request):
+def cross_validation_model(request):
     dataset = get_dataset()
-    y = dataset['name']
-    X = dataset.drop('name', axis=1, inplace=True)
-    model = MasterModel.objects.all()
+    target = dataset['name']
+    data = dataset.drop('name', axis='columns')
+    print(data)
     result = []
-    for data in model:
-        method = joblib.load(data.path.open('rb'))
-        predict = method.predict(X)
-        acc = accuracy_score(y, predict)
-        recall = recall_score(y, predict)
-        precisi = precision_score(y, predict)
-        f1 = f1_score(y, predict)
-        data = {
-            'method': data.name,
-            'accuracy': acc,
-            'precision': precisi,
-            'recall': recall,
-            'f1-score': f1
-        }
-        result.append(data)
-
-    return Response(result)
+    query = MasterModel.objects.all()
+    for model in query:
+        file = pickle.load(model.path.open('rb'))
+        # print(file)
+        # score = cross_val_score(file, data, target, cv=KFold(n_splits=10), scoring='accuracy')
+        # result.append({'name': model.name, 'score': score})
+    return Response(result, status=status.HTTP_200_OK)

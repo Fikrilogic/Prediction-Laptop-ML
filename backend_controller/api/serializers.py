@@ -46,7 +46,7 @@ class UserSerializers(serializers.ModelSerializer):
 
 class AdminSerializers(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model(),
+        model = get_user_model()
         fields = [
             'id',
             'username',
@@ -115,6 +115,19 @@ class DatasetSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.MasterDataset
         fields = [
-            'id', 'budget', 'cpu', 'gpu', 'ram', 'memory', 'company', 'screen', 'sc_res', 'weight', 'type', 'predict',
+            'id',
+            'kebutuhan_id',
+            'budget',
+            'cpu',
+            'gpu',
+            'ram',
+            'memory',
+            'company',
+            'screen',
+            'resolution',
+            'weight',
+            'type',
+            'price',
+            'name'
         ]
         depth = 1

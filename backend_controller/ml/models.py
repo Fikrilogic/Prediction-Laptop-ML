@@ -36,6 +36,9 @@ class MasterModel(models.Model):
     desc = models.CharField(verbose_name=_('deskripsi'), max_length=255, blank=True, null=True)
     upload_at = models.DateTimeField(verbose_name=_('created_at'), auto_now=True)
 
+    class Meta:
+        get_latest_by = ['-created_at']
+
     def __str__(self):
         return self.name
 
