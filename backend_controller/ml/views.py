@@ -12,28 +12,18 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 
-from .serializers import ModelSerializers, KonsultasiSerializers, ResultSerializers
-from .models import MasterModel, MasterKonsultasi, MasterHasil
+from .serializers import ModelSerializers, KonsultasiSerializers, ResultSerializers, TrainingResultSerializers
+from .models import MasterModel, MasterKonsultasi, MasterHasil, MasterTrainingResult
+from .tasks import get_dataset
 
-import pandas as pd
-import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import joblib
 import jwt
 
 User = get_user_model()
 
-
-# function for dataset
-def get_dataset():
-    dataset = pd.DataFrame(
-        MasterDataset.objects.all().values('budget', 'cpu_id__name', 'gpu_id__merk', 'gpu_id__name', 'ram',
-                                         'memory_id__type', 'company_id__name',
-                                         'screen_id__type', 'sc_res_id__resolusi', 'weight', 'type_id__name',
-                                         'predict')
-    )
-    return dataset
 
 
 # Create your views here.
@@ -42,6 +32,8 @@ class MlModelView(viewsets.ModelViewSet):
     queryset = MasterModel.objects.all()
     permission_classes = [isAdminUser]
     parser_classes = [MultiPartParser, FormParser]
+
+
 
 
 class KonsultasiView(viewsets.ModelViewSet):
@@ -54,6 +46,20 @@ class ResultView(viewsets.ModelViewSet):
     serializer_class = ResultSerializers
     queryset = MasterHasil.objects.all()
     permission_classes = [isAdminOrMemberUser]
+
+class TrainingResultView(viewsets.GenericViewSet):
+    serializer_class = TrainingResultSerializers
+    queryset = MasterTrainingResult.objects.all()
+    permission_classes(isAdminUser)
+
+    def list(self, request):
+        query = self.get_queryset()
+        if query.count() < 20:
+            serialize = self.get_serializer(query, many=True)
+            return Response(serialize.data)
+        serialize = self.get_serializer(query, many=True)
+        return self.get_paginated_response(serialize.data)
+
 
 
 @api_view(['POST'])
@@ -80,13 +86,12 @@ def predict_view(request, model_id):
     return Response({'prediction': predict[0]}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes([isAdminUser,])
-def test_model(self, request):
+@permission_classes([isAdminUser])
+def test_model(request):
     dataset = get_dataset()
-    y = dataset['predict']
-    X = dataset.drop('predict', axis=1, inplace=True)
+    y = dataset['name']
+    X = dataset.drop('name', axis=1, inplace=True)
     model = MasterModel.objects.all()
-
     result = []
     for data in model:
         method = joblib.load(data.path.open('rb'))

@@ -22,3 +22,10 @@ class ResultSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.MasterHasil
         fields = '__all__'
+
+
+class TrainingResultSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterTrainingResult
+        fields = '__all__'
+        depth = 1

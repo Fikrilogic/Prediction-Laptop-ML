@@ -1,7 +1,6 @@
 from api.models import MasterDataset
 from .models import MasterTrainingResult, MasterModel
 
-
 from huey import crontab
 from huey.contrib.djhuey import periodic_task, task
 from django.core.files.base import ContentFile
@@ -24,35 +23,39 @@ column_trans = ColumnTransformer(remainder="passthrough",
                                  )
 
 knn = KNeighborsClassifier(n_neighbors=5, weights='distance', algorithm='kd_tree')
-dt = DecisionTreeClassifier(criterion='entropy', random_state=24, max_depth=10, max_leaf_nodes=15)
-gb = GradientBoostingClassifier(criterion='friedman_mse', learning_rate=0.05, min_samples_leaf=8, max_leaf_nodes=15, random_state=0)
+dt = DecisionTreeClassifier(criterion='entropy', random_state=24, max_depth=10, max_leaf_nodes=20)
+gb = GradientBoostingClassifier(criterion='friedman_mse', learning_rate=0.05, min_samples_leaf=8, max_leaf_nodes=15,
+                                random_state=0)
 
 knn_pipeline = Pipeline(steps=[('preprocessing', column_trans),
                                ('K-Nearest Neighbors Classifier', knn)
                                ])
 dt_pipeline = Pipeline(steps=[('preprocessing', column_trans),
-                               ('Decision Tree Classifier', dt)
-                               ])
+                              ('Decision Tree Classifier', dt)
+                              ])
 nb_pipeline = Pipeline(steps=[('preprocessing', column_trans),
-                               ('Naive Bayes Classifier', GaussianNB())
-                               ])
+                              ('Naive Bayes Classifier', GaussianNB())
+                              ])
 gb_pipeline = Pipeline(steps=[('preprocessing', column_trans),
-                               ('Gradient Boost Decision Tree Classifier', gb)
-                               ])
+                              ('Gradient Boost Decision Tree Classifier', gb)
+                              ])
+
 
 def get_dataset():
     query = MasterDataset.objects.all()
-    data = query.values('kebutuhan_id__name', 'budget','cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type',
-                        'company_id__name', 'screen_id__type', 'resolution_id__resolution', 'weight', 'type_id__name','price',
+    data = query.values('kebutuhan_id__name', 'budget', 'cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type',
+                        'company_id__name', 'screen_id__type', 'resolution_id__resolution', 'weight', 'type_id__name',
+                        'price',
                         'name')
     df = pd.DataFrame(data)
     return df
 
-def save_result(x_test, y_test, model):
-    method = pickle.load(model[0].path.open('rb'))
+
+def save_result(x_test, y_test, model, file):
+    method = file
     predict = method.predict(x_test)
 
-    MasterTrainingResult.objects.create(
+    MasterTrainingResult.objects.update_or_create(
         method_id=model[0].id,
         accuracy=accuracy_score(y_test, predict),
         recall=recall_score(y_test, predict, average='micro'),
@@ -61,7 +64,7 @@ def save_result(x_test, y_test, model):
     )
 
 
-#K-Nearest Neighbors
+# K-Nearest Neighbors
 @periodic_task(crontab(minute='*/1'), retries=2, delay=10)
 def retrain_knn_model():
     df = get_dataset()
@@ -76,8 +79,10 @@ def retrain_knn_model():
         name='K-Nearest Neighbors',
         desc='Model with KNN Algorithm'
     )
+    model[0].path.delete(save=False)
     model[0].path.save(content=ContentFile(pickle.dumps(m)), name='knn_model.pkl')
-    save_result(x_test, y_test, model)
+    save_result(x_test, y_test, model, m)
+
 
 # DECISION TREE
 @periodic_task(crontab(minute='*/1'), retries=2, delay=10)
@@ -93,10 +98,12 @@ def retrain_dt_model():
         name='Decision Tree',
         desc='Model with DT Algorithm'
     )
+    model[0].path.delete(save=False)
     model[0].path.save(content=ContentFile(pickle.dumps(m)), name='dt_model.pkl')
-    save_result(x_test, y_test, model)
+    save_result(x_test, y_test, model, m)
 
-#gdbt
+
+# gdbt
 @periodic_task(crontab(minute='*/1'), retries=2, delay=10)
 def retrain_gbdt_model():
     df = get_dataset()
@@ -110,8 +117,10 @@ def retrain_gbdt_model():
         name='Gradient Boost Decision Tree',
         desc='Model with GBDT Algorithm'
     )
+    model[0].path.delete(save=False)
     model[0].path.save(content=ContentFile(pickle.dumps(m)), name='gbdt_model.pkl')
-    save_result(x_test, y_test, model)
+    save_result(x_test, y_test, model, m)
+
 
 # Naive Bayes
 @periodic_task(crontab(minute='*/1'), retries=2, delay=10)
@@ -127,5 +136,6 @@ def retrain_nb_model():
         name='Naive Bayes',
         desc='Model with Naive Bayes Algorithm'
     )
+    model[0].path.delete(save=False)
     model[0].path.save(content=ContentFile(pickle.dumps(m)), name='nb_model.pkl')
-    save_result(x_test, y_test, model)
+    save_result(x_test, y_test, model, m)
