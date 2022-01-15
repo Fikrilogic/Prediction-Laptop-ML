@@ -54,13 +54,8 @@ const Dashboard = () => {
           </Typography>
         </Container>
         <Card sx={{ mx: "auto", my: "20px", width: "75%" }} raised>
-          <CardHeader
-            title={<Typography variant="h4">User Table</Typography>}
-          />
           <Divider />
-          <CardContent>
-            <Chart />
-          </CardContent>
+          <CardContent>{/* <Chart /> */}</CardContent>
         </Card>
       </Box>
     </Container>
