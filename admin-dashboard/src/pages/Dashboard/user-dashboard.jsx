@@ -1,56 +1,82 @@
-import React, {useEffect} from "react";
-import {connect} from "react-redux";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
 
-import {makeStyles} from "@mui/styles";
-import {Container, Box, Card, Typography} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import {
+  Container,
+  Box,
+  Card,
+  Typography,
+  CardHeader,
+  CardContent,
+  Divider,
+} from "@mui/material";
 
-import SideMenuComponent from "../../components/SideMenuDashboard/side-menu.component";
-import {fetchUser} from "../../Redux/User/fetch-action";
+import { fetchUser } from "../../Redux/User/fetch-action";
 import UserTableComponent from "../../components/TableComponent/user-table.component";
-import AppBarCustome from "../../components/AppBar/appbar-custome.component";
 
 const useStyle = makeStyles((theme) => ({
-    containerDashboard: {
-        display: 'flex',
-        width: '100vw'
-    },
-    sideComponent:{
-        flexGrow: 0,
-    },
-    mainDashboard: {
-        width: "100%",
-        boxShadow: 3,
-        flexGrow: 1
-    },
+  mainDashboard: {
+    width: "100%",
+    flexGrow: 1,
+  },
+  containerDashboard: {
+    backgroundColor: "#F4F4F4",
+  },
+  titlePage: {
+    opacity: 0.2,
+    position: "relative",
+    left: "-50px",
+    fontSize: 32,
+  },
 }));
 
-const UserDashboard = ({dispatch, user, status, theme}) => {
-    const classes = useStyle(theme);
+const UserDashboard = ({ dispatch, user, status, theme }) => {
+  const classes = useStyle(theme);
 
-    useEffect(() => {
-        dispatch(fetchUser());
-    }, [dispatch]);
+  useEffect(() => {
+    // dispatch(fetchUser());
+  }, [dispatch]);
 
-    return (
-        <Container maxWidth="100%" disableGutters className={classes.containerDashboard}>
-            <AppBarCustome/>
-            <Box className={classes.containerDashboard}>
-                <SideMenuComponent/>
-                <Box className={classes.mainDashboard}>
-
-                    <Card sx={{mx: 'auto', my: '20px', width: '75%'}}>
-                        <UserTableComponent data={user} dispatch={dispatch}/>
-                    </Card>
-                </Box>
-            </Box>
+  return (
+    <Container
+      maxWidth="100%"
+      disableGutters
+      className={classes.containerDashboard}
+    >
+      <Box className={classes.mainDashboard}>
+        <Container maxWidth="100%" sx={{ width: "75%", mt: 5 }} disableGutters>
+          <Typography
+            variant="h3"
+            component="h1"
+            className={classes.titlePage}
+            sx={{
+              fontFamily: "Montserrat, sans-serif",
+              fontWeight: 700,
+              fontSize: 64,
+            }}
+          >
+            Dashboard
+          </Typography>
         </Container>
-    );
+        <Card sx={{ mx: "auto", my: "20px", width: "75%" }} raised>
+          <CardHeader
+            title={<Typography variant="h4">User Table</Typography>}
+          />
+          <Divider />
+          <CardContent>
+            <UserTableComponent data={user} dispatch={dispatch} />
+          </CardContent>
+        </Card>
+      </Box>
+    </Container>
+  );
 };
 
 const mapStateToProps = (state) => ({
-    loading: state.user.loading,
-    user: state.user.users,
-    status: state.user.status,
+  loading: state.user.loading,
+  user: state.user.users,
+  status: state.user.status,
 });
 
 export default connect(mapStateToProps)(UserDashboard);
