@@ -55,15 +55,21 @@ def save_result(x_test, y_test, model, file):
     method = file
     predict = method.predict(x_test)
 
-
-    MasterTrainingResult.objects.update_or_create(
-        method_id=model[0].id,
-        accuracy=accuracy_score(y_test, predict),
-        recall=recall_score(y_test, predict, average='micro'),
-        precision=precision_score(y_test, predict, average='micro'),
-        f1_score=f1_score(y_test, predict, average='micro'),
-    )
-
+    try:
+        data = MasterTrainingResult.objects.get(method_id=model[0].id)
+        data.accuracy = accuracy_score(y_test, predict)
+        data.recall = recall_score(y_test, predict, average='weighted')
+        data.precision = precision_score(y_test, predict, average='weighted')
+        data.f1_score = accuracy_score(y_test, predict)
+        data.save()
+    except MasterTrainingResult.DoesNotExist:
+        MasterTrainingResult.objects.create(
+            method_id=model[0].id,
+            accuracy=accuracy_score(y_test, predict),
+            recall=recall_score(y_test, predict, average='weighted'),
+            precision=precision_score(y_test, predict, average='weighted'),
+            f1_score=f1_score(y_test, predict, average='weighted'),
+        )
 
 # K-Nearest Neighbors
 @periodic_task(crontab(minute='*/1'), retries=2, delay=10)

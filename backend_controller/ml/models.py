@@ -88,7 +88,7 @@ class MasterHasil(models.Model):
 
 class MasterTrainingResult(models.Model):
     id = models.AutoField(primary_key=True)
-    method = models.ForeignKey(MasterModel, on_delete=models.CASCADE)
+    method = models.ForeignKey(MasterModel, on_delete=models.CASCADE, unique=True)
     accuracy = models.DecimalField(max_digits=10, decimal_places=7)
     precision = models.DecimalField(max_digits=10, decimal_places=7)
     recall = models.DecimalField(max_digits=10, decimal_places=7)
