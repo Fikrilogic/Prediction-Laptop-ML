@@ -9,6 +9,7 @@ import {
   Button,
   Modal,
   Box,
+  Skeleton,
   ButtonGroup,
   Typography,
 } from "@mui/material";
@@ -18,6 +19,15 @@ import { deleteUser } from "../../Redux/User/fetch-action";
 function UserTableComponent({ data, dispatch }) {
   const [id, setId] = useState("");
   const [open, setOpen] = useState(false);
+
+  // const data = [
+  //   {
+  //     user_id: 1,
+  //     first_name: "Dan",
+  //     last_name: "Bil",
+  //     phone: "087484738"
+  //   }
+  // ]
 
   const selectData = (e) => {
     e.preventDefault();
@@ -68,7 +78,7 @@ function UserTableComponent({ data, dispatch }) {
       <Table>
         <TableHead>
           <TableRow>
-            {["No", "First Name", "Last Name", "Phone", "ACTION"].map(
+            {["No", "First Name", "Last Name", "Phone", "Action"].map(
               (label) => (
                 <TableCell>{label}</TableCell>
               )
@@ -76,7 +86,26 @@ function UserTableComponent({ data, dispatch }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((data, index) => (
+        {data.length === 0 ? (
+          <TableRow>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+          </TableRow>
+        ) : (
+          data.map((data, index) => (
             <TableRow>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{data.first_name}</TableCell>
@@ -92,7 +121,8 @@ function UserTableComponent({ data, dispatch }) {
                 </Button>
               </TableCell>
             </TableRow>
-          ))}
+          ))
+        )}
         </TableBody>
       </Table>
       <div></div>

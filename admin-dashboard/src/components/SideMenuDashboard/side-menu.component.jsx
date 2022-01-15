@@ -1,16 +1,27 @@
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   Box,
   Typography,
-  Avatar,
   Stack,
   Divider,
-  ButtonBase,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  Collapse,
+  ListItemText,
+  Tooltip,
+  Drawer,
+  Toolbar,
 } from "@mui/material";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { HashLink as Link } from "react-router-hash-link";
+import TableViewIcon from "@mui/icons-material/TableView";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import HomeIcon from "@mui/icons-material/Home";
+import GroupIcon from "@mui/icons-material/Group";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../../Context/context";
 
@@ -18,41 +29,18 @@ import { logout } from "../../Context/action";
 
 const useStyle = makeStyles((theme) => ({
   container: {
-    width: "18.75em",
-    height: "auto",
+    width: "18em",
+    height: "100vh",
     padding: "15px 10px",
     border: `1px solid ${theme.palette.neutral.transparent}`,
     backgroundColor: theme.palette.primary["300"],
     textAlign: "center",
     color: "white",
-  },
-  boxName: {
-    margin: '20px 0px',
-
-  },
-  profile: {
-    marginBlock: "2rem",
-    padding: '20px 0px'
-  },
-  icon: {
-    margin: "0 auto"
-  },
-  btnIcon: {
-    marginRight: "2px",
+    flexGrow: 0,
   },
   link: {
+    color: "white",
     textDecoration: "none",
-    color: theme.palette.neutral.main,
-    display: "flex",
-    cursor: "pointer",
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    fontSize: 15,
-    fontWeight: "bold",
-    border: "none",
-  },
-  btnBase: {
-    width: "100%",
   },
 }));
 
@@ -60,41 +48,97 @@ function SideMenuComponent(props) {
   const classes = useStyle(props.theme);
   const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleLogoutClick = async (e) => {
     e.preventDefault();
+    console.log("clicked");
     const req = await logout(dispatch);
     if (req === 200) return navigate("/login");
   };
 
+  const scrollWithOffset = (el) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80;
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: "smooth" });
+  };
+
   return (
-    <Box component="div" className={classes.container} boxShadow={5}>
-      <Box>
-        <Typography className={classes.boxName} sx={{mb: 2}} variant='h5'>Admin Dashboard</Typography>
-
-        <Box component="div" className={classes.profile}>
-          <Avatar className={classes.icon} sx={{ width: '60px', height: '60px'}}>
-            {/* <SupervisedUserCircleRoundedIcon /> */}
-          </Avatar>
-          <Typography variant='h6'>ADMIN</Typography>
-        </Box>
-
-        <Stack
-          spacing={2}
-          sx={{ mt: 5, px: 4 }}
-          divider={<Divider orientation="horizontal" />}
-        >
-          <Link to='../user' className={classes.link}>
-            <Typography variant='h5'>Master User</Typography>
-            <ArrowForwardIosIcon/>
-          </Link>
-          <Link to='../dataset' className={classes.link}>
-            <Typography variant='h5'>Master Dataset</Typography>
-            <ArrowForwardIosIcon/>
-          </Link>
-        </Stack>
+    <Drawer anchor="left" variant="permanent">
+      <Toolbar />
+      <Box component="div" className={classes.container} boxShadow={5}>
+        <List>
+          <ListItemButton onClick={() => navigate("/dashboard")}>
+            <ListItemIcon sx={{ color: "white" }}>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </ListItemButton>
+          <ListItemButton onClick={() => navigate("/user")}>
+            <ListItemIcon sx={{ color: "white" }}>
+              <GroupIcon />
+            </ListItemIcon>
+            <ListItemText primary="Master User" />
+          </ListItemButton>
+          <ListItemButton onClick={() => navigate("/dataset")}>
+            <ListItemIcon sx={{ color: "white" }}>
+              <TableViewIcon />
+            </ListItemIcon>
+            <ListItemText primary="Master Dataset" />
+            {open ? (
+              <Tooltip title="Collapse">
+                <ExpandLess onClick={() => setOpen(!open)} />
+              </Tooltip>
+            ) : (
+              <Tooltip title="Expand">
+                <ExpandMore onClick={() => setOpen(!open)} />
+              </Tooltip>
+            )}
+          </ListItemButton>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {[
+                "CPU",
+                "GPU",
+                "storage",
+                "company",
+                "type",
+                "screen",
+                "resolution",
+              ].map((item) => (
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
+                  <Link
+                    className={classes.link}
+                    smooth
+                    style={{
+                      fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+                      margin: 0,
+                      fontWeight: 400,
+                      fontSize: "1rem",
+                      lineHeight: 1.5,
+                      letterSpacing: "0.00938em",
+                      display: "block",
+                    }}
+                    scroll={(el) => scrollWithOffset(el)}
+                    to={`../dataset/tables#${item}`}
+                  >{`Tabel ${item.replace(
+                    item[0],
+                    item[0].toUpperCase()
+                  )}`}</Link>
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
+          <ListItemButton onClick={handleLogoutClick}>
+            <ListItemIcon sx={{ color: "white" }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+        </List>
       </Box>
-    </Box>
+    </Drawer>
   );
 }
 

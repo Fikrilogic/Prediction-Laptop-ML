@@ -11,21 +11,45 @@ import {
 } from "@mui/material";
 
 function DatasetTable({ data }) {
+
   return (
-    <Table
-      size="small"
-      sx={{ width: "100%", height: "auto", margin: "0 auto" }}
-    >
-      <TableHead size="small">
+    <Table>
+      <TableHead>
         <TableRow>
-          <TableCell size="small">Code</TableCell>
-          <TableCell size="small">Name</TableCell>
-          <TableCell size="small">action</TableCell>
+          {["Budget", "CPU", "GPU", "RAM", "Memory Type", "Company", "Screen Type", "Resolution", "Weight", "Type", "Prediction"].map(
+              (label) => (
+                <TableCell>{label}</TableCell>
+              )
+            )}
         </TableRow>
       </TableHead>
-      <TableBody size="small">
+      <TableBody>
         {data.length === 0 ? (
           <TableRow>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
             <TableCell>
               <Skeleton variant="rectangular" />
             </TableCell>
