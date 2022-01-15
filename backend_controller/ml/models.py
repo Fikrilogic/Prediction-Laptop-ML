@@ -89,10 +89,10 @@ class MasterHasil(models.Model):
 class MasterTrainingResult(models.Model):
     id = models.AutoField(primary_key=True)
     method = models.ForeignKey(MasterModel, on_delete=models.CASCADE)
-    accuracy = models.DecimalField(max_digits=4, decimal_places=2)
-    precision = models.DecimalField(max_digits=4, decimal_places=2)
-    recall = models.DecimalField(max_digits=4, decimal_places=2)
-    f1_score = models.DecimalField(max_digits=4, decimal_places=2)
+    accuracy = models.DecimalField(max_digits=10, decimal_places=7)
+    precision = models.DecimalField(max_digits=10, decimal_places=7)
+    recall = models.DecimalField(max_digits=10, decimal_places=7)
+    f1_score = models.DecimalField(max_digits=10, decimal_places=7)
     train_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

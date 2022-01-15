@@ -55,6 +55,7 @@ def save_result(x_test, y_test, model, file):
     method = file
     predict = method.predict(x_test)
 
+
     MasterTrainingResult.objects.update_or_create(
         method_id=model[0].id,
         accuracy=accuracy_score(y_test, predict),
