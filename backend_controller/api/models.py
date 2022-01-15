@@ -134,8 +134,8 @@ class MasterMemory(models.Model):
 
 class MasterKebutuhan(models.Model):
     """
-            Model for Table Master Dataset
-        """
+        Model for Table Master Dataset
+    """
 
     id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
     name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)

@@ -53,6 +53,7 @@ class MasterKonsultasi(models.Model):
 
     id = models.UUIDField(verbose_name=_('kode_konsultasi'), default=uuid.uuid4, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    kebutuhan = models.CharField(max_length=150, null=False, blank=False)
     budget = models.BigIntegerField()
     cpu = models.CharField(max_length=150, null=False, blank=False)
     gpu = models.CharField(max_length=150, null=False, blank=False)
