@@ -11,12 +11,10 @@ import {
 } from "@mui/material";
 
 function DatasetTable({ data }) {
+
   return (
-    <Table
-      size="small"
-      sx={{ width: "100%", height: "auto", margin: "0 auto" }}
-    >
-      <TableHead size="small">
+    <Table>
+      <TableHead>
         <TableRow>
           {["Budget", "CPU", "GPU", "RAM", "Memory Type", "Company", "Screen Type", "Resolution", "Weight", "Type", "Prediction"].map(
               (label) => (
@@ -25,7 +23,7 @@ function DatasetTable({ data }) {
             )}
         </TableRow>
       </TableHead>
-      <TableBody size="small">
+      <TableBody>
         {data.length === 0 ? (
           <TableRow>
             <TableCell>
