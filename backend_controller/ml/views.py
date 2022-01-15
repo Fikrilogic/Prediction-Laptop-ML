@@ -32,12 +32,18 @@ class MlModelView(viewsets.ModelViewSet):
     serializer_class = ModelSerializers
     queryset = MasterModel.objects.all()
     permission_classes = [isAdminUser]
-    # parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser]
+
+
+class KonsultasiView(viewsets.ModelViewSet):
+    serializer_class = KonsultasiSerializers
+    queryset = MasterKonsultasi.objects.all()
+    permission_classes = [isAdminOrMemberUser]
 
     @action(detail=True, methods=['post'])
     def predict_data(self, request, model_id):
         data = request.data
-        query = self.get_queryset()
+        query = MasterModel.objects.all()
         model = get_object_or_404(query, pk=model_id)
 
         file = joblib.load(model.path.open('rb'))
@@ -45,16 +51,19 @@ class MlModelView(viewsets.ModelViewSet):
         data = [[data for data in data]]
         predict = file.predict(data)
 
+        MasterKonsultasi.objects.create(
+            name=predict,
+            **request.data
+        )
         return Response({'prediction': predict}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
     def all_method_predict(self, request):
         data = request.data
-        query = self.get_queryset()
+        query = MasterModel.objects.all()
 
         data = list(data.values())
         data = [[data for data in data]]
-        print(query)
         result = []
         for model in query:
             file = joblib.load(model.path.open('rb'))
@@ -63,11 +72,6 @@ class MlModelView(viewsets.ModelViewSet):
 
         return Response(result, status=status.HTTP_200_OK)
 
-
-class KonsultasiView(viewsets.ModelViewSet):
-    serializer_class = KonsultasiSerializers
-    queryset = MasterKonsultasi.objects.all()
-    permission_classes = [isAdminOrMemberUser]
 
 
 class TrainingResultView(viewsets.GenericViewSet):

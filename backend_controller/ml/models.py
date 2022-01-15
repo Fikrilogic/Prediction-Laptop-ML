@@ -64,6 +64,7 @@ class MasterKonsultasi(models.Model):
     weight = models.DecimalField(max_digits=3, decimal_places=2)
     type_laptop = models.CharField(verbose_name=_('type_laptop'), max_length=100, null=False, blank=False)
     price = models.BigIntegerField(null=False, blank=False)
+    name = models.CharField(verbose_name=_('name'), max_length=100, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
