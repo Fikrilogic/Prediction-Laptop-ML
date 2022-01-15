@@ -9,14 +9,23 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const useStyle = makeStyles({});
+const useStyle = makeStyles(() => ({
+  userProfile: {
+    cursor: "pointer",
+  },
+}));
 
 const AppBarCustome = () => {
   const classes = useStyle();
+  const navigate = useNavigate();
 
   return (
-    <AppBar position="relative" sx={{ width: "100%"} }>
+    <AppBar
+      position="sticky"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
       <Container maxWidth="100%">
         <Toolbar disableGutters>
           <Typography
@@ -26,15 +35,13 @@ const AppBarCustome = () => {
           >
             CREAVEN
           </Typography>
-          
-          <Typography
-            variant="h5"
-            sx={{ flexGrow: 0, display: { xs: "flex" } }}
-          >
-            Admin
-          </Typography>
 
-          <Box sx={{ flexGrow: 0 }}>
+          <Box
+            sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}
+            className={classes.userProfile}
+            onClick={() => navigate("../profile")}
+          >
+            <Typography variant="h5">Admin</Typography>
             <IconButton size="large">
               <Avatar />
             </IconButton>
