@@ -58,9 +58,8 @@ class AdminSerializers(serializers.ModelSerializer):
             'password': {"write_only": True}
         }
 
-        def admin_create(self):
-            admin = User.objects.create_admin(**self.validated_data)
-            return admin
+    def create(self):
+        self.instance = User.objects.create_admin(**self.validated_data)
 
 
 class CpuSerializers(serializers.ModelSerializer):

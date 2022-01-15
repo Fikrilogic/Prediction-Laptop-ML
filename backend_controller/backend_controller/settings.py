@@ -125,7 +125,7 @@ HUEY = {
     'name': 'ml',  # Use db name for huey.
     'immediate': False,  # If DEBUG=True, run synchronously.
     'connection': {
-        'host': 'redis',
+        'host': 'localhost',
         'port': 6379,
         'db': 0
     },

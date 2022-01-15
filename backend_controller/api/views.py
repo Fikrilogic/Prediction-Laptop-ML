@@ -72,11 +72,10 @@ class RegisterAdminView(generics.GenericAPIView):
     serializer_class = AdminSerializers
 
     def post(self, request):
-        print(self.request.data)
         data = self.request.data
         serializers = self.get_serializer(data=data)
         if serializers.is_valid(raise_exception=True):
-            serializers.admin_create()
+            serializers.create()
             return Response(serializers.data, status=status.HTTP_201_CREATED)
 
 
