@@ -28,3 +28,12 @@ class TrainingResultSerializers(serializers.ModelSerializer):
         model = models.MasterTrainingResult
         fields = '__all__'
         depth = 1
+
+
+class CrossValidationSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.MasterCrossvalResult
+        fields = '__all__'
+        exclude = [
+            'id', 'kfold', 'train_at', 'model_id', 'mean'
+        ]

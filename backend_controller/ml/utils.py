@@ -30,6 +30,7 @@ def convert_to__dict_graph(data):
     return result
 
 
+
 def createplot(label, data, name):
     df = pd.DataFrame({'Metode': name, label: [int(n*100) for n in data]})
     plt.switch_backend('AGG')
@@ -46,3 +47,27 @@ def createplot(label, data, name):
     plt.yticks(range(10, 100, 10))
     graph = get_graph()
     return graph
+
+
+def create_cross_val_dict(data):
+    result = []
+    turn = list(range(1,11))
+    for n in range(len(data)):
+        name = data.iloc[n, 0]
+        acc_score = list(data.iloc[n, 1:])
+
+        plot_data = pd.DataFrame({'turn': turn, 'accuracy': acc_score})
+        graph = create_crossval_plot(plot_data)
+        result.append({'metode': name, 'graph': graph})
+
+    return result
+
+def create_crossval_plot(data_dict):
+    plt.switch_backend('AGG')
+    plt.figure(figsize=(8, 8))
+    sns.lineplot(data=data_dict, x=data_dict['turn'], y='accuracy')
+    plt.xticks(np.linspace(1, 10, 10))
+    plt.xlabel('KFOLD')
+    graph = get_graph()
+    return graph
+

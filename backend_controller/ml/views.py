@@ -3,12 +3,9 @@ import pickle
 from django.shortcuts import render
 from api.permissions import isAdminUser, isAdminOrMemberUser, isMemberUser
 from api.models import MasterDataset
-from django.conf import settings
-from django.views.decorators.csrf import (
-    csrf_exempt
-)
+
 from django.contrib.auth import get_user_model
-from asgiref.sync import sync_to_async
+
 
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -17,20 +14,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 
-from .serializers import ModelSerializers, KonsultasiSerializers, ResultSerializers, TrainingResultSerializers
-from .models import MasterModel, MasterKonsultasi, MasterHasil, MasterTrainingResult
-from .tasks import get_dataset, save_result, nb_pipeline, dt_pipeline, knn_pipeline, gb_pipeline
-from .utils import convert_to__dict_graph
+from .serializers import ModelSerializers, KonsultasiSerializers, TrainingResultSerializers, CrossValidationSerializers
+from .models import MasterModel, MasterKonsultasi, MasterTrainingResult, MasterCrossvalResult
+from .utils import convert_to__dict_graph, create_cross_val_dict
 
 from sklearn.model_selection import KFold, cross_val_score
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import  accuracy_score
 import pandas as pd
 import numpy as np
 import joblib
-import os
-import seaborn as sns
-import matplotlib.pyplot as plt
-sns.set_style('whitegrid')
 
 
 User = get_user_model()
@@ -100,7 +92,7 @@ class KonsultasiView(viewsets.ModelViewSet):
 class TrainingResultView(viewsets.GenericViewSet):
     serializer_class = TrainingResultSerializers
     queryset = MasterTrainingResult.objects.all()
-    permission_classes(isAdminUser)
+    permission_classes =[isAdminUser]
 
     def list(self, request):
         query = self.get_queryset()
@@ -119,15 +111,38 @@ class TrainingResultView(viewsets.GenericViewSet):
         return Response(list_graph, status=status.HTTP_200_OK)
 
 
-def get_model_pipeline(*args):
-    model = []
+class CrossValidationView(viewsets.GenericViewSet):
+    serializer_class = CrossValidationSerializers
+    queryset = MasterCrossvalResult.objects.all()
+    permission_classes = [isAdminUser]
 
-    for data in args:
-        model.append(data)
+    def list(self, request):
+        query = self.get_queryset()
+        if query.count() < 20:
+            serialize = self.get_serializer(query, many=True)
+            return Response(serialize.data)
+        serialize = self.get_serializer(query, many=True)
+        return self.get_paginated_response(serialize.data)
 
-    return model
-
-
+    @action(detail=False, methods=['get'])
+    def get_graph(self, request):
+        query = self.get_queryset()
+        filter = query.values(
+            'name',
+            'test1',
+            'test2',
+            'test3',
+            'test4',
+            'test5',
+            'test6',
+            'test7',
+            'test8',
+            'test9',
+            'test10',
+        )
+        df = pd.DataFrame(filter)
+        result = create_cross_val_dict(df)
+        return Response(result,status=status.HTTP_200_OK)
 
 # not fixed
 @api_view(['POST'])
