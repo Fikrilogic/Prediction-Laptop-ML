@@ -97,3 +97,23 @@ class MasterTrainingResult(models.Model):
 
     class Meta:
         get_latest_by = ['train_at']
+
+class MasterCrossvalResult(models.Model):
+    model = models.OneToOneField(MasterModel, on_delete=models.CASCADE, unique=True)
+    name = models.CharField(max_length=100, null=False, blank=False)
+    kfold = models.IntegerField(default=10)
+    test1 = models.DecimalField(max_digits=7, decimal_places=5)
+    test2 = models.DecimalField(max_digits=7, decimal_places=5)
+    test3 = models.DecimalField(max_digits=7, decimal_places=5)
+    test4 = models.DecimalField(max_digits=7, decimal_places=5)
+    test5 = models.DecimalField(max_digits=7, decimal_places=5)
+    test6 = models.DecimalField(max_digits=7, decimal_places=5)
+    test7 = models.DecimalField(max_digits=7, decimal_places=5)
+    test8 = models.DecimalField(max_digits=7, decimal_places=5)
+    test9 = models.DecimalField(max_digits=7, decimal_places=5)
+    test10 = models.DecimalField(max_digits=7, decimal_places=5)
+    mean = models.DecimalField(max_digits=7, decimal_places=5)
+    train_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        get_latest_by = ['train_at']

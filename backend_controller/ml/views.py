@@ -8,6 +8,7 @@ from django.views.decorators.csrf import (
     csrf_exempt
 )
 from django.contrib.auth import get_user_model
+from asgiref.sync import sync_to_async
 
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -19,10 +20,18 @@ from rest_framework.generics import get_object_or_404
 from .serializers import ModelSerializers, KonsultasiSerializers, ResultSerializers, TrainingResultSerializers
 from .models import MasterModel, MasterKonsultasi, MasterHasil, MasterTrainingResult
 from .tasks import get_dataset, save_result, nb_pipeline, dt_pipeline, knn_pipeline, gb_pipeline
+from .utils import convert_to__dict_graph
 
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.metrics import classification_report, accuracy_score
+import pandas as pd
+import numpy as np
 import joblib
-import jwt
+import os
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.set_style('whitegrid')
+
 
 User = get_user_model()
 
@@ -33,6 +42,20 @@ class MlModelView(viewsets.ModelViewSet):
     queryset = MasterModel.objects.all()
     permission_classes = [isAdminUser]
     parser_classes = [MultiPartParser, FormParser]
+
+    @action(detail=False, methods=['post'])
+    def test_model(self, request):
+        data = pd.read_excel(request.FILES.get('file'))
+        y = data['name']
+        x = np.array(data.drop('name', axis='columns'))
+        query = self.get_queryset()
+        for model in query:
+            ml = pickle.load(model.path.open('rb'))
+            predict = ml.predict(x)
+            report = pd.DataFrame(classification_report(y, predict, output_dict=True))
+            print(report)
+
+        return Response(report, status=status.HTTP_200_OK)
 
 
 class KonsultasiView(viewsets.ModelViewSet):
@@ -74,7 +97,6 @@ class KonsultasiView(viewsets.ModelViewSet):
         return Response(result, status=status.HTTP_200_OK)
 
 
-
 class TrainingResultView(viewsets.GenericViewSet):
     serializer_class = TrainingResultSerializers
     queryset = MasterTrainingResult.objects.all()
@@ -88,6 +110,15 @@ class TrainingResultView(viewsets.GenericViewSet):
         serialize = self.get_serializer(query, many=True)
         return self.get_paginated_response(serialize.data)
 
+    @action(detail=False, methods=['get'])
+    def result_graph(self, request):
+        query = self.get_queryset()
+        data = pd.DataFrame(query.values('method_id__name', 'accuracy', 'precision', 'recall', 'f1_score'))
+
+        list_graph = convert_to__dict_graph(data)
+        return Response(list_graph, status=status.HTTP_200_OK)
+
+
 def get_model_pipeline(*args):
     model = []
 
@@ -97,17 +128,21 @@ def get_model_pipeline(*args):
     return model
 
 
-@api_view(['GET'])
+
+# not fixed
+@api_view(['POST'])
 def cross_validation_model(request):
-    dataset = get_dataset()
+    dataset = pd.read_excel(request.FILES.get('file'))
     target = dataset['name']
-    data = dataset.drop('name', axis='columns')
-    print(data)
+    data = np.array(dataset.drop('name', axis='columns'))
+
     result = []
     query = MasterModel.objects.all()
     for model in query:
         file = pickle.load(model.path.open('rb'))
-        # print(file)
-        # score = cross_val_score(file, data, target, cv=KFold(n_splits=10), scoring='accuracy')
-        # result.append({'name': model.name, 'score': score})
+        score = cross_val_score(file, data,target, cv=KFold(n_splits=10), scoring='accuracy')
+        result.append({'name': model.name, 'score': score})
+
     return Response(result, status=status.HTTP_200_OK)
+    # return Response(status=status.HTTP_200_OK)
+
