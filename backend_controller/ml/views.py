@@ -48,14 +48,14 @@ class MlModelView(viewsets.ModelViewSet):
         data = pd.read_excel(request.FILES.get('file'))
         y = data['name']
         x = np.array(data.drop('name', axis='columns'))
+        results = []
         query = self.get_queryset()
         for model in query:
             ml = pickle.load(model.path.open('rb'))
             predict = ml.predict(x)
-            report = pd.DataFrame(classification_report(y, predict, output_dict=True))
-            print(report)
+            results.append({'name': model.name, 'accuracy': accuracy_score(y, predict)})
 
-        return Response(report, status=status.HTTP_200_OK)
+        return Response(results, status=status.HTTP_200_OK)
 
 
 class KonsultasiView(viewsets.ModelViewSet):
@@ -139,10 +139,10 @@ def cross_validation_model(request):
     result = []
     query = MasterModel.objects.all()
     for model in query:
-        file = pickle.load(model.path.open('rb'))
-        score = cross_val_score(file, data,target, cv=KFold(n_splits=10), scoring='accuracy')
-        result.append({'name': model.name, 'score': score})
+        with model.path.open('rb') as f:
+            file = f
+            score = cross_val_score(file, data, target, cv=KFold(n_splits=10), scoring='accuracy')
+            result.append({'name': model.name, 'score': score})
 
     return Response(result, status=status.HTTP_200_OK)
-    # return Response(status=status.HTTP_200_OK)
 
