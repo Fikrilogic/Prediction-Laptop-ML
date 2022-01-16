@@ -89,6 +89,14 @@ const DatasetTable = ({ dispatch, data, results }) => {
     setPage(newPage);
   };
 
+  const formatMoney = (number) => {
+    return number.toLocaleString("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    });
+  };
+
   return (
     <Table>
       <TableHead>
@@ -166,7 +174,7 @@ const DatasetTable = ({ dispatch, data, results }) => {
               <TableCell>{data.resolution.resolution}</TableCell>
               <TableCell>{data.weight}</TableCell>
               <TableCell>{data.type.name}</TableCell>
-              <TableCell size="small">{data.budget}</TableCell>
+              <TableCell size="small">{formatMoney(data.budget)}</TableCell>
               <TableCell>
                 <Button variant="outlined" color="error">
                   Delete
@@ -194,7 +202,7 @@ const DatasetTable = ({ dispatch, data, results }) => {
 
 const mapStateToProps = (state) => ({
   loading: state.dataset.loading,
-  data: state.dataset.data,
+  data: state.dataset.dataset,
   results: state.dataset.results,
   status: state.dataset.status,
 });

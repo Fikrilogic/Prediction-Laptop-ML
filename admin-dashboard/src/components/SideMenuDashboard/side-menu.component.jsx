@@ -148,7 +148,83 @@ function SideMenuComponent(props) {
             <List component="div" disablePadding>
               <ListItemButton sx={{ pl: 4 }}>
                 <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
-                <ListItemText primary="Accuracy" />
+                <Link
+                  className={classes.link}
+                  smooth
+                  style={{
+                    fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+                    margin: 0,
+                    fontWeight: 400,
+                    fontSize: "1rem",
+                    lineHeight: 1.5,
+                    letterSpacing: "0.00938em",
+                    display: "block",
+                  }}
+                  scroll={(el) => scrollWithOffset(el)}
+                  to="../analytic/result#accuracy"
+                >
+                  Accuracy
+                </Link>
+              </ListItemButton>
+              <ListItemButton sx={{ pl: 4 }}>
+                <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
+                <Link
+                  className={classes.link}
+                  smooth
+                  style={{
+                    fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+                    margin: 0,
+                    fontWeight: 400,
+                    fontSize: "1rem",
+                    lineHeight: 1.5,
+                    letterSpacing: "0.00938em",
+                    display: "block",
+                  }}
+                  scroll={(el) => scrollWithOffset(el)}
+                  to="../analytic/result#precision"
+                >
+                  Precision
+                </Link>
+              </ListItemButton>
+              <ListItemButton sx={{ pl: 4 }}>
+                <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
+                <Link
+                  className={classes.link}
+                  smooth
+                  style={{
+                    fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+                    margin: 0,
+                    fontWeight: 400,
+                    fontSize: "1rem",
+                    lineHeight: 1.5,
+                    letterSpacing: "0.00938em",
+                    display: "block",
+                  }}
+                  scroll={(el) => scrollWithOffset(el)}
+                  to="../analytic/result#recall"
+                >
+                  Recall
+                </Link>
+              </ListItemButton>
+              <ListItemButton sx={{ pl: 4 }}>
+                <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
+                <Link
+                  className={classes.link}
+                  smooth
+                  style={{
+                    fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+                    margin: 0,
+                    fontWeight: 400,
+                    fontSize: "1rem",
+                    lineHeight: 1.5,
+                    letterSpacing: "0.00938em",
+                    display: "block",
+                  }}
+                  scroll={(el) => scrollWithOffset(el)}
+                  to="../analytic/result#f1-score"
+                >
+                  F1 Score
+                </Link>
               </ListItemButton>
             </List>
           </Collapse>

@@ -12,11 +12,24 @@ import {
   Modal,
   TextField,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 import DatasetTable from "../../components/TableComponent/dataset-table.component";
 import { FetchDataset } from "../../Redux/Dataset/fetch-action.js";
 import { useNavigate } from "react-router-dom";
+import {
+  FetchCompany,
+  FetchCpu,
+  FetchGpu,
+  FetchLaptopType,
+  FetchScreenResolution,
+  FetchScreenType,
+  FetchStorage,
+} from "../../Redux/Data/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -34,11 +47,40 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const DatasetDashboard = () => {
-  // useEffect(() => {
-  //   dispatch(FetchDataset());
-  //   console.log(results);
-  // }, [dispatch]);
+const DatasetDashboard = ({
+  cpuList,
+  gpuList,
+  storageList,
+  screenList,
+  resolutionList,
+  typeList,
+  companyList,
+  dispatch,
+}) => {
+  const [data, setData] = useState({
+    budget: 0,
+    ram: "",
+    weight: "",
+    price: 0,
+    name: "",
+    cpu: "",
+    gpu: "",
+    memory: "",
+    company: "",
+    screen: "",
+    resolution: "",
+    type: "",
+  });
+
+  useEffect(() => {
+    dispatch(FetchCpu());
+    dispatch(FetchGpu());
+    dispatch(FetchScreenResolution());
+    dispatch(FetchScreenType());
+    dispatch(FetchCompany());
+    dispatch(FetchStorage());
+    dispatch(FetchLaptopType());
+  }, [dispatch]);
 
   const classes = useStyle();
   const [open, setOpen] = useState(false);
@@ -68,28 +110,161 @@ const DatasetDashboard = () => {
           <form noValidate autoComplete="off">
             <TextField
               sx={{ margin: "12px 0", display: "block" }}
-              label="Full Name"
+              label="Name"
               variant="outlined"
+              onChange={(e) => setData({ ...data, name: e.target.value })}
+              fullWidth
+            />
+            <FormControl fullWidth>
+              <InputLabel id="cpu-select">CPU</InputLabel>
+              <Select
+                labelId="cpu-select"
+                value={data.cpu}
+                label="CPU"
+                onChange={(e) => setData({ ...data, cpu: e.target.value })}
+              >
+                {cpuList.map((data) => (
+                  <MenuItem key={data.id} value={data.name}>
+                    {data.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel id="gpu-select">GPU</InputLabel>
+              <Select
+                labelId="gpu-select"
+                value={data.gpu}
+                label="GPU"
+                onChange={(e) => setData({ ...data, gpu: e.target.value })}
+              >
+                {gpuList.map((data) => (
+                  <MenuItem key={data.id} value={data.name}>
+                    {data.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel id="ram-select">RAM</InputLabel>
+              <Select
+                labelId="ram-select"
+                value={data.ram}
+                label="RAM"
+                onChange={(e) => setData({ ...data, ram: e.target.value })}
+              >
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={8}>8</MenuItem>
+                <MenuItem value={16}>16</MenuItem>
+                <MenuItem value={32}>32</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel id="storage-select">Memory Type</InputLabel>
+              <Select
+                labelId="storage-select"
+                value={data.storage}
+                label="Memory Type"
+                onChange={(e) => setData({ ...data, storage: e.target.value })}
+              >
+                {storageList.map((data) => (
+                  <MenuItem key={data.id} value={data.type}>
+                    {data.type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel id="company-select">Company</InputLabel>
+              <Select
+                labelId="company-select"
+                value={data.company}
+                label="Company"
+                onChange={(e) => setData({ ...data, company: e.target.value })}
+              >
+                {companyList.map((data) => (
+                  <MenuItem key={data.id} value={data.name}>
+                    {data.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel id="screen-select">Screen Type</InputLabel>
+              <Select
+                labelId="screen-select"
+                value={data.screen}
+                label="Screen Type"
+                onChange={(e) => setData({ ...data, screen: e.target.value })}
+              >
+                {screenList.map((data) => (
+                  <MenuItem key={data.id} value={data.type}>
+                    {data.type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel id="resolution-select">Screen Resolution</InputLabel>
+              <Select
+                labelId="resolution-select"
+                value={data.resolution}
+                label="Screen Resolution"
+                onChange={(e) =>
+                  setData({ ...data, resolution: e.target.value })
+                }
+              >
+                {resolutionList.map((data) => (
+                  <MenuItem key={data.id} value={data.resolution}>
+                    {data.resolution}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              className={classes.inputField}
+              label="Weight"
+              variant="outlined"
+              onChange={(e) =>
+                setData({ ...data, weight: parseInt(e.target.value) })
+              }
+              fullWidth
+            />
+            <FormControl fullWidth>
+              <InputLabel id="type-select">Laptop Type</InputLabel>
+              <Select
+                labelId="type-select"
+                value={data.type}
+                label="Laptop Type"
+                onChange={(e) => setData({ ...data, type: e.target.value })}
+              >
+                {resolutionList.map((data) => (
+                  <MenuItem key={data.id} value={data.name}>
+                    {data.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Budget"
+              variant="outlined"
+              onChange={(e) =>
+                setData({ ...data, budget: parseInt(e.target.value) })
+              }
               fullWidth
             />
             <TextField
               sx={{ margin: "12px 0", display: "block" }}
               className={classes.inputField}
-              label="E-mail"
+              label="Price"
               variant="outlined"
-              fullWidth
-            />
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Phone Number"
-              variant="outlined"
-              fullWidth
-            />
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              className={classes.inputField}
-              label="E-mail"
-              variant="outlined"
+              onChange={(e) =>
+                setData({ ...data, price: parseInt(e.target.value) })
+              }
               fullWidth
             />
             <Button variant="contained" onClick={saveHandler}>
@@ -165,12 +340,15 @@ const DatasetDashboard = () => {
   );
 };
 
-// const mapStateToProps = (state) => ({
-//   method: state.dataset.method,
-//   dataset: state.dataset.data,
-//   status: state.dataset.status,
-//   results: state.dataset.results,
-// });
-// export default connect(mapStateToProps)(DatasetDashboard);
+const mapStateToProps = (state) => ({
+  cpuList: state.data.cpu,
+  gpuList: state.data.gpu,
+  storageList: state.data.storage,
+  screenList: state.data.screen,
+  resolutionList: state.data.resolution,
+  typeList: state.data.laptop_type,
+  companyList: state.data.company,
+});
+export default connect(mapStateToProps)(DatasetDashboard);
 
-export default DatasetDashboard;
+// export default DatasetDashboard;

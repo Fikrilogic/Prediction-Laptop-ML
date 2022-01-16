@@ -16,9 +16,9 @@ import {
   Card,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useLocation } from "react-router-dom";
 import { FetchCpu } from "../../Redux/Data/fetch-action";
 import { connect } from "react-redux";
+import ModalInput from "../ModalInputComponent/modal-input.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -28,13 +28,12 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 const CpuTable = ({ data, dispatch }) => {
-  const location = useLocation().pathname;
   const classes = useStyle();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     dispatch(FetchCpu());
-  }, [dispatch, location]);
+  }, [dispatch]);
 
   const saveHandler = () => {
     // window.location.reload();
@@ -42,6 +41,12 @@ const CpuTable = ({ data, dispatch }) => {
 
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
+      <ModalInput
+        open={open}
+        setOpen={setOpen}
+        type="cpu"
+        saveHandler={saveHandler}
+      />
       <Box className={classes.mainDashboard} component="div">
         <Card sx={{ mx: "auto", my: "20px" }} raised>
           <Box

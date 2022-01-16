@@ -19,6 +19,7 @@ import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 import { FetchScreenType } from "../../Redux/Data/fetch-action";
+import ModalInput from "../ModalInputComponent/modal-input.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -42,6 +43,12 @@ const ScreenTable = ({ data, dispatch }) => {
 
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
+      <ModalInput
+        open={open}
+        setOpen={setOpen}
+        type="screen"
+        saveHandler={saveHandler}
+      />
       <Box className={classes.mainDashboard}>
         <Card sx={{ mx: "auto", my: "20px" }} raised>
           <Box

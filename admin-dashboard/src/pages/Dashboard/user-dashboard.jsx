@@ -38,6 +38,24 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
     dispatch(fetchUser());
   }, [dispatch]);
 
+  const data = [
+    {
+      first_name: "Anwar",
+      last_name: "Habiburahman",
+      phone: "085865854",
+    },
+    {
+      first_name: "Fikri",
+      last_name: "Sandi",
+      phone: "083267623",
+    },
+    {
+      first_name: "Dandi",
+      last_name: "Izzulhaq",
+      phone: "087346734",
+    },
+  ];
+
   return (
     <Container
       maxWidth="100%"
@@ -65,7 +83,7 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
           />
           <Divider />
           <CardContent>
-            <UserTableComponent data={user} dispatch={dispatch} />
+            <UserTableComponent data={data} dispatch={dispatch} />
           </CardContent>
         </Card>
       </Box>
