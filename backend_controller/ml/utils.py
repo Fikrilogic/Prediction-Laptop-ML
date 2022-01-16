@@ -41,6 +41,7 @@ def createplot(label, data, name):
     sns.histplot(data, x=name, shrink=8)
     plt.xlabel('Algorithm')
     plt.ylabel(f'{label}_value')
+    plt.xticks(rotation=45)
     plt.legend(labels=name, title='Machine Learning Algorithm')
     graph = get_graph()
     return graph
