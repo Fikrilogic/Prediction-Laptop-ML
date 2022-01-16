@@ -161,7 +161,7 @@ def retrain_gbdt_model():
     m = gb_pipeline
     m.fit(x_train, y_train)
     model = MasterModel.objects.get_or_create(
-        name='Gradient Boost Decision Tree',
+        name='Gradient Boosting',
         desc='Model with GBDT Algorithm'
     )
     model[0].path.delete(save=False)
