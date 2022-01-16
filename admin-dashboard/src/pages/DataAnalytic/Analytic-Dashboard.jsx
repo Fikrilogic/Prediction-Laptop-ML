@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/styles";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import {
@@ -7,58 +7,18 @@ import {
   Box,
   Card,
   Typography,
-  CardHeader,
   CardContent,
+  Skeleton,
+  Grid,
+  CardHeader,
   Divider,
 } from "@mui/material";
-import { Bar } from "react-chartjs-2";
+import LoopIcon from "@mui/icons-material/Loop";
+
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-import { fetchAnalyticResults } from "../../Redux/Dataset/fetch-action.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-const legend = {
-  display: true,
-  position: "bottom",
-  labels: {
-    fontColor: "#323130",
-    fontSize: 14,
-  },
-};
-
-const options = {
-  responsive: true,
-  title: {
-    display: true,
-    text: "Analytic Results",
-  },
-  scales: {
-    yAxes: [
-      {
-        ticks: {
-          suggestedMin: 0,
-          suggestedMax: 1,
-        },
-      },
-    ],
-  },
-};
+  FetchAnalyticGraph,
+  FetchAnalyticResults,
+} from "../../Redux/Dataset/fetch-action.js";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -67,6 +27,7 @@ const useStyle = makeStyles((theme) => ({
   },
   containerDashboard: {
     backgroundColor: "#F4F4F4",
+    paddingBottom: "60px",
   },
   titlePage: {
     opacity: 0.2,
@@ -74,14 +35,25 @@ const useStyle = makeStyles((theme) => ({
     left: "10px",
     fontSize: 32,
   },
+  imgAnalytic: {
+    width: "500px",
+  },
+  cardAnalytic: {
+    width: "600px",
+    height: "auto",
+  },
 }));
 
-const AnalyticDashboard = ({ dispatch, dataset, status, method }) => {
+const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
   useEffect(() => {
-    dispatch(fetchAnalyticResults());
+    dispatch(FetchAnalyticGraph());
   }, [dispatch]);
   const classes = useStyle();
-  console.log(dataset);
+
+  const accuracy = graph[0] !== undefined ? graph[0].accuracy : "";
+  const precision = graph[1] !== undefined ? graph[1].precision : "";
+  const recall = graph[2] !== undefined ? graph[2].recall : "";
+  const f1_score = graph[3] !== undefined ? graph[3].f1_score : "";
 
   return (
     <Container
@@ -104,102 +76,125 @@ const AnalyticDashboard = ({ dispatch, dataset, status, method }) => {
             Analytic Results
           </Typography>
         </Container>
-        <Card sx={{ mx: "auto", my: "20px", width: "75%" }} raised>
-          <CardContent>
-            <Bar
-              datasetIdKey={dataset.id}
-              data={{
-                labels: ["Accuracy", "Precision", "Recall", "F1 Score"],
-                datasets: [
-                  {
-                    id: 1,
-                    label: "KNN",
-                    data: [33, 53, 85, 41],
-                    fill: true,
-                    backgroundColor: "rgba(209, 21, 21,0.2)",
-                    borderColor: "rgba(75,192,192,1)",
-                  },
-                  {
-                    id: 2,
-                    label: "Decision Tree",
-                    data: [33, 25, 35, 51],
-                    fill: false,
-                    borderColor: "#742774",
-                  },
-                  {
-                    id: 3,
-                    label: "Naive Bayes",
-                    data: [33, 53, 85, 41],
-                    fill: true,
-                    backgroundColor: "rgba(75,192,192,0.2)",
-                    borderColor: "rgba(75,192,192,1)",
-                  },
-                  {
-                    id: 4,
-                    label: "Gradient Boost Decision Tree",
-                    data: [33, 25, 35, 51],
-                    fill: false,
-                    backgroundColor: "rgba(224, 227, 41, 0.2)",
-                    borderColor: "#742774",
-                  },
-                  //   {
-                  //     id: 1,
-                  //     label: dataset.method.name,
-                  //     data: [
-                  //       dataset.accuracy,
-                  //       dataset.precision,
-                  //       dataset.recall,
-                  //       dataset.f1_score,
-                  //     ],
-                  //     fill: true,
-                  //     backgroundColor: "rgba(209, 21, 21,0.2)",
-                  //     borderColor: "rgba(75,192,192,1)",
-                  //   },
-                  //   {
-                  //     id: 2,
-                  //     label: dataset.method.name,
-                  //     data: [
-                  //       dataset.accuracy,
-                  //       dataset.precision,
-                  //       dataset.recall,
-                  //       dataset.f1_score,
-                  //     ],
-                  //     fill: false,
-                  //     borderColor: "#742774",
-                  //   },
-                  //   {
-                  //     id: 3,
-                  //     label: dataset.method.name,
-                  //     data: [
-                  //       dataset.accuracy,
-                  //       dataset.precision,
-                  //       dataset.recall,
-                  //       dataset.f1_score,
-                  //     ],
-                  //     fill: true,
-                  //     backgroundColor: "rgba(75,192,192,0.2)",
-                  //     borderColor: "rgba(75,192,192,1)",
-                  //   },
-                  //   {
-                  //     id: 4,
-                  //     label: dataset.method.name,
-                  //     data: [
-                  //       dataset.accuracy,
-                  //       dataset.precision,
-                  //       dataset.recall,
-                  //       dataset.f1_score,
-                  //     ],
-                  //     fill: false,
-                  //     backgroundColor: "rgba(224, 227, 41, 0.2)",
-                  //     borderColor: "#742774",
-                  //   },
-                ],
-              }}
-              legend={legend}
-              options={options}
-            />
-          </CardContent>
-        </Card>
+
+        <Grid container spacing={4}>
+          <Grid item xs={6}>
+            <Card
+              sx={{ mx: "auto" }}
+              className={classes.cardAnalytic}
+              raised
+              id="accuracy"
+            >
+              <CardHeader
+                title="Accuracy Chart"
+                subheader="Perbandingan akurasi dari keempat model machine learing yang telah di training"
+              />
+              <Divider />
+              <CardContent>
+                {accuracy === undefined || accuracy === "" ? (
+                  <Skeleton
+                    variant="rectangular"
+                    animation="pulse"
+                    height={510}
+                  />
+                ) : (
+                  <img
+                    className={classes.imgAnalytic}
+                    src={`data:image/png;base64,${accuracy}`}
+                    alt="Accuracy Model"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <Card
+              sx={{ mx: "auto" }}
+              className={classes.cardAnalytic}
+              raised
+              id="precision"
+            >
+              <CardHeader
+                title="Precision Chart"
+                subheader="Perbandingan presisi dari keempat model machine learing yang telah di training"
+              />
+              <Divider />
+              <CardContent>
+                {accuracy === undefined || accuracy === "" ? (
+                  <Skeleton
+                    variant="rectangular"
+                    animation="pulse"
+                    height={510}
+                  />
+                ) : (
+                  <img
+                    className={classes.imgAnalytic}
+                    src={`data:image/png;base64,${precision}`}
+                    alt="Precision Model"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <Card
+              sx={{ mx: "auto" }}
+              className={classes.cardAnalytic}
+              raised
+              id="recall"
+            >
+              <CardHeader
+                title="Recall Chart"
+                subheader="Perbandingan recall dari keempat model machine learing yang telah di training"
+              />
+              <Divider />
+              <CardContent>
+                {accuracy === undefined || accuracy === "" ? (
+                  <Skeleton
+                    variant="rectangular"
+                    animation="pulse"
+                    height={510}
+                  />
+                ) : (
+                  <img
+                    className={classes.imgAnalytic}
+                    src={`data:image/png;base64,${recall}`}
+                    alt="Recall Model"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <Card
+              sx={{ mx: "auto" }}
+              className={classes.cardAnalytic}
+              raised
+              id="f1-score"
+            >
+              <CardHeader
+                title="F1 Score Chart"
+                subheader="Perbandingan nilai F1 dari keempat model machine learing yang telah di training"
+              />
+              <Divider />
+              <CardContent>
+                {accuracy === undefined || accuracy === "" ? (
+                  <Skeleton
+                    variant="rectangular"
+                    animation="pulse"
+                    height={510}
+                  />
+                ) : (
+                  <img
+                    className={classes.imgAnalytic}
+                    src={`data:image/png;base64,${f1_score}`}
+                    alt="F1 Score Model"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </Box>
     </Container>
   );
@@ -207,7 +202,8 @@ const AnalyticDashboard = ({ dispatch, dataset, status, method }) => {
 
 const mapStateToProps = (state) => ({
   method: state.dataset.method,
-  dataset: state.dataset.data,
+  graph: state.dataset.graph,
+  analytic: state.dataset.analytic,
   status: state.dataset.status,
 });
 

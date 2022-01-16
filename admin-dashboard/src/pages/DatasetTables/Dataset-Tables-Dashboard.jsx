@@ -10,6 +10,7 @@ import ScreenTable from "../../components/TableComponent/screen-table.component.
 import ResolutionTable from "../../components/TableComponent/screen-resolution-table.component.jsx";
 import LaptopTypeTable from "../../components/TableComponent/laptop-type-table.component.jsx";
 import CompanyTable from "../../components/TableComponent/company-table.component.jsx";
+import ModalInput from "../../components/ModalInputComponent/modal-input.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -30,11 +31,6 @@ const useStyle = makeStyles((theme) => ({
 
 const DatasetTablesDashboard = () => {
   const classes = useStyle();
-  const [open, setOpen] = useState(false);
-
-  const saveHandler = () => {
-    // window.location.reload();
-  };
 
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
