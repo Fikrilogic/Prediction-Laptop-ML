@@ -25,20 +25,24 @@ def convert_to__dict_graph(data):
     df = data.iloc[:, 1:5]
     for n in df.columns:
         graph = createplot(n, df[n], name)
-        print(type(graph))
         result.append({n: graph})
 
     return result
 
 
 def createplot(label, data, name):
-    df = pd.DataFrame({'Metode': name, label: data})
+    df = pd.DataFrame({'Metode': name, label: [int(n*100) for n in data]})
     plt.switch_backend('AGG')
     plt.figure(figsize=(8, 8))
     plt.title(f"{label} report".upper())
     sns.set_theme(style='whitegrid')
-    sns.histplot(data=df, x=name, y=label)
-    plt.xticks(rotation=45)
-    plt.yticks(np.linspace(0, 1, 8))
+    ax = sns.barplot(data=df, x=name, y=label)
+    for p in ax.patches:
+        percentage = '{}%'.format(10 * p.get_height() / 10)
+        x = p.get_x() + 0.4
+        y = p.get_height() + 1
+        ax.annotate(percentage, (x, y), ha='center')
+    plt.xticks(rotation=-15)
+    plt.yticks(range(10, 100, 10))
     graph = get_graph()
     return graph
