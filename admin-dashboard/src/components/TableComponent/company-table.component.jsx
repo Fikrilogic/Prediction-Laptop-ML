@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
+import { FetchCompany } from "../../Redux/Data/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -25,13 +27,13 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const CompanyTable = ({ data, dispatch, sx }) => {
+const CompanyTable = ({ data, dispatch }) => {
   const location = useLocation().pathname;
   const classes = useStyle();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // dispatch(FetchDataset());
+    dispatch(FetchCompany());
   }, [dispatch, location]);
 
   const saveHandler = () => {
@@ -39,7 +41,7 @@ const CompanyTable = ({ data, dispatch, sx }) => {
   };
 
   return (
-    <Container maxWidth="100%" className={classes.containerDashboard} sx={sx}>
+    <Container maxWidth="100%" className={classes.containerDashboard}>
       <Box className={classes.mainDashboard}>
         <Card sx={{ mx: "auto", my: "20px" }} raised>
           <Box
@@ -51,7 +53,7 @@ const CompanyTable = ({ data, dispatch, sx }) => {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Company Name Table</Typography>
+              <Typography variant="h4">Tabel Perusahaan</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -71,9 +73,11 @@ const CompanyTable = ({ data, dispatch, sx }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode Perusahan", "Nama Perusahaan"].map((label) => (
-                    <TableCell>{label}</TableCell>
-                  ))}
+                  {["No", "Kode Perusahan", "Nama Perusahaan", "Aksi"].map(
+                    (label, index) => (
+                      <TableCell key={index}>{label}</TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -90,9 +94,10 @@ const CompanyTable = ({ data, dispatch, sx }) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data) => (
-                    <TableRow aria-labelledby={data.kode}>
-                      <TableCell size="small">{data.kode}</TableCell>
+                  data.map((data, index) => (
+                    <TableRow key={data.id}>
+                      <TableCell size="small">{index + 1}</TableCell>
+                      <TableCell>{data.id}</TableCell>
                       <TableCell>{data.name}</TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error">
@@ -111,4 +116,10 @@ const CompanyTable = ({ data, dispatch, sx }) => {
   );
 };
 
-export default CompanyTable;
+const mapStateToProps = (state) => ({
+  loading: state.data.loading,
+  data: state.data.company,
+  status: state.data.status,
+});
+
+export default connect(mapStateToProps)(CompanyTable);

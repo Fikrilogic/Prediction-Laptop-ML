@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
+import { FetchLaptopType } from "../../Redux/Data/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -31,7 +33,7 @@ const LaptopTypeTable = ({ data, dispatch, sx }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // dispatch(FetchDataset());
+    dispatch(FetchLaptopType());
   }, [dispatch, location]);
 
   const saveHandler = () => {
@@ -51,7 +53,7 @@ const LaptopTypeTable = ({ data, dispatch, sx }) => {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Laptop Type Table</Typography>
+              <Typography variant="h4">Tabel Tipe Laptop</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -71,9 +73,11 @@ const LaptopTypeTable = ({ data, dispatch, sx }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode Tipe Laptop", "Nama Laptop"].map((label) => (
-                    <TableCell>{label}</TableCell>
-                  ))}
+                  {["No", "Kode Tipe Laptop", "Nama Laptop", "Aksi"].map(
+                    (label) => (
+                      <TableCell>{label}</TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -90,9 +94,10 @@ const LaptopTypeTable = ({ data, dispatch, sx }) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data) => (
-                    <TableRow aria-labelledby={data.kode}>
-                      <TableCell size="small">{data.kode}</TableCell>
+                  data.map((data, i) => (
+                    <TableRow key={data.id}>
+                      <TableCell size="small">{i + 1}</TableCell>
+                      <TableCell>{data.id}</TableCell>
                       <TableCell>{data.name}</TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error">
@@ -111,4 +116,10 @@ const LaptopTypeTable = ({ data, dispatch, sx }) => {
   );
 };
 
-export default LaptopTypeTable;
+const mapStateToProps = (state) => ({
+  loading: state.data.loading,
+  data: state.data.laptop_type,
+  status: state.data.status,
+});
+
+export default connect(mapStateToProps)(LaptopTypeTable);

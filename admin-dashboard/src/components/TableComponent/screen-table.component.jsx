@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
+import { FetchScreenType } from "../../Redux/Data/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -25,13 +27,13 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const ScreenTable = ({ data, dispatch, sx }) => {
+const ScreenTable = ({ data, dispatch }) => {
   const location = useLocation().pathname;
   const classes = useStyle();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // dispatch(FetchDataset());
+    dispatch(FetchScreenType());
   }, [dispatch, location]);
 
   const saveHandler = () => {
@@ -39,7 +41,7 @@ const ScreenTable = ({ data, dispatch, sx }) => {
   };
 
   return (
-    <Container maxWidth="100%" className={classes.containerDashboard} sx={sx}>
+    <Container maxWidth="100%" className={classes.containerDashboard}>
       <Box className={classes.mainDashboard}>
         <Card sx={{ mx: "auto", my: "20px" }} raised>
           <Box
@@ -51,7 +53,7 @@ const ScreenTable = ({ data, dispatch, sx }) => {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Screen Type Table</Typography>
+              <Typography variant="h4">Tabel Tipe Layar</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -90,10 +92,11 @@ const ScreenTable = ({ data, dispatch, sx }) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data) => (
-                    <TableRow aria-labelledby={data.kode}>
-                      <TableCell size="small">{data.kode}</TableCell>
-                      <TableCell>{data.name}</TableCell>
+                  data.map((data, index) => (
+                    <TableRow key={data.id}>
+                      <TableCell size="small">{index + 1}</TableCell>
+                      <TableCell>{data.id}</TableCell>
+                      <TableCell>{data.type}</TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error">
                           Delete
@@ -111,4 +114,10 @@ const ScreenTable = ({ data, dispatch, sx }) => {
   );
 };
 
-export default ScreenTable;
+const mapStateToProps = (state) => ({
+  loading: state.data.loading,
+  data: state.data.screen,
+  status: state.data.status,
+});
+
+export default connect(mapStateToProps)(ScreenTable);

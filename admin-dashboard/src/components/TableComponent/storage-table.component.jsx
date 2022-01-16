@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
+import { FetchStorage } from "../../Redux/Data/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -31,7 +33,7 @@ const StorageTable = ({ data, dispatch }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // dispatch(FetchDataset());
+    dispatch(FetchStorage());
   }, [dispatch, location]);
 
   const saveHandler = () => {
@@ -51,7 +53,7 @@ const StorageTable = ({ data, dispatch }) => {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Storage Table</Typography>
+              <Typography variant="h4">Tabel Tipe Storage</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -71,9 +73,11 @@ const StorageTable = ({ data, dispatch }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode Storage", "Tipe Storage"].map((label) => (
-                    <TableCell>{label}</TableCell>
-                  ))}
+                  {["No", "Kode Storage", "Tipe Storage", "Aksi"].map(
+                    (label, index) => (
+                      <TableCell key={index}>{label}</TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -88,12 +92,16 @@ const StorageTable = ({ data, dispatch }) => {
                     <TableCell>
                       <Skeleton variant="rectangular" />
                     </TableCell>
+                    <TableCell>
+                      <Skeleton variant="rectangular" />
+                    </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data) => (
-                    <TableRow aria-labelledby={data.kode}>
-                      <TableCell size="small">{data.kode}</TableCell>
-                      <TableCell>{data.name}</TableCell>
+                  data.map((data, index) => (
+                    <TableRow key={data.id}>
+                      <TableCell size="small">{index + 1}</TableCell>
+                      <TableCell>{data.id}</TableCell>
+                      <TableCell>{data.type}</TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error">
                           Delete
@@ -111,4 +119,10 @@ const StorageTable = ({ data, dispatch }) => {
   );
 };
 
-export default StorageTable;
+const mapStateToProps = (state) => ({
+  loading: state.data.loading,
+  data: state.data.storage,
+  status: state.data.status,
+});
+
+export default connect(mapStateToProps)(StorageTable);

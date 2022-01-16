@@ -9,8 +9,8 @@ function PrivateRoute({ children }) {
     if (status.isAuthenticated !== true) return false;
   }
   const auth = checkAuth();
-  // return auth ? children : <Navigate to="/login" />;
-  return true ? children : <Navigate to="/login" />; // disable authentication
+  return auth ? children : <Navigate to="/login" />;
+  // return true ? children : <Navigate to="/login" />; // disable authentication
 }
 
 export default PrivateRoute;

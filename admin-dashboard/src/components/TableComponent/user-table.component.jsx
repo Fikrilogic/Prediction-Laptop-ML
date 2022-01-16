@@ -86,43 +86,43 @@ function UserTableComponent({ data, dispatch }) {
           </TableRow>
         </TableHead>
         <TableBody>
-        {data.length === 0 ? (
-          <TableRow>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-          </TableRow>
-        ) : (
-          data.map((data, index) => (
+          {data === undefined || data.length === 0 ? (
             <TableRow>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{data.first_name}</TableCell>
-              <TableCell>{data.last_name}</TableCell>
-              <TableCell>{data.phone}</TableCell>
-              <TableCell data-key={data.user_id}>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={(e) => selectData(e)}
-                >
-                  Delete
-                </Button>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
               </TableCell>
             </TableRow>
-          ))
-        )}
+          ) : (
+            data.map((data, index) => (
+              <TableRow>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{data.first_name}</TableCell>
+                <TableCell>{data.last_name}</TableCell>
+                <TableCell>{data.phone}</TableCell>
+                <TableCell data-key={data.user_id}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={(e) => selectData(e)}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
       <div></div>

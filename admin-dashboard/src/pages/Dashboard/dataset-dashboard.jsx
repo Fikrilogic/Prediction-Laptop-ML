@@ -8,20 +8,19 @@ import {
   Card,
   Button,
   Typography,
-  CardHeader,
   CardContent,
   Modal,
   TextField,
-  ButtonGroup,
   Divider,
 } from "@mui/material";
 
 import DatasetTable from "../../components/TableComponent/dataset-table.component";
 import { FetchDataset } from "../../Redux/Dataset/fetch-action.js";
+import { useNavigate } from "react-router-dom";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
-    width: "100%",
+    maxwidth: "70vw",
     flexGrow: 1,
   },
   containerDashboard: {
@@ -35,14 +34,15 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const DatasetDashboard = ({ dispatch, dataset, status, loading }) => {
-  useEffect(() => {
-    // dispatch(FetchDataset());
-  }, [dispatch]);
+const DatasetDashboard = () => {
+  // useEffect(() => {
+  //   dispatch(FetchDataset());
+  //   console.log(results);
+  // }, [dispatch]);
 
   const classes = useStyle();
   const [open, setOpen] = useState(false);
-
+  const navigate = useNavigate();
   const saveHandler = () => {
     // window.location.reload();
   };
@@ -92,14 +92,16 @@ const DatasetDashboard = ({ dispatch, dataset, status, loading }) => {
               variant="outlined"
               fullWidth
             />
-            <ButtonGroup>
-              <Button variant="contained" onClick={saveHandler}>
-                Save
-              </Button>
-              <Button variant="outlined" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-            </ButtonGroup>
+            <Button variant="contained" onClick={saveHandler}>
+              Save
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setOpen(false)}
+              sx={{ ml: 2 }}
+            >
+              Cancel
+            </Button>
           </form>
         </Box>
       </Modal>
@@ -147,6 +149,7 @@ const DatasetDashboard = ({ dispatch, dataset, status, loading }) => {
                 className={classes.btnDataset}
                 variant="outlined"
                 disableElevation
+                onClick={() => navigate("/analytic/result")}
               >
                 Train Model
               </Button>
@@ -154,7 +157,7 @@ const DatasetDashboard = ({ dispatch, dataset, status, loading }) => {
           </Box>
           <Divider />
           <CardContent>
-            <DatasetTable data={dataset} dispatch={dispatch} />
+            <DatasetTable />
           </CardContent>
         </Card>
       </Box>
@@ -162,10 +165,12 @@ const DatasetDashboard = ({ dispatch, dataset, status, loading }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  loading: state.dataset.loading,
-  dataset: state.dataset.data,
-  status: state.dataset.status,
-});
+// const mapStateToProps = (state) => ({
+//   method: state.dataset.method,
+//   dataset: state.dataset.data,
+//   status: state.dataset.status,
+//   results: state.dataset.results,
+// });
+// export default connect(mapStateToProps)(DatasetDashboard);
 
-export default connect(mapStateToProps)(DatasetDashboard);
+export default DatasetDashboard;

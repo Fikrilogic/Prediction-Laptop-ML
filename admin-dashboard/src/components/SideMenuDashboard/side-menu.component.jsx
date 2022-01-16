@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
   Box,
-  Typography,
-  Stack,
-  Divider,
   List,
   ListItemButton,
   ListItemIcon,
@@ -22,6 +19,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../../Context/context";
 
@@ -49,6 +47,7 @@ function SideMenuComponent(props) {
   const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
 
   const handleLogoutClick = async (e) => {
     e.preventDefault();
@@ -105,8 +104,8 @@ function SideMenuComponent(props) {
                 "type",
                 "screen",
                 "resolution",
-              ].map((item) => (
-                <ListItemButton sx={{ pl: 4 }}>
+              ].map((item, index) => (
+                <ListItemButton sx={{ pl: 4 }} key={index}>
                   <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
                   <Link
                     className={classes.link}
@@ -128,6 +127,29 @@ function SideMenuComponent(props) {
                   )}`}</Link>
                 </ListItemButton>
               ))}
+            </List>
+          </Collapse>
+          <ListItemButton>
+            <ListItemIcon sx={{ color: "white" }}>
+              <BarChartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Performance Testing" />
+            {open2 ? (
+              <Tooltip title="Collapse">
+                <ExpandLess onClick={() => setOpen2(!open2)} />
+              </Tooltip>
+            ) : (
+              <Tooltip title="Expand">
+                <ExpandMore onClick={() => setOpen2(!open2)} />
+              </Tooltip>
+            )}
+          </ListItemButton>
+          <Collapse in={open2} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton sx={{ pl: 4 }}>
+                <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
+                <ListItemText primary="Accuracy" />
+              </ListItemButton>
             </List>
           </Collapse>
           <ListItemButton onClick={handleLogoutClick}>

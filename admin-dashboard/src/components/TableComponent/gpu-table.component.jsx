@@ -18,6 +18,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
+import { FetchGpu } from "../../Redux/Data/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -26,13 +28,13 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-function GpuTable({ data, dispatch, sx }) {
+function GpuTable({ data, dispatch }) {
   const location = useLocation().pathname;
   const classes = useStyle();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // dispatch(FetchDataset());
+    dispatch(FetchGpu());
   }, [location]);
 
   const saveHandler = () => {
@@ -40,7 +42,7 @@ function GpuTable({ data, dispatch, sx }) {
   };
 
   return (
-    <Container maxWidth="100%" className={classes.containerDashboard} sx={sx}>
+    <Container maxWidth="100%" className={classes.containerDashboard}>
       <Box className={classes.mainDashboard}>
         <Card sx={{ mx: "auto", my: "20px" }} raised>
           <Box
@@ -52,7 +54,7 @@ function GpuTable({ data, dispatch, sx }) {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Graphics Card Table</Typography>
+              <Typography variant="h4">Tabel Graphics Card</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -72,9 +74,11 @@ function GpuTable({ data, dispatch, sx }) {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode GPU", "Tipe GPU", "Merk"].map((label) => (
-                    <TableCell>{label}</TableCell>
-                  ))}
+                  {["No", "Kode GPU", "Tipe GPU", "Aksi"].map(
+                    (label, index) => (
+                      <TableCell key={index}>{label}</TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -94,9 +98,10 @@ function GpuTable({ data, dispatch, sx }) {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data) => (
-                    <TableRow aria-labelledby={data.kode}>
-                      <TableCell size="small">{data.kode}</TableCell>
+                  data.map((data, index) => (
+                    <TableRow key={data.id}>
+                      <TableCell size="small">{index + 1}</TableCell>
+                      <TableCell>{data.id}</TableCell>
                       <TableCell>{data.name}</TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error">
@@ -115,4 +120,10 @@ function GpuTable({ data, dispatch, sx }) {
   );
 }
 
-export default GpuTable;
+const mapStateToProps = (state) => ({
+  loading: state.data.loading,
+  data: state.data.gpu,
+  status: state.data.status,
+});
+
+export default connect(mapStateToProps)(GpuTable);

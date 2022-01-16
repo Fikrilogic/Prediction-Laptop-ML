@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
+import { FetchCpu } from "../../Redux/Data/fetch-action";
+import { connect } from "react-redux";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -31,7 +33,7 @@ const CpuTable = ({ data, dispatch }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // dispatch(FetchDataset());
+    dispatch(FetchCpu());
   }, [dispatch, location]);
 
   const saveHandler = () => {
@@ -51,7 +53,7 @@ const CpuTable = ({ data, dispatch }) => {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Processor Table</Typography>
+              <Typography variant="h4">Tabel Processor</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -71,9 +73,11 @@ const CpuTable = ({ data, dispatch }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode CPU", "Nama CPU", "Merk"].map((label) => (
-                    <TableCell>{label}</TableCell>
-                  ))}
+                  {["No", "Kode CPU", "Nama CPU", "Aksi"].map(
+                    (label, index) => (
+                      <TableCell key={index}>{label}</TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -93,9 +97,10 @@ const CpuTable = ({ data, dispatch }) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data) => (
-                    <TableRow aria-labelledby={data.kode}>
-                      <TableCell size="small">{data.kode}</TableCell>
+                  data.map((data, index) => (
+                    <TableRow key={data.id}>
+                      <TableCell size="small">{index + 1}</TableCell>
+                      <TableCell>{data.id}</TableCell>
                       <TableCell>{data.name}</TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error">
@@ -114,4 +119,10 @@ const CpuTable = ({ data, dispatch }) => {
   );
 };
 
-export default CpuTable;
+const mapStateToProps = (state) => ({
+  loading: state.data.loading,
+  data: state.data.cpu,
+  status: state.data.status,
+});
+
+export default connect(mapStateToProps)(CpuTable);

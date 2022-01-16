@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
+import { FetchScreenResolution } from "../../Redux/Data/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -31,7 +33,7 @@ const ResolutionTable = ({ data, dispatch }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // dispatch(FetchDataset());
+    dispatch(FetchScreenResolution());
   }, [dispatch, location]);
 
   const saveHandler = () => {
@@ -51,7 +53,7 @@ const ResolutionTable = ({ data, dispatch }) => {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Company Name Table</Typography>
+              <Typography variant="h4">Tabel Resolusi Layar</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -71,8 +73,8 @@ const ResolutionTable = ({ data, dispatch }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode", "Resolusi", "Kode Screen"].map((label) => (
-                    <TableCell>{label}</TableCell>
+                  {["No", "Kode", "Resolusi", "Aksi"].map((label, i) => (
+                    <TableCell key={i}>{label}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -93,10 +95,11 @@ const ResolutionTable = ({ data, dispatch }) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data) => (
-                    <TableRow aria-labelledby={data.kode}>
-                      <TableCell size="small">{data.kode}</TableCell>
-                      <TableCell>{data.name}</TableCell>
+                  data.map((data, index) => (
+                    <TableRow key={data.id}>
+                      <TableCell size="small">{index + 1}</TableCell>
+                      <TableCell>{data.id}</TableCell>
+                      <TableCell>{data.resolution}</TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error">
                           Delete
@@ -114,4 +117,10 @@ const ResolutionTable = ({ data, dispatch }) => {
   );
 };
 
-export default ResolutionTable;
+const mapStateToProps = (state) => ({
+  loading: state.data.loading,
+  data: state.data.resolution,
+  status: state.data.status,
+});
+
+export default connect(mapStateToProps)(ResolutionTable);

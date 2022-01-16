@@ -35,7 +35,7 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
   const classes = useStyle(theme);
 
   useEffect(() => {
-    // dispatch(fetchUser());
+    dispatch(fetchUser());
   }, [dispatch]);
 
   return (
