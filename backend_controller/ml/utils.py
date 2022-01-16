@@ -36,9 +36,9 @@ def convert_to_graph(data):
 
 def createplot(label, data, name):
     plt.switch_backend('AGG')
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(8, 8))
     plt.title(label)
-    sns.histplot(data, x=name, shrink=8)
+    sns.histplot(data, x=name, bins=4)
     plt.xticks(rotation=45)
     plt.yticks(np.linspace(0, 1, 11))
     plt.xlabel('Algorithm')
