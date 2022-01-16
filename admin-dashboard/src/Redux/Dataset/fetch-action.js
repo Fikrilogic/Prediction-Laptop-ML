@@ -1,4 +1,5 @@
 import {
+  getAnalyticGraph,
   getAnalyticResults,
   getDataset,
   getDatasetPage,
@@ -47,13 +48,32 @@ export const uploadDataset = ({ name, path }) => {
   };
 };
 
-export const fetchAnalyticResults = () => {
+export const FetchAnalyticResults = () => {
   return async (dispatch) => {
     try {
+      // const req = await axios.get(URL + "ml/train-result/", {
+      //   withCredentials: true,
+      // });
       const req = await axios.get(URL + "ml/train-result/", {
         withCredentials: true,
       });
       dispatch(getAnalyticResults(req.data));
+    } catch (e) {
+      dispatch(FailRequest());
+    }
+  };
+};
+
+export const FetchAnalyticGraph = () => {
+  return async (dispatch) => {
+    try {
+      // const req = await axios.get(URL + "ml/train-result/", {
+      //   withCredentials: true,
+      // });
+      const req = await axios.get(URL + "ml/train-result/result_graph/", {
+        withCredentials: true,
+      });
+      dispatch(getAnalyticGraph(req.data));
     } catch (e) {
       dispatch(FailRequest());
     }

@@ -5,13 +5,16 @@ import {
   DELETE_ALL_DATASET,
   GET_ANALYTIC_RESULTS,
   GET_DATASET_PAGE,
+  GET_ANALYTIC_GRAPH,
 } from "./action";
 import { FAILED_REQUEST } from "../User/action";
 
 // initial state for dataset
 export const DATASET_STATE = {
-  data: [],
+  dataset: [],
   results: [],
+  analytic: [],
+  graph: [],
   method: "",
   status: "",
 };
@@ -23,7 +26,7 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
       return {
         ...state,
         method: "GET",
-        data: action.payload.results,
+        dataset: action.payload.results,
         results: action.payload,
         status: "SUCCESS",
       };
@@ -31,7 +34,7 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
       return {
         ...state,
         method: "GET PAGE",
-        data: action.payload.results,
+        dataset: action.payload.results,
         results: action.payload,
         status: "SUCCESS",
       };
@@ -62,7 +65,14 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
     case GET_ANALYTIC_RESULTS:
       return {
         ...state,
-        data: action.payload,
+        analytic: action.payload,
+        method: "GET ANALYTIC",
+        status: "SUCCESS",
+      };
+    case GET_ANALYTIC_GRAPH:
+      return {
+        ...state,
+        graph: action.payload,
         method: "GET ANALYTIC",
         status: "SUCCESS",
       };
