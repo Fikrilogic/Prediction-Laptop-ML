@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import pandas as pd
 import base64
 from io import BytesIO
 
@@ -29,20 +30,15 @@ def convert_to__dict_graph(data):
 
     return result
 
-def convert_to_graph(data):
-
-    pass
-
 
 def createplot(label, data, name):
+    df = pd.DataFrame({'Metode': name, label: data})
     plt.switch_backend('AGG')
     plt.figure(figsize=(8, 8))
-    plt.title(label)
-    sns.histplot(data, x=name, bins=4)
+    plt.title(f"{label} report".upper())
+    sns.set_theme(style='whitegrid')
+    sns.histplot(data=df, x=name, y=label)
     plt.xticks(rotation=45)
-    plt.yticks(np.linspace(0, 1, 11))
-    plt.xlabel('Algorithm')
-    plt.ylabel(f'{label}_value')
-    plt.legend(labels=name, title='Machine Learning Algorithm')
+    plt.yticks(np.linspace(0, 1, 8))
     graph = get_graph()
     return graph
