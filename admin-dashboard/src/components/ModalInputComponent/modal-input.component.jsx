@@ -2,7 +2,7 @@ import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React from "react";
 
-const ModalInput = ({ open, setOpen, saveHandler }) => {
+const ModalInput = ({ open, setOpen, saveHandler, type }) => {
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <Box
@@ -21,30 +21,83 @@ const ModalInput = ({ open, setOpen, saveHandler }) => {
         </Typography>
 
         <form noValidate autoComplete="off">
-          <TextField
-            sx={{ margin: "12px 0", display: "block" }}
-            label="Full Name"
-            variant="outlined"
-            fullWidth
-          />
-          <TextField
-            sx={{ margin: "12px 0", display: "block" }}
-            label="E-mail"
-            variant="outlined"
-            fullWidth
-          />
-          <TextField
-            sx={{ margin: "12px 0", display: "block" }}
-            label="Phone Number"
-            variant="outlined"
-            fullWidth
-          />
-          <TextField
-            sx={{ margin: "12px 0", display: "block" }}
-            label="E-mail"
-            variant="outlined"
-            fullWidth
-          />
+          {type === "cpu" ? (
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Nama CPU"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          ) : (
+            <></>
+          )}
+          {type === "gpu" ? (
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Nama GPU"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          ) : (
+            <></>
+          )}
+          {type === "storage" ? (
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Tipe Storage"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          ) : (
+            <></>
+          )}
+          {type === "company" ? (
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Nama Perusahaan"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          ) : (
+            <></>
+          )}
+          {type === "type" ? (
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Nama Tipe Laptop"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          ) : (
+            <></>
+          )}
+          {type === "screen" ? (
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Tipe Layar"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          ) : (
+            <></>
+          )}
+          {type === "resolution" ? (
+            <TextField
+              sx={{ margin: "12px 0", display: "block" }}
+              label="Resolusi Layar"
+              variant="outlined"
+              fullWidth
+              required
+            />
+          ) : (
+            <></>
+          )}
           <Button variant="contained" onClick={saveHandler}>
             Save
           </Button>
