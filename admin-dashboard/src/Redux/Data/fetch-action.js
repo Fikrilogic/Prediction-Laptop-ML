@@ -2,6 +2,7 @@ import {
   getCompanyData,
   getCpuData,
   getGpuData,
+  getKebutuhanData,
   getResolutionData,
   getScreenData,
   getStorageData,
@@ -86,6 +87,18 @@ export const FetchScreenResolution = () => {
         withCredentials: true,
       });
       dispatch(getResolutionData(req.data));
+    } catch (e) {
+      dispatch(FailRequest());
+    }
+  };
+};
+export const FetchKebutuhan = () => {
+  return async (dispatch) => {
+    try {
+      const req = await axios.get(URL + "kebutuhan/", {
+        withCredentials: true,
+      });
+      dispatch(getKebutuhanData(req.data));
     } catch (e) {
       dispatch(FailRequest());
     }

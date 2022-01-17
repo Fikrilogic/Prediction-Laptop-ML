@@ -3,9 +3,7 @@ import {
   UPLOAD_EXCEL,
   GET_DATASET,
   DELETE_ALL_DATASET,
-  GET_ANALYTIC_RESULTS,
   GET_DATASET_PAGE,
-  GET_ANALYTIC_GRAPH,
 } from "./action";
 import { FAILED_REQUEST } from "../User/action";
 
@@ -13,8 +11,6 @@ import { FAILED_REQUEST } from "../User/action";
 export const DATASET_STATE = {
   dataset: [],
   results: [],
-  analytic: [],
-  graph: [],
   method: "",
   status: "",
 };
@@ -61,20 +57,6 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
         ...state,
         method: "ERROR",
         status: "FAILED",
-      };
-    case GET_ANALYTIC_RESULTS:
-      return {
-        ...state,
-        analytic: action.payload,
-        method: "GET ANALYTIC",
-        status: "SUCCESS",
-      };
-    case GET_ANALYTIC_GRAPH:
-      return {
-        ...state,
-        graph: action.payload,
-        method: "GET ANALYTIC",
-        status: "SUCCESS",
       };
     default:
       return state;
