@@ -77,7 +77,6 @@ function TablePaginationActions(props) {
 const DatasetTable = ({ dispatch, data, results }) => {
   useEffect(() => {
     dispatch(FetchDataset());
-    console.log(results);
   }, [dispatch]);
 
   const [page, setPage] = useState(0);
@@ -102,18 +101,20 @@ const DatasetTable = ({ dispatch, data, results }) => {
       <TableHead>
         <TableRow>
           {[
-            "Name",
+            "Nama",
             "CPU",
             "GPU",
             "RAM",
-            "Memory Type",
-            "Company",
-            "Screen Type",
-            "Resolution",
-            "Weight",
-            "Type",
+            "Tipe Storage",
+            "Perusahaan",
+            "Tipe Layar",
+            "Resolusi",
+            "Berat",
+            "Tipe Laptop",
+            "Kebutuhan",
             "Budget",
-            "Prediction",
+            "Harga",
+            "Aksi",
           ].map((label, i) => (
             <TableCell key={i} size="small">
               {label}
@@ -124,6 +125,12 @@ const DatasetTable = ({ dispatch, data, results }) => {
       <TableBody>
         {data === undefined || data.length === 0 ? (
           <TableRow>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
+            <TableCell>
+              <Skeleton variant="rectangular" />
+            </TableCell>
             <TableCell>
               <Skeleton variant="rectangular" />
             </TableCell>
@@ -174,7 +181,9 @@ const DatasetTable = ({ dispatch, data, results }) => {
               <TableCell>{data.resolution.resolution}</TableCell>
               <TableCell>{data.weight}</TableCell>
               <TableCell>{data.type.name}</TableCell>
+              <TableCell>{data.type.name}</TableCell>
               <TableCell size="small">{formatMoney(data.budget)}</TableCell>
+              <TableCell size="small">{formatMoney(data.price)}</TableCell>
               <TableCell>
                 <Button variant="outlined" color="error">
                   Delete

@@ -14,7 +14,7 @@ import {
   Divider,
 } from "@mui/material";
 
-import { FetchAnalyticGraph } from "../../Redux/Analytics/fetch-action.js";
+import { FetchCrossValidation } from "../../Redux/Analytics/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -41,16 +41,29 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
+const CrossValDashboard = ({ dispatch, data }) => {
   useEffect(() => {
-    dispatch(FetchAnalyticGraph());
+    dispatch(FetchCrossValidation());
   }, [dispatch]);
   const classes = useStyle();
 
-  const accuracy = graph[0] !== undefined ? graph[0].accuracy : "";
-  const precision = graph[1] !== undefined ? graph[1].precision : "";
-  const recall = graph[2] !== undefined ? graph[2].recall : "";
-  const f1_score = graph[3] !== undefined ? graph[3].f1_score : "";
+  const method1 = {
+    graph: data[0] !== undefined ? data[0].graph : "",
+    name: data[0] !== undefined ? data[0].metode : "",
+  };
+  const method2 = {
+    graph: data[1] !== undefined ? data[1].graph : "",
+    name: data[1] !== undefined ? data[1].metode : "",
+  };
+  const method3 = {
+    graph: data[2] !== undefined ? data[2].graph : "",
+    name: data[2] !== undefined ? data[2].metode : "",
+  };
+  const method4 = {
+    graph: data[3] !== undefined ? data[3].graph : "",
+    name: data[3] !== undefined ? data[3].metode : "",
+  };
+  console.log(data);
 
   return (
     <Container
@@ -70,25 +83,20 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
               fontSize: 64,
             }}
           >
-            Analytic Results
+            Cross Validation
           </Typography>
         </Container>
 
         <Grid container spacing={4}>
           <Grid item xs={6}>
-            <Card
-              sx={{ mx: "auto" }}
-              className={classes.cardAnalytic}
-              raised
-              id="accuracy"
-            >
+            <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
               <CardHeader
-                title="Accuracy Chart"
-                subheader="Perbandingan akurasi dari keempat model machine learing yang telah di training"
+                title={method1.name}
+                subheader="Hasil perbandingan cross validation akurasi pada Naive Bayes"
               />
               <Divider />
               <CardContent>
-                {accuracy === undefined || accuracy === "" ? (
+                {method1.graph === undefined || method1.graph === "" ? (
                   <Skeleton
                     variant="rectangular"
                     animation="pulse"
@@ -98,7 +106,7 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
                   <img
                     sx={{ width: "500px", height: "500px" }}
                     className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${accuracy}`}
+                    src={`data:image/png;base64,${method1.graph}`}
                     alt="Accuracy Model"
                   />
                 )}
@@ -106,19 +114,14 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Card
-              sx={{ mx: "auto" }}
-              className={classes.cardAnalytic}
-              raised
-              id="precision"
-            >
+            <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
               <CardHeader
-                title="Precision Chart"
-                subheader="Perbandingan presisi dari keempat model machine learing yang telah di training"
+                title={method2.name}
+                subheader="Hasil perbandingan cross validation akurasi pada K-Nearest Neighbors"
               />
               <Divider />
               <CardContent>
-                {accuracy === undefined || accuracy === "" ? (
+                {method2.graph === undefined || method2.graph === "" ? (
                   <Skeleton
                     variant="rectangular"
                     animation="pulse"
@@ -128,7 +131,7 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
                   <img
                     sx={{ width: "500px", height: "500px" }}
                     className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${precision}`}
+                    src={`data:image/png;base64,${method2.graph}`}
                     alt="Precision Model"
                   />
                 )}
@@ -136,19 +139,14 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Card
-              sx={{ mx: "auto" }}
-              className={classes.cardAnalytic}
-              raised
-              id="recall"
-            >
+            <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
               <CardHeader
-                title="Recall Chart"
-                subheader="Perbandingan recall dari keempat model machine learing yang telah di training"
+                title={method3.name}
+                subheader="Hasil perbandingan cross validation akurasi pada Decision Tree"
               />
               <Divider />
               <CardContent>
-                {accuracy === undefined || accuracy === "" ? (
+                {method3.graph === undefined || method3.graph === "" ? (
                   <Skeleton
                     variant="rectangular"
                     animation="pulse"
@@ -158,7 +156,7 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
                   <img
                     sx={{ width: "500px", height: "500px" }}
                     className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${recall}`}
+                    src={`data:image/png;base64,${method3.graph}`}
                     alt="Recall Model"
                   />
                 )}
@@ -166,19 +164,14 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Card
-              sx={{ mx: "auto" }}
-              className={classes.cardAnalytic}
-              raised
-              id="f1-score"
-            >
+            <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
               <CardHeader
-                title="F1 Score Chart"
-                subheader="Perbandingan nilai F1 dari keempat model machine learing yang telah di training"
+                title={method4.name}
+                subheader="Hasil perbandingan cross validation akurasi pada Gradient Boosting"
               />
               <Divider />
               <CardContent>
-                {accuracy === undefined || accuracy === "" ? (
+                {method4.graph === undefined || method4.graph === "" ? (
                   <Skeleton
                     variant="rectangular"
                     animation="pulse"
@@ -188,7 +181,7 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
                   <img
                     sx={{ width: "500px", height: "500px" }}
                     className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${f1_score}`}
+                    src={`data:image/png;base64,${method4.graph}`}
                     alt="F1 Score Model"
                   />
                 )}
@@ -203,9 +196,8 @@ const AnalyticDashboard = ({ dispatch, graph, data, analytic }) => {
 
 const mapStateToProps = (state) => ({
   method: state.analytic.method,
-  graph: state.analytic.graph,
-  analytic: state.analytic.analytic,
+  data: state.analytic.crossVal,
   status: state.analytic.status,
 });
 
-export default connect(mapStateToProps)(AnalyticDashboard);
+export default connect(mapStateToProps)(CrossValDashboard);

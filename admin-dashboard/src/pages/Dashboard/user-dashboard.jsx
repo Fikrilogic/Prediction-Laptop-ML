@@ -79,7 +79,7 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
         </Container>
         <Card sx={{ mx: "auto", my: "20px", width: "75%" }} raised>
           <CardHeader
-            title={<Typography variant="h4">User Table</Typography>}
+            title={<Typography variant="h4">Tabel User</Typography>}
           />
           <Divider />
           <CardContent>

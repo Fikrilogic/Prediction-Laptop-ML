@@ -11,6 +11,7 @@ import ResolutionTable from "../../components/TableComponent/screen-resolution-t
 import LaptopTypeTable from "../../components/TableComponent/laptop-type-table.component.jsx";
 import CompanyTable from "../../components/TableComponent/company-table.component.jsx";
 import ModalInput from "../../components/ModalInputComponent/modal-input.component";
+import KebutuhanTable from "../../components/TableComponent/kebutuhan-table.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -78,8 +79,13 @@ const DatasetTablesDashboard = () => {
             <ScreenTable />
           </Grid>
 
-          <Grid item xs={12} id="resolution">
+          <Grid item xs={6} id="resolution">
             <ResolutionTable />
+          </Grid>
+          <Grid item xs={6}></Grid>
+          <Grid item xs={6}></Grid>
+          <Grid item xs={6} id="kebutuhan">
+            <KebutuhanTable />
           </Grid>
         </Grid>
       </Box>

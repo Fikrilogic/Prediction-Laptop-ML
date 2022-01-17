@@ -3,6 +3,15 @@ import { connect } from "react-redux";
 
 import { makeStyles } from "@mui/styles";
 import {
+  FetchCompany,
+  FetchCpu,
+  FetchGpu,
+  FetchLaptopType,
+  FetchScreenResolution,
+  FetchScreenType,
+  FetchStorage,
+} from "../../Redux/Data/fetch-action";
+import {
   Container,
   Box,
   Card,
@@ -11,7 +20,10 @@ import {
   CardContent,
   Divider,
 } from "@mui/material";
-import { Chart } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -29,8 +41,28 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const Dashboard = () => {
+const Dashboard = ({
+  cpu,
+  gpu,
+  storage,
+  screen,
+  resolution,
+  type,
+  company,
+  dispatch,
+}) => {
+  useEffect(() => {
+    dispatch(FetchCpu());
+    dispatch(FetchGpu());
+    dispatch(FetchScreenResolution());
+    dispatch(FetchScreenType());
+    dispatch(FetchCompany());
+    dispatch(FetchStorage());
+    dispatch(FetchLaptopType());
+  }, [dispatch]);
   const classes = useStyle();
+
+  console.log(cpu.length, gpu.length);
 
   return (
     <Container
@@ -53,13 +85,72 @@ const Dashboard = () => {
             Dashboard
           </Typography>
         </Container>
-        <Card sx={{ mx: "auto", my: "20px", width: "75%" }} raised>
+        <Card sx={{ my: "20px", width: "fit-content" }} raised>
+          <CardHeader title="Banyak Data" />
           <Divider />
-          <CardContent>{/* <Chart /> */}</CardContent>
+          <CardContent>
+            <Box sx={{ width: "500px" }}>
+              <Doughnut
+                data={{
+                  labels: [
+                    "CPU",
+                    "GPU",
+                    "Storage",
+                    "Screen Type",
+                    "Screen Resolution",
+                    "Company",
+                    "Laptop Type",
+                  ],
+                  datasets: [
+                    {
+                      label: "# of Datas",
+                      data: [
+                        cpu.length,
+                        gpu.length,
+                        storage.length,
+                        screen.length,
+                        resolution.length,
+                        company.length,
+                        type.length,
+                      ],
+                      backgroundColor: [
+                        "rgba(255, 99, 132, 0.2)",
+                        "rgba(54, 162, 235, 0.2)",
+                        "rgba(255, 206, 86, 0.2)",
+                        "rgba(75, 192, 192, 0.2)",
+                        "rgba(153, 102, 255, 0.2)",
+                        "rgba(255, 159, 64, 0.2)",
+                        "rgba(50, 240, 64, 0.2)",
+                      ],
+                      borderColor: [
+                        "rgba(255, 99, 132, 1)",
+                        "rgba(54, 162, 235, 1)",
+                        "rgba(255, 206, 86, 1)",
+                        "rgba(75, 192, 192, 1)",
+                        "rgba(153, 102, 255, 1)",
+                        "rgba(255, 159, 64, 1)",
+                        "rgba(50, 240, 64, 1)",
+                      ],
+                      borderWidth: 1,
+                    },
+                  ],
+                }}
+              />
+            </Box>
+          </CardContent>
         </Card>
       </Box>
     </Container>
   );
 };
 
-export default Dashboard;
+const mapStateToProps = (state) => ({
+  cpu: state.data.cpu,
+  gpu: state.data.gpu,
+  storage: state.data.storage,
+  screen: state.data.screen,
+  resolution: state.data.resolution,
+  type: state.data.laptop_type,
+  company: state.data.company,
+});
+export default connect(mapStateToProps)(Dashboard);
