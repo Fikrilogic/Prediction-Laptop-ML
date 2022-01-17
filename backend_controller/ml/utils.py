@@ -57,16 +57,18 @@ def create_cross_val_dict(data):
         acc_score = list(data.iloc[n, 1:])
 
         plot_data = pd.DataFrame({'turn': turn, 'accuracy': acc_score})
-        graph = create_crossval_plot(plot_data)
+        graph = create_crossval_plot(plot_data, name)
         result.append({'metode': name, 'graph': graph})
 
     return result
 
-def create_crossval_plot(data_dict):
+def create_crossval_plot(data_dict, name):
     plt.switch_backend('AGG')
     plt.figure(figsize=(8, 8))
+    plt.title(f"{name} Method")
     sns.lineplot(data=data_dict, x=data_dict['turn'], y='accuracy')
     plt.xticks(np.linspace(1, 10, 10))
+    plt.yticks(np.linspace(0, 1, 11))
     plt.xlabel('KFOLD')
     graph = get_graph()
     return graph
