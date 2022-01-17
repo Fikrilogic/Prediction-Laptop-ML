@@ -33,7 +33,6 @@ class TrainingResultSerializers(serializers.ModelSerializer):
 class CrossValidationSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.MasterCrossvalResult
-        fields = '__all__'
         exclude = [
-            'id', 'kfold', 'train_at', 'model_id', 'mean'
+            'id', 'model'
         ]
