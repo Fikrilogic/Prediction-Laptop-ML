@@ -147,6 +147,7 @@ class LoginAdmin(generics.GenericAPIView):
 
 # all user logout
 class LogoutUser(generics.GenericAPIView):
+    serializer_class = UserSerializers
     def get(self, request):
         res = Response()
         res.delete_cookie('jwt')
