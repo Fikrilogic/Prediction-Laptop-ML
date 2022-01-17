@@ -15,7 +15,8 @@ from .views import (
     MemoryTypeView,
     ResolutionView,
     DatasetView,
-    add_dataset_with_file_view
+    add_dataset_with_file_view,
+    KebutuhanView
 )
 
 from rest_framework.routers import DefaultRouter
@@ -32,6 +33,7 @@ router.register(r'laptop-type', LaptopTypeView, basename='laptop-type')
 router.register(r'memory-type', MemoryTypeView, basename='memory-type')
 router.register(r'screen-reso', ResolutionView, basename='screen-reso')
 router.register(r'dataset', DatasetView, basename='dataset')
+router.register(r'kebutuhan', KebutuhanView, basename='kebutuhan')
 
 urlpatterns = [
     path('register', Register.as_view(), name='user-register'),
