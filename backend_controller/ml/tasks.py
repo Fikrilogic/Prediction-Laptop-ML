@@ -61,9 +61,9 @@ def save_result(x_test, y_test, model, file):
     try:
         data = MasterTrainingResult.objects.get(method_id=model[0].id)
         data.accuracy = accuracy_score(y_test, predict)
-        data.recall = recall_score(y_test, predict, average='weighted')
+        data.recall = recall_score(y_test, predict, average='weighted', zero_division=0)
         data.precision = precision_score(y_test, predict, average='weighted', zero_division=0)
-        data.f1_score = accuracy_score(y_test, predict)
+        data.f1_score = f1_score(y_test, predict, average='weighted', zero_division=0)
         data.save()
     except MasterTrainingResult.DoesNotExist:
         MasterTrainingResult.objects.create(
@@ -76,7 +76,16 @@ def save_result(x_test, y_test, model, file):
 
 def cross_validation_testing(x,y, model, file):
     list_score = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='accuracy')
-    print()
+    kfold_f1 = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='f1_weighted')
+    kfold_recall = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='recall_weighted')
+    kfold_precision = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='precision_weighted')
+
+    kfold_result = [
+        {'name': model[0].name, 'precision': kfold_precision},
+        {'name': model[0].name, 'recall': kfold_recall},
+        {'name': model[0].name, 'f1': kfold_f1},
+    ]
+    print('10 KFOLD Result :\n {}'.format(kfold_result))
 
     try:
         data = MasterCrossvalResult.objects.get(model_id=model[0].id)
@@ -110,7 +119,7 @@ def cross_validation_testing(x,y, model, file):
 
 
 # K-Nearest Neighbors
-@periodic_task(crontab(minute='*/1'), retries=2, delay=10)
+@periodic_task(crontab(minute='*/1'))
 def retrain_knn_model():
     df = get_dataset()
 
@@ -131,7 +140,7 @@ def retrain_knn_model():
 
 
 # DECISION TREE
-@periodic_task(crontab(minute='*/1'), retries=2, delay=10)
+@periodic_task(crontab(minute='*/1'))
 def retrain_dt_model():
     df = get_dataset()
     target = df['name']
@@ -151,7 +160,7 @@ def retrain_dt_model():
 
 
 # gdbt
-@periodic_task(crontab(minute='*/1'), retries=2, delay=10)
+@periodic_task(crontab(minute='*/1'), retries=2, delay=5)
 def retrain_gbdt_model():
     df = get_dataset()
     target = df['name']
@@ -171,7 +180,7 @@ def retrain_gbdt_model():
 
 
 # Naive Bayes
-@periodic_task(crontab(minute='*/1'), retries=2, delay=10)
+@periodic_task(crontab(minute='*/1'))
 def retrain_nb_model():
     df = get_dataset()
     target = df['name']
