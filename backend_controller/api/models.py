@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.utils.deconstruct import deconstructible
+from .utils import PathAndRename
 
 import uuid
 import os
@@ -9,19 +9,7 @@ import os
 
 # Create your models here.
 
-@deconstructible
-class PathAndRename(object):
 
-    def __init__(self, sub_path):
-        self.path = sub_path
-
-    def __call__(self, instance, filename):
-        ext = filename.split('.')[-1]
-        name = filename.split('.')[0]
-        # set filename as random string
-        filename = '{}_{}.{}'.format(name, uuid.uuid4().hex, ext)
-        # return the whole path to the file
-        return os.path.join(self.path, filename)
 
 
 path_and_rename = PathAndRename('images/product')
@@ -134,7 +122,7 @@ class MasterMemory(models.Model):
 
 class MasterKebutuhan(models.Model):
     """
-        Model for Table Master Dataset
+        Model for kebutuhan
     """
 
     id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)

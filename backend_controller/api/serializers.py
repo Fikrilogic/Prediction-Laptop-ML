@@ -115,7 +115,7 @@ class DatasetSerializers(serializers.ModelSerializer):
         model = models.MasterDataset
         fields = [
             'id',
-            'kebutuhan_id',
+            'kebutuhan',
             'budget',
             'cpu',
             'gpu',
