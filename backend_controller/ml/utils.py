@@ -1,9 +1,23 @@
+from django.utils.deconstruct import deconstructible
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import pandas as pd
 import base64
 from io import BytesIO
+import os
+
+
+@deconstructible
+class PathAndRename(object):
+
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
+        # return the whole path to the file
+        return os.path.join(self.path, filename)
 
 
 def get_graph():

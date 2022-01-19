@@ -1,16 +1,16 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.conf import settings
-from rest_framework.generics import get_object_or_404
 
+from rest_framework.generics import get_object_or_404
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action, permission_classes
 from rest_framework.exceptions import (
     AuthenticationFailed,
     PermissionDenied,
-    NotFound,
+    NotFound, ParseError,
 )
 from rest_framework import status
 
@@ -148,13 +148,13 @@ class LoginAdmin(generics.GenericAPIView):
 # all user logout
 class LogoutUser(generics.GenericAPIView):
     serializer_class = UserSerializers
+
     def get(self, request):
         res = Response()
         res.delete_cookie('jwt')
         return res
 
 
-# get profile user **NOT FIXED YET
 class UserView(generics.GenericAPIView):
     serializer_class = UserSerializers
     permission_classes = [isMemberUser]
@@ -226,7 +226,7 @@ class CpuView(viewsets.ModelViewSet):
     serializer_class = CpuSerializers
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
@@ -252,7 +252,7 @@ class CompanyView(viewsets.ModelViewSet):
     permission_classes = [isAdminOrMemberUser]
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
@@ -265,7 +265,7 @@ class ScreenView(viewsets.ModelViewSet):
     permission_classes = [isAdminOrMemberUser]
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
@@ -278,7 +278,7 @@ class ResolutionView(viewsets.ModelViewSet):
     permission_classes = [isAdminOrMemberUser]
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
@@ -291,7 +291,7 @@ class MemoryTypeView(viewsets.ModelViewSet):
     permission_classes = [isAdminOrMemberUser]
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
@@ -304,7 +304,7 @@ class LaptopTypeView(viewsets.ModelViewSet):
     permission_classes = [isAdminOrMemberUser]
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
@@ -317,7 +317,7 @@ class KebutuhanView(viewsets.ModelViewSet):
     permission_classes = [isAdminOrMemberUser]
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
@@ -343,66 +343,73 @@ class DatasetView(viewsets.ModelViewSet):
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms='HS256')
 
-        user = User.objects.get(pk=payload['id'])
-        cpu = MasterCpu.objects.get(name=data['cpu'])
-        gpu = MasterGpu.objects.get(name=data['gpu'])
-        memory = MasterMemory.objects.get(type=data['memory'])
-        company = MasterCompany.objects.get(name=data['company'])
-        screen = MasterScreen.objects.get(type=data['screen'])
-        sc_res = MasterScreenResolution.objects.get(resolution=data['sc_res'])
-        type = MasterTypeLaptop.objects.get(name=data['type']),
-        kebutuhan = MasterKebutuhan.objects.get(name=data['kebutuhan'])
-        dataset = MasterDataset.objects.create(
-            created_by_id=user.id,
-            cpu_id=cpu.id,
-            gpu_id=gpu.id,
-            memory_id=memory.id,
-            resolution_id=sc_res.id,
-            company_id=company.id,
-            screen_id=screen.id,
-            type_id=type.id,
-            kebutuhan_id=kebutuhan.id
-                         ** data
-        )
+        try:
+            user = User.objects.get(pk=payload['id'])
+            cpu = MasterCpu.objects.get(name=data['cpu'])
+            gpu = MasterGpu.objects.get(name=data['gpu'])
+            memory = MasterMemory.objects.get(type=data['memory'])
+            company = MasterCompany.objects.get(name=data['company'])
+            screen = MasterScreen.objects.get(type=data['screen'])
+            sc_res = MasterScreenResolution.objects.get(resolution=data['sc_res'])
+            type = MasterTypeLaptop.objects.get(name=data['type']),
+            kebutuhan = MasterKebutuhan.objects.get(name=data['kebutuhan'])
+            dataset = MasterDataset.objects.create(
+                created_by_id=user.id,
+                cpu_id=cpu.id,
+                gpu_id=gpu.id,
+                memory_id=memory.id,
+                resolution_id=sc_res.id,
+                company_id=company.id,
+                screen_id=screen.id,
+                type_id=type.id,
+                kebutuhan_id=kebutuhan.id,
+                **data
+            )
+
+        except ValueError as e:
+            raise NotFound(str(e))
 
         serializer = self.get_serializer(dataset)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['post'])
+    def add_dataset_with_file_view(request):
+        token = request.COOKIES.get('jwt')
+        file = pd.read_excel(request.FILES.get('file'))
 
-@api_view(['POST'])
-def add_dataset_with_file_view(request):
-    token = request.COOKIES.get('jwt')
-    file = pd.read_excel(request.FILES.get('file'))
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
 
-    payload = jwt.decode(
-        token, settings.SECRET_KEY, algorithms='HS256')
+        user = User.objects.get(pk=payload['id'])
+        try:
+            for index, data in file.iterrows():
+                kebutuhan = MasterKebutuhan.objects.get_or_create(name=data[0])
+                cpu = MasterCpu.objects.get_or_create(name=data[2])
+                gpu = MasterGpu.objects.get_or_create(name=data[3])
+                memory = MasterMemory.objects.get_or_create(type=data[5])
+                company = MasterCompany.objects.get_or_create(name=data[6])
+                screen = MasterScreen.objects.get_or_create(type=data[7])
+                resolution = MasterScreenResolution.objects.get_or_create(resolution=data[8])
+                type = MasterTypeLaptop.objects.get_or_create(name=data[10])
 
-    user = User.objects.get(pk=payload['id'])
-    for index, data in file.iterrows():
-        kebutuhan = MasterKebutuhan.objects.get_or_create(name=data[0])
-        cpu = MasterCpu.objects.get_or_create(name=data[2])
-        gpu = MasterGpu.objects.get_or_create(name=data[3])
-        memory = MasterMemory.objects.get_or_create(type=data[5])
-        company = MasterCompany.objects.get_or_create(name=data[6])
-        screen = MasterScreen.objects.get_or_create(type=data[7])
-        resolution = MasterScreenResolution.objects.get_or_create(resolution=data[8])
-        type = MasterTypeLaptop.objects.get_or_create(name=data[10])
+                MasterDataset.objects.create(
+                    created_by_id=user.id,
+                    kebutuhan_id=kebutuhan[0].id,
+                    cpu_id=cpu[0].id,
+                    gpu_id=gpu[0].id,
+                    memory_id=memory[0].id,
+                    resolution_id=resolution[0].id,
+                    company_id=company[0].id,
+                    screen_id=screen[0].id,
+                    type_id=type[0].id,
+                    budget=data[1],
+                    ram=data[4],
+                    weight=data[9],
+                    price=data[11],
+                    name=data[12]
+                )
 
-        MasterDataset.objects.create(
-            created_by_id=user.id,
-            kebutuhan_id=kebutuhan[0].id,
-            cpu_id=cpu[0].id,
-            gpu_id=gpu[0].id,
-            memory_id=memory[0].id,
-            resolution_id=resolution[0].id,
-            company_id=company[0].id,
-            screen_id=screen[0].id,
-            type_id=type[0].id,
-            budget=data[1],
-            ram=data[4],
-            weight=data[9],
-            price=data[11],
-            name=data[12]
-        )
+        except ValueError as e:
+            raise ParseError(str(e))
 
-    return Response({"message": "success add dataset"}, status=status.HTTP_200_OK)
+        return Response({"message": "success add dataset"}, status=status.HTTP_200_OK)

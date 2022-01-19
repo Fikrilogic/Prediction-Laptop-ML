@@ -6,17 +6,6 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 
 
-# Profile image path function
-
-
-def get_image_path(self, filename):
-    return f'UserImage/{self.pk}/{"profile_image.png"}'
-
-
-def get_default_image_path():
-    return 'UserImage/default/user.png'
-
-
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
