@@ -5,7 +5,6 @@ from huey import crontab
 from huey.contrib.djhuey import periodic_task, task
 from django.core.files.base import ContentFile
 import pandas as pd
-import numpy as np
 import pickle
 
 from sklearn.pipeline import Pipeline
@@ -14,10 +13,12 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
+
+# Model Pipeline
 column_trans = ColumnTransformer(remainder="passthrough",
                                  transformers=[('encode', OrdinalEncoder(handle_unknown="use_encoded_value",
                                                                          unknown_value=30),
@@ -44,6 +45,7 @@ gb_pipeline = Pipeline(steps=[('preprocessing', column_trans),
                               ])
 
 
+# Helper Function
 def get_dataset():
     query = MasterDataset.objects.all()
     data = query.values('kebutuhan_id__name', 'budget', 'cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type',
@@ -118,8 +120,10 @@ def cross_validation_testing(x,y, model, file):
         )
 
 
+# Task for Training Model
+
 # K-Nearest Neighbors
-@periodic_task(crontab(minute='*/1'))
+@periodic_task(crontab(minute='*/15'))
 def retrain_knn_model():
     df = get_dataset()
 
@@ -140,7 +144,7 @@ def retrain_knn_model():
 
 
 # DECISION TREE
-@periodic_task(crontab(minute='*/1'))
+@periodic_task(crontab(minute='*/15'))
 def retrain_dt_model():
     df = get_dataset()
     target = df['name']
@@ -160,7 +164,7 @@ def retrain_dt_model():
 
 
 # gdbt
-@periodic_task(crontab(minute='*/1'), retries=2, delay=5)
+@periodic_task(crontab(minute='*/15'), retries=2, delay=5)
 def retrain_gbdt_model():
     df = get_dataset()
     target = df['name']
@@ -180,7 +184,7 @@ def retrain_gbdt_model():
 
 
 # Naive Bayes
-@periodic_task(crontab(minute='*/1'))
+@periodic_task(crontab(minute='*/15'))
 def retrain_nb_model():
     df = get_dataset()
     target = df['name']

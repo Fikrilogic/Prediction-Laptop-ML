@@ -1,11 +1,8 @@
-from django.urls import path
 from .views import(
     MlModelView,
-    KonsultasiView, TrainingResultView, cross_validation_model, CrossValidationView)
+    KonsultasiView, TrainingResultView, CrossValidationView)
 from rest_framework.routers import DefaultRouter
-from django.views.decorators.csrf import (
-    csrf_exempt
-)
+
 
 router = DefaultRouter()
 

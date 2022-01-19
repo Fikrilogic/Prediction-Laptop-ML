@@ -15,7 +15,6 @@ from .views import (
     MemoryTypeView,
     ResolutionView,
     DatasetView,
-    add_dataset_with_file_view,
     KebutuhanView
 )
 
@@ -42,7 +41,6 @@ urlpatterns = [
     path('staff/register', RegisterAdminView.as_view(), name='staff-register'),
     path('staff/login', LoginAdmin.as_view(), name='staff-login'),
     path('profile', UserView.as_view(), name='user-profile'),
-    path('upload_dataset', add_dataset_with_file_view, name='user-profile'),
     path('ml/', include('ml.urls'))
 ]
 

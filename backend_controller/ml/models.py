@@ -2,21 +2,11 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
-from django.utils.deconstruct import deconstructible
+
+from .utils import PathAndRename
 
 import uuid
-import os
 
-
-@deconstructible
-class PathAndRename(object):
-
-    def __init__(self, sub_path):
-        self.path = sub_path
-
-    def __call__(self, instance, filename):
-        # return the whole path to the file
-        return os.path.join(self.path, filename)
 
 
 model_path = PathAndRename('file/model')

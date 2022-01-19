@@ -2,28 +2,27 @@ import pickle
 
 from django.shortcuts import render
 from api.permissions import isAdminUser, isAdminOrMemberUser, isMemberUser
-from api.models import MasterDataset
 
 from django.contrib.auth import get_user_model
 
-
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
+from rest_framework.exceptions import (
+    NotFound, ParseError
+)
 
 from .serializers import ModelSerializers, KonsultasiSerializers, TrainingResultSerializers, CrossValidationSerializers
 from .models import MasterModel, MasterKonsultasi, MasterTrainingResult, MasterCrossvalResult
 from .utils import convert_to__dict_graph, create_cross_val_dict
 
-from sklearn.model_selection import KFold, cross_val_score
-from sklearn.metrics import  accuracy_score
+from sklearn.metrics import accuracy_score
 import pandas as pd
 import numpy as np
 import joblib
-
 
 User = get_user_model()
 
@@ -41,13 +40,16 @@ class MlModelView(viewsets.ModelViewSet):
         y = data['name']
         x = np.array(data.drop('name', axis='columns'))
         results = []
-        query = self.get_queryset()
-        for model in query:
-            ml = pickle.load(model.path.open('rb'))
-            predict = ml.predict(x)
-            results.append({'name': model.name, 'accuracy': accuracy_score(y, predict)})
+        try:
+            query = self.get_queryset()
+            for model in query:
+                ml = pickle.load(model.path.open('rb'))
+                predict = ml.predict(x)
+                results.append({'name': model.name, 'accuracy': accuracy_score(y, predict)})
 
-        return Response(results, status=status.HTTP_200_OK)
+            return Response(results, status=status.HTTP_200_OK)
+        except ValueError:
+            raise NotFound('Model is Empty')
 
 
 class KonsultasiView(viewsets.ModelViewSet):
@@ -62,9 +64,13 @@ class KonsultasiView(viewsets.ModelViewSet):
         model = get_object_or_404(query, pk=model_id)
 
         file = joblib.load(model.path.open('rb'))
-        data = list(data.values())
-        data = [[data for data in data]]
-        predict = file.predict(data)
+
+        try:
+            data = list(data.values())
+            data = [[data for data in data]]
+            predict = file.predict(data)
+        except ValueError as e:
+            raise ParseError(str(e))
 
         MasterKonsultasi.objects.create(
             name=predict,
@@ -81,10 +87,14 @@ class KonsultasiView(viewsets.ModelViewSet):
         data = list(data.values())
         data = [[data for data in data]]
         result = []
-        for model in query:
-            file = joblib.load(model.path.open('rb'))
-            predict = file.predict(data)
-            result.append({"name": model.name, 'predict': predict})
+
+        try:
+            for model in query:
+                file = joblib.load(model.path.open('rb'))
+                predict = file.predict(data)
+                result.append({"name": model.name, 'predict': predict})
+        except ValueError as e:
+            raise ParseError(str(e))
 
         return Response(result, status=status.HTTP_200_OK)
 
@@ -92,7 +102,7 @@ class KonsultasiView(viewsets.ModelViewSet):
 class TrainingResultView(viewsets.GenericViewSet):
     serializer_class = TrainingResultSerializers
     queryset = MasterTrainingResult.objects.all()
-    permission_classes =[isAdminUser]
+    permission_classes = [isAdminUser]
 
     def list(self, request):
         query = self.get_queryset()
@@ -107,7 +117,11 @@ class TrainingResultView(viewsets.GenericViewSet):
         query = self.get_queryset()
         data = pd.DataFrame(query.values('method_id__name', 'accuracy', 'precision', 'recall', 'f1_score'))
 
-        list_graph = convert_to__dict_graph(data)
+        try:
+            list_graph = convert_to__dict_graph(data)
+        except ValueError as e:
+            raise ParseError(str(e))
+
         return Response(list_graph, status=status.HTTP_200_OK)
 
 
@@ -121,13 +135,14 @@ class CrossValidationView(viewsets.GenericViewSet):
         if query.count() < 20:
             serialize = self.get_serializer(query, many=True)
             return Response(serialize.data)
+
         serialize = self.get_serializer(query, many=True)
         return self.get_paginated_response(serialize.data)
 
     @action(detail=False, methods=['get'])
     def get_graph(self, request):
         query = self.get_queryset()
-        filter = query.values(
+        data_filter = query.values(
             'name',
             'test1',
             'test2',
@@ -140,24 +155,11 @@ class CrossValidationView(viewsets.GenericViewSet):
             'test9',
             'test10',
         )
-        df = pd.DataFrame(filter)
-        result = create_cross_val_dict(df)
-        return Response(result,status=status.HTTP_200_OK)
+        df = pd.DataFrame(data_filter)
+        try:
+            result = create_cross_val_dict(df)
+        except ValueError as e:
+            raise ParseError(str(e))
 
-# not fixed
-@api_view(['POST'])
-def cross_validation_model(request):
-    dataset = pd.read_excel(request.FILES.get('file'))
-    target = dataset['name']
-    data = np.array(dataset.drop('name', axis='columns'))
-
-    result = []
-    query = MasterModel.objects.all()
-    for model in query:
-        with model.path.open('rb') as f:
-            file = f
-            score = cross_val_score(file, data, target, cv=KFold(n_splits=10), scoring='accuracy')
-            result.append({'name': model.name, 'score': score})
-
-    return Response(result, status=status.HTTP_200_OK)
+        return Response(result, status=status.HTTP_200_OK)
 
