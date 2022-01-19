@@ -27,7 +27,7 @@ column_trans = ColumnTransformer(remainder="passthrough",
 
 knn = KNeighborsClassifier(n_neighbors=5, weights='distance', algorithm='kd_tree')
 dt = DecisionTreeClassifier(criterion='entropy', random_state=24, max_depth=10, max_leaf_nodes=20)
-gb = GradientBoostingClassifier(criterion='friedman_mse', learning_rate=1, min_samples_leaf=8, max_leaf_nodes=20,
+gb = GradientBoostingClassifier(criterion='friedman_mse', learning_rate=1, min_samples_leaf=8, max_leaf_nodes=15,
                                 random_state=0)
 
 knn_pipeline = Pipeline(steps=[('preprocessing', column_trans),
