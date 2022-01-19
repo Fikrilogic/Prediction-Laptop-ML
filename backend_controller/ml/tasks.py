@@ -17,7 +17,6 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-
 # Model Pipeline
 column_trans = ColumnTransformer(remainder="passthrough",
                                  transformers=[('encode', OrdinalEncoder(handle_unknown="use_encoded_value",
@@ -28,7 +27,7 @@ column_trans = ColumnTransformer(remainder="passthrough",
 
 knn = KNeighborsClassifier(n_neighbors=5, weights='distance', algorithm='kd_tree')
 dt = DecisionTreeClassifier(criterion='entropy', random_state=24, max_depth=10, max_leaf_nodes=20)
-gb = GradientBoostingClassifier(criterion='friedman_mse', learning_rate=1, min_samples_leaf=8, max_leaf_nodes=15,
+gb = GradientBoostingClassifier(criterion='friedman_mse', learning_rate=1, min_samples_leaf=8, max_leaf_nodes=20,
                                 random_state=0)
 
 knn_pipeline = Pipeline(steps=[('preprocessing', column_trans),
@@ -76,11 +75,15 @@ def save_result(x_test, y_test, model, file):
             f1_score=f1_score(y_test, predict, average='weighted'),
         )
 
-def cross_validation_testing(x,y, model, file):
-    list_score = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='accuracy')
-    kfold_f1 = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='f1_weighted')
-    kfold_recall = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='recall_weighted')
-    kfold_precision = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='precision_weighted')
+
+def cross_validation_testing(x, y, model, file):
+    try:
+        list_score = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='accuracy')
+        kfold_f1 = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='f1_weighted')
+        kfold_recall = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='recall_weighted')
+        kfold_precision = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='precision_weighted')
+    except ValueError as e:
+        print(str(e))
 
     kfold_result = [
         {'name': model[0].name, 'precision': kfold_precision},
@@ -105,16 +108,16 @@ def cross_validation_testing(x,y, model, file):
     except MasterCrossvalResult.DoesNotExist:
         MasterCrossvalResult.objects.create(
             model_id=model[0].id,
-            test1 = list_score[0],
-            test2 = list_score[1],
-            test3 = list_score[2],
-            test4 = list_score[3],
-            test5 = list_score[4],
-            test6 = list_score[5],
-            test7 = list_score[6],
-            test8 = list_score[7],
-            test9 = list_score[8],
-            test10 = list_score[9],
+            test1=list_score[0],
+            test2=list_score[1],
+            test3=list_score[2],
+            test4=list_score[3],
+            test5=list_score[4],
+            test6=list_score[5],
+            test7=list_score[6],
+            test8=list_score[7],
+            test9=list_score[8],
+            test10=list_score[9],
             mean=list_score.mean(),
             name=model[0].name
         )
@@ -123,7 +126,7 @@ def cross_validation_testing(x,y, model, file):
 # Task for Training Model
 
 # K-Nearest Neighbors
-@periodic_task(crontab(minute='*/15'))
+@periodic_task(crontab(minute='*/1'))
 def retrain_knn_model():
     df = get_dataset()
 
@@ -144,7 +147,7 @@ def retrain_knn_model():
 
 
 # DECISION TREE
-@periodic_task(crontab(minute='*/15'))
+@periodic_task(crontab(minute='*/1'))
 def retrain_dt_model():
     df = get_dataset()
     target = df['name']
@@ -164,7 +167,7 @@ def retrain_dt_model():
 
 
 # gdbt
-@periodic_task(crontab(minute='*/15'), retries=2, delay=5)
+@periodic_task(crontab(minute='*/1'), retries=2, delay=5)
 def retrain_gbdt_model():
     df = get_dataset()
     target = df['name']
@@ -184,7 +187,7 @@ def retrain_gbdt_model():
 
 
 # Naive Bayes
-@periodic_task(crontab(minute='*/15'))
+@periodic_task(crontab(minute='*/1'))
 def retrain_nb_model():
     df = get_dataset()
     target = df['name']

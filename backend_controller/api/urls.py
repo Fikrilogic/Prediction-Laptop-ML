@@ -22,6 +22,7 @@ from rest_framework.routers import DefaultRouter
 
 app_name = "api"
 
+
 router = DefaultRouter()
 router.register(r'member', UserCustomerView, basename='member')
 router.register(r'cpu', CpuView, basename='cpu')

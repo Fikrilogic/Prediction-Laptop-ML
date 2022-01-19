@@ -373,7 +373,7 @@ class DatasetView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
-    def add_dataset_with_file_view(request):
+    def upload(self, request):
         token = request.COOKIES.get('jwt')
         file = pd.read_excel(request.FILES.get('file'))
 
