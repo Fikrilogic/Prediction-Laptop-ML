@@ -19,7 +19,7 @@ export const DATA_STATE = {
   resolution: [],
   company: [],
   laptop_type: [],
-  kebutuahn: [],
+  kebutuhan: [],
   method: "",
   status: "",
 };
