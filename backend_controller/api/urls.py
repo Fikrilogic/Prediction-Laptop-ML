@@ -6,7 +6,6 @@ from .views import (
     LogoutUser,
     UserCustomerView,
     LoginAdmin,
-    UserView,
     CpuView,
     GpuView,
     CompanyView,
@@ -41,7 +40,6 @@ urlpatterns = [
     path('logout', LogoutUser.as_view(), name='all-user-logout'),
     path('staff/register', RegisterAdminView.as_view(), name='staff-register'),
     path('staff/login', LoginAdmin.as_view(), name='staff-login'),
-    path('profile', UserView.as_view(), name='user-profile'),
     path('ml/', include('ml.urls'))
 ]
 
