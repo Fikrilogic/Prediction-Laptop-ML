@@ -6,7 +6,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import action, permission_classes
+from rest_framework.decorators import action
 from rest_framework.exceptions import (
     AuthenticationFailed,
     PermissionDenied,
@@ -155,28 +155,6 @@ class LogoutUser(generics.GenericAPIView):
         return res
 
 
-class UserView(generics.GenericAPIView):
-    serializer_class = ProfileSerializers
-    queryset = Profile.objects.all()
-    permission_classes = [isMemberUser]
-
-    def get(self, request):
-        token = request.COOKIES.get('jwt')
-
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms='HS256')
-
-        user = User.objects.get(pk=payload['id'])
-
-        if user is None:
-            return NotFound()
-        query = self.get_queryset()
-        data = get_object_or_404(query, pk=user.id)
-        serialize = self.get_serializer(data)
-        print(serialize)
-        return Response(serialize.data)
-
-
 # User Customer Data view
 class UserCustomerView(viewsets.GenericViewSet):
     serializer_class = ProfileSerializers
@@ -223,6 +201,23 @@ class UserCustomerView(viewsets.GenericViewSet):
         user.delete()
         profile.delete()
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def profile(self, request):
+        token = request.COOKIES.get('jwt')
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms='HS256')
+
+        user = User.objects.get(pk=payload['id'])
+
+        if user is None:
+            return NotFound()
+        query = self.get_queryset()
+        data = get_object_or_404(query, pk=user.id)
+        serialize = self.get_serializer(data)
+        print(serialize)
+        return Response(serialize.data)
 
 
 class CpuView(viewsets.ModelViewSet):
