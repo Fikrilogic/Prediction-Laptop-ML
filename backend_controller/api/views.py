@@ -156,7 +156,8 @@ class LogoutUser(generics.GenericAPIView):
 
 
 class UserView(generics.GenericAPIView):
-    serializer_class = UserSerializers
+    serializer_class = ProfileSerializers
+    queryset = Profile.objects.all()
     permission_classes = [isMemberUser]
 
     def get(self, request):
@@ -169,7 +170,10 @@ class UserView(generics.GenericAPIView):
 
         if user is None:
             return NotFound()
-        serialize = self.get_serializer(user).get_profile()
+        query = self.get_queryset()
+        data = get_object_or_404(query, pk=user.id)
+        serialize = self.get_serializer(data)
+        print(serialize)
         return Response(serialize.data)
 
 
@@ -351,7 +355,7 @@ class DatasetView(viewsets.ModelViewSet):
             company = MasterCompany.objects.get(name=data['company'])
             screen = MasterScreen.objects.get(type=data['screen'])
             sc_res = MasterScreenResolution.objects.get(resolution=data['sc_res'])
-            type = MasterTypeLaptop.objects.get(name=data['type']),
+            type = MasterTypeLaptop.objects.get(name=data['type'])
             kebutuhan = MasterKebutuhan.objects.get(name=data['kebutuhan'])
             dataset = MasterDataset.objects.create(
                 created_by_id=user.id,
@@ -363,7 +367,11 @@ class DatasetView(viewsets.ModelViewSet):
                 screen_id=screen.id,
                 type_id=type.id,
                 kebutuhan_id=kebutuhan.id,
-                **data
+                ram=data['ram'],
+                budget=data["budget"],
+                price=data["price"],
+                weight=data["weight"],
+                name=data['name']
             )
 
         except ValueError as e:
