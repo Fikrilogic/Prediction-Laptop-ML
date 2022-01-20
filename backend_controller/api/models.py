@@ -4,12 +4,8 @@ from django.contrib.auth import get_user_model
 from .utils import PathAndRename
 
 import uuid
-import os
-
 
 # Create your models here.
-
-
 
 
 path_and_rename = PathAndRename('images/product')
@@ -172,4 +168,3 @@ class MasterDataset(models.Model):
 
     def __str__(self):
         return self.name
-

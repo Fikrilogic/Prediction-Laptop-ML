@@ -1,5 +1,5 @@
 from django.utils.deconstruct import deconstructible
-
+import os
 @deconstructible
 class PathAndRename(object):
 
