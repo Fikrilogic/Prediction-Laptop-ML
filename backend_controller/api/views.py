@@ -214,7 +214,7 @@ class UserCustomerView(viewsets.GenericViewSet):
             serialize.save()
             return Response({"user": serialize.data}, status=status.HTTP_200_OK)
 
-    def destroy(self, pk):
+    def destroy(self, request, pk):
         query = self.get_queryset()
         profile = get_object_or_404(query, pk=pk)
         user = User.objects.get(id=profile.user_id)
