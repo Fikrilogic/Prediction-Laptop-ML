@@ -1,9 +1,8 @@
 import {
   POST_DATASET,
-  UPLOAD_EXCEL,
   GET_DATASET,
-  DELETE_ALL_DATASET,
   GET_DATASET_PAGE,
+  DELETE_DATASET_ID,
 } from "./action";
 import { FAILED_REQUEST } from "../User/action";
 
@@ -34,19 +33,13 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
         results: action.payload,
         status: "SUCCESS",
       };
-    case UPLOAD_EXCEL:
-      return {
-        ...state,
-        method: "POST upload file",
-        status: "SUCCESS",
-      };
     case POST_DATASET:
       return {
         ...state,
         method: "POST add Data",
         status: "SUCCESS",
       };
-    case DELETE_ALL_DATASET:
+    case DELETE_DATASET_ID:
       return {
         ...state,
         method: "DELETE",

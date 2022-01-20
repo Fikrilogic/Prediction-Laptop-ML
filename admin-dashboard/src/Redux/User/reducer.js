@@ -22,7 +22,7 @@ export const UserReducer = (state = USER_STATE, action) => {
         ...state,
         loading: false,
         method: "GET",
-        users: action.payload.user,
+        users: action.payload,
         status: "SUCCESS",
       };
     case POST_USER:

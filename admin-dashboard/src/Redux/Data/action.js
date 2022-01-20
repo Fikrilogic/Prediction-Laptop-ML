@@ -46,6 +46,6 @@ export const getCompanyData = (Dataset) => ({
 });
 
 export const getKebutuhanData = (Dataset) => ({
-  type: GET_COMPANY_DATA,
+  type: GET_KEBUTUHAN_DATA,
   payload: Dataset,
 });
