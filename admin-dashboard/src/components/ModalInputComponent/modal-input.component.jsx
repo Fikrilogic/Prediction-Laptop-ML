@@ -1,8 +1,37 @@
-import { Modal, Box, Typography, TextField, Button } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+
 import React from "react";
 
-const ModalInput = ({ open, setOpen, saveHandler, type }) => {
+const ModalInput = ({ open, setOpen, saveHandler, type, setData }) => {
+  const selectModal = () => {
+    switch (type) {
+      case "cpu":
+        return "Input Nama CPU";
+      case "gpu":
+        return "Input Nama GPU";
+      case "storage":
+        return "Input Tipe Storage";
+      case "company":
+        return "Input Nama Produsen Laptop";
+      case "type":
+        return "Input Tipe Laptop";
+      case "screen":
+        return "Input Jenis Layar";
+      case "resolution":
+        return "Input Resolusi Layar";
+      case "kebutuhan":
+        return "Input Jenis Kebutuhan";
+      default:
+        return;
+    }
+  };
+
+  const typeModal = selectModal();
+
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <Box
@@ -21,83 +50,14 @@ const ModalInput = ({ open, setOpen, saveHandler, type }) => {
         </Typography>
 
         <form noValidate autoComplete="off">
-          {type === "cpu" ? (
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Nama CPU"
-              variant="outlined"
-              fullWidth
-              required
-            />
-          ) : (
-            <></>
-          )}
-          {type === "gpu" ? (
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Nama GPU"
-              variant="outlined"
-              fullWidth
-              required
-            />
-          ) : (
-            <></>
-          )}
-          {type === "storage" ? (
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Tipe Storage"
-              variant="outlined"
-              fullWidth
-              required
-            />
-          ) : (
-            <></>
-          )}
-          {type === "company" ? (
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Nama Perusahaan"
-              variant="outlined"
-              fullWidth
-              required
-            />
-          ) : (
-            <></>
-          )}
-          {type === "type" ? (
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Nama Tipe Laptop"
-              variant="outlined"
-              fullWidth
-              required
-            />
-          ) : (
-            <></>
-          )}
-          {type === "screen" ? (
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Tipe Layar"
-              variant="outlined"
-              fullWidth
-              required
-            />
-          ) : (
-            <></>
-          )}
-          {type === "resolution" ? (
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Resolusi Layar"
-              variant="outlined"
-              fullWidth
-              required
-            />
-          ) : (
-            <></>
-          )}
+          <TextField
+            sx={{ margin: "12px 0", display: "block" }}
+            label={typeModal}
+            variant="outlined"
+            onChange={(e) => setData(e.target.value)}
+            fullWidth
+            required
+          />
           <Button variant="contained" onClick={saveHandler}>
             Save
           </Button>

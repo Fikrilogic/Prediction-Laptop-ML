@@ -2,10 +2,7 @@
 export const GET_DATASET = "GET_DATASET";
 export const POST_DATASET = "POST_DATASET";
 export const GET_DATASET_PAGE = "GET_DATASET_PAGE";
-export const DELETE_ALL_DATASET = "DELETE_ALL_DATA";
-export const UPLOAD_EXCEL = "UPLOAD_DATASET_EXCEL";
-export const GET_ANALYTIC_RESULTS = "GET_ANALYTIC_RESULTS";
-export const GET_ANALYTIC_GRAPH = "GET_ANALYTIC_GRAPH";
+export const DELETE_DATASET_ID = "DELETE_DATASET_ID";
 
 // action function for fetch action
 export const getDataset = (Dataset) => ({
@@ -18,16 +15,6 @@ export const getDatasetPage = (Dataset) => ({
   payload: Dataset,
 });
 
-export const uploadFile = (Dataset) => ({
-  type: UPLOAD_EXCEL,
-});
-
-export const getAnalyticResults = (Dataset) => ({
-  type: GET_ANALYTIC_RESULTS,
-  payload: Dataset,
-});
-
-export const getAnalyticGraph = (Dataset) => ({
-  type: GET_ANALYTIC_GRAPH,
-  payload: Dataset,
+export const deleteDatasetById = () => ({
+  type: DELETE_DATASET_ID,
 });

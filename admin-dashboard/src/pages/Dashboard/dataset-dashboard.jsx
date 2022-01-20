@@ -1,35 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { makeStyles } from "@mui/styles";
-import {
-  Container,
-  Box,
-  Card,
-  Button,
-  Typography,
-  CardContent,
-  Modal,
-  TextField,
-  Divider,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
+
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import Modal from "@mui/material/Modal";
+import Divider from "@mui/material/Divider";
+import Stack from "@mui/material/Stack";
+import Input from "@mui/material/Input";
 
 import DatasetTable from "../../components/TableComponent/dataset-table.component";
-import { FetchDataset } from "../../Redux/Dataset/fetch-action.js";
-import { useNavigate } from "react-router-dom";
-import {
-  FetchCompany,
-  FetchCpu,
-  FetchGpu,
-  FetchLaptopType,
-  FetchScreenResolution,
-  FetchScreenType,
-  FetchStorage,
-} from "../../Redux/Data/fetch-action";
+import ModalInputDataset from "../../components/ModalInputComponent/modal-input-dataset.component";
+
+import axios from "axios";
+import { URL } from "../../Context/action";
+import { FailRequest } from "../../Redux/User/action";
+import { FetchDataset } from "../../Redux/Dataset/fetch-action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -47,236 +38,117 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const DatasetDashboard = ({
-  cpuList,
-  gpuList,
-  storageList,
-  screenList,
-  resolutionList,
-  typeList,
-  companyList,
-  dispatch,
-}) => {
+const DatasetDashboard = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(FetchDataset());
+  }, [dispatch]);
+
   const [data, setData] = useState({
-    budget: 0,
-    ram: "",
-    weight: "",
-    price: 0,
-    name: "",
     cpu: "",
     gpu: "",
     memory: "",
     company: "",
     screen: "",
-    resolution: "",
+    sc_res: "",
     type: "",
+    kebutuhan: "",
+    budget: 0,
+    weight: "",
+    ram: "",
+    price: 0,
+    name: "",
   });
-
-  useEffect(() => {
-    dispatch(FetchCpu());
-    dispatch(FetchGpu());
-    dispatch(FetchScreenResolution());
-    dispatch(FetchScreenType());
-    dispatch(FetchCompany());
-    dispatch(FetchStorage());
-    dispatch(FetchLaptopType());
-  }, [dispatch]);
 
   const classes = useStyle();
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+  const [open2, setOpen2] = useState(false);
+  const formData = new FormData();
+  const fileInput = useRef(null);
+  const [file, setFile] = useState(null);
+
   const saveHandler = () => {
     // window.location.reload();
   };
 
+  const handleChange = (e) => {
+    setFile(null);
+    const fileUploaded = e.target.files[0];
+    setFile(fileUploaded);
+  };
+
+  const uploadExcel = async () => {
+    formData.append("file", file);
+    try {
+      const req = await axios.post(
+        URL + "dataset/upload/",
+        formData,
+        { withCredentials: true },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (req.status === 201) console.log("upload berhasil");
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
+  };
+
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
-      <Modal open={open} onClose={() => setOpen(false)}>
+      <ModalInputDataset
+        open={open}
+        setOpen={setOpen}
+        saveHandler={saveHandler}
+        setData={setData}
+        data={data}
+      />
+      <Modal open={open2} onClose={() => setOpen2(false)}>
         <Box
           sx={{
-            width: "600px",
+            width: "500px",
             height: "auto",
             backgroundColor: "#Fff",
             marginX: "auto",
             marginTop: "10%",
-            padding: "20px",
+            padding: "80px 20px",
             borderRadius: 8,
           }}
         >
-          <Typography variant="h4" sx={{ marginBottom: "30px" }}>
-            Input New Data
-          </Typography>
-
-          <form noValidate autoComplete="off">
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Name"
-              variant="outlined"
-              onChange={(e) => setData({ ...data, name: e.target.value })}
-              fullWidth
-            />
-            <FormControl fullWidth>
-              <InputLabel id="cpu-select">CPU</InputLabel>
-              <Select
-                labelId="cpu-select"
-                value={data.cpu}
-                label="CPU"
-                onChange={(e) => setData({ ...data, cpu: e.target.value })}
-              >
-                {cpuList.map((data) => (
-                  <MenuItem key={data.id} value={data.name}>
-                    {data.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id="gpu-select">GPU</InputLabel>
-              <Select
-                labelId="gpu-select"
-                value={data.gpu}
-                label="GPU"
-                onChange={(e) => setData({ ...data, gpu: e.target.value })}
-              >
-                {gpuList.map((data) => (
-                  <MenuItem key={data.id} value={data.name}>
-                    {data.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id="ram-select">RAM</InputLabel>
-              <Select
-                labelId="ram-select"
-                value={data.ram}
-                label="RAM"
-                onChange={(e) => setData({ ...data, ram: e.target.value })}
-              >
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={8}>8</MenuItem>
-                <MenuItem value={16}>16</MenuItem>
-                <MenuItem value={32}>32</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id="storage-select">Memory Type</InputLabel>
-              <Select
-                labelId="storage-select"
-                value={data.storage}
-                label="Memory Type"
-                onChange={(e) => setData({ ...data, storage: e.target.value })}
-              >
-                {storageList.map((data) => (
-                  <MenuItem key={data.id} value={data.type}>
-                    {data.type}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id="company-select">Company</InputLabel>
-              <Select
-                labelId="company-select"
-                value={data.company}
-                label="Company"
-                onChange={(e) => setData({ ...data, company: e.target.value })}
-              >
-                {companyList.map((data) => (
-                  <MenuItem key={data.id} value={data.name}>
-                    {data.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id="screen-select">Screen Type</InputLabel>
-              <Select
-                labelId="screen-select"
-                value={data.screen}
-                label="Screen Type"
-                onChange={(e) => setData({ ...data, screen: e.target.value })}
-              >
-                {screenList.map((data) => (
-                  <MenuItem key={data.id} value={data.type}>
-                    {data.type}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id="resolution-select">Screen Resolution</InputLabel>
-              <Select
-                labelId="resolution-select"
-                value={data.resolution}
-                label="Screen Resolution"
-                onChange={(e) =>
-                  setData({ ...data, resolution: e.target.value })
-                }
-              >
-                {resolutionList.map((data) => (
-                  <MenuItem key={data.id} value={data.resolution}>
-                    {data.resolution}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              className={classes.inputField}
-              label="Weight"
-              variant="outlined"
-              onChange={(e) =>
-                setData({ ...data, weight: parseInt(e.target.value) })
-              }
-              fullWidth
-            />
-            <FormControl fullWidth>
-              <InputLabel id="type-select">Laptop Type</InputLabel>
-              <Select
-                labelId="type-select"
-                value={data.type}
-                label="Laptop Type"
-                onChange={(e) => setData({ ...data, type: e.target.value })}
-              >
-                {resolutionList.map((data) => (
-                  <MenuItem key={data.id} value={data.name}>
-                    {data.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              label="Budget"
-              variant="outlined"
-              onChange={(e) =>
-                setData({ ...data, budget: parseInt(e.target.value) })
-              }
-              fullWidth
-            />
-            <TextField
-              sx={{ margin: "12px 0", display: "block" }}
-              className={classes.inputField}
-              label="Price"
-              variant="outlined"
-              onChange={(e) =>
-                setData({ ...data, price: parseInt(e.target.value) })
-              }
-              fullWidth
-            />
-            <Button variant="contained" onClick={saveHandler}>
-              Save
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setOpen(false)}
-              sx={{ ml: 2 }}
-            >
-              Cancel
-            </Button>
+          <form>
+            <label htmlFor="contained-button-file">
+              <Container>
+                <Stack spacing={5}>
+                  <Input
+                    sx={{ display: "none" }}
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    id="contained-button-file"
+                    type="file"
+                    onChange={handleChange}
+                    ref={fileInput}
+                  />
+                  <Button variant="contained" component="span">
+                    Select Dataset File (.csv)
+                  </Button>
+                  <Box display={"flex"} justifyContent={"center"}>
+                    <Button variant="contained" onClick={uploadExcel}>
+                      Save
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setOpen2(false)}
+                      sx={{ ml: 2 }}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Stack>
+              </Container>
+            </label>
           </form>
         </Box>
       </Modal>
@@ -306,7 +178,7 @@ const DatasetDashboard = ({
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Dataset Table</Typography>
+              <Typography variant="h4">Tabel Dataset</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -324,9 +196,9 @@ const DatasetDashboard = ({
                 className={classes.btnDataset}
                 variant="outlined"
                 disableElevation
-                onClick={() => navigate("/analytic/result")}
+                onClick={() => setOpen2(true)}
               >
-                Train Model
+                Upload Dataset
               </Button>
             </Box>
           </Box>
@@ -340,15 +212,4 @@ const DatasetDashboard = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  cpuList: state.data.cpu,
-  gpuList: state.data.gpu,
-  storageList: state.data.storage,
-  screenList: state.data.screen,
-  resolutionList: state.data.resolution,
-  typeList: state.data.laptop_type,
-  companyList: state.data.company,
-});
-export default connect(mapStateToProps)(DatasetDashboard);
-
-// export default DatasetDashboard;
+export default DatasetDashboard;

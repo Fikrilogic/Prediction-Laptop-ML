@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Skeleton,
-  Button,
-  TableFooter,
-  TablePagination,
-  IconButton,
-} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import Skeleton from "@mui/material/Skeleton";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import IconButton from "@mui/material/IconButton";
+
 import { connect, useDispatch, useSelector } from "react-redux";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import LastPageIcon from "@mui/icons-material/LastPage";
+
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import { Box } from "@mui/system";
+
 import { useTheme } from "@mui/styles";
+
 import {
+  deleteDataset,
   FetchDataset,
   FetchDatasetPage,
 } from "../../Redux/Dataset/fetch-action";
+
+import ModalDelete from "../ModalInputComponent/modal-delete.component";
 
 function TablePaginationActions(props) {
   const dispatch = useDispatch();
@@ -77,8 +80,9 @@ function TablePaginationActions(props) {
 const DatasetTable = ({ dispatch, data, results }) => {
   useEffect(() => {
     dispatch(FetchDataset());
-    console.log(results);
   }, [dispatch]);
+  const [id, setId] = useState("");
+  const [open, setOpen] = useState(false);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
@@ -87,6 +91,20 @@ const DatasetTable = ({ dispatch, data, results }) => {
     console.log(results.next);
     console.log(results.previous);
     setPage(newPage);
+  };
+
+  const selectData = (e) => {
+    e.preventDefault();
+    const id = e.currentTarget.parentNode.getAttribute("data-key");
+    setId(id);
+    setOpen(true);
+  };
+
+  const deleteData = (e) => {
+    e.preventDefault();
+    dispatch(deleteDataset(id));
+    setOpen(false);
+    window.location.reload();
   };
 
   const formatMoney = (number) => {
@@ -98,105 +116,157 @@ const DatasetTable = ({ dispatch, data, results }) => {
   };
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {[
-            "Name",
-            "CPU",
-            "GPU",
-            "RAM",
-            "Memory Type",
-            "Company",
-            "Screen Type",
-            "Resolution",
-            "Weight",
-            "Type",
-            "Budget",
-            "Prediction",
-          ].map((label, i) => (
-            <TableCell key={i} size="small">
-              {label}
-            </TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {data === undefined || data.length === 0 ? (
+    <>
+      {/* <Modal open={open} onClose={() => setOpen(false)}>
+        <Box
+          sx={{
+            width: "300px",
+            height: "200px",
+            backgroundColor: "#Fff",
+            marginX: "auto",
+            marginTop: "10%",
+            padding: "10px 15px",
+            borderRadius: "20px",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h4" sx={{ marginBottom: "30px" }}>
+            Delete Data
+          </Typography>
+          <Typography variant="body1" mb={3}>
+            Sure wanna delete this data?
+          </Typography>
+          <ButtonGroup>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button color="error" variant="contained" onClick={deleteData}>
+              Delete
+            </Button>
+          </ButtonGroup>
+        </Box>
+      </Modal> */}
+
+      <ModalDelete open={open} deleteHandler={deleteData} setOpen={setOpen} />
+
+      <Table>
+        <TableHead>
           <TableRow>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
-            <TableCell>
-              <Skeleton variant="rectangular" />
-            </TableCell>
+            {[
+              "Nama",
+              "CPU",
+              "GPU",
+              "RAM",
+              "Tipe Storage",
+              "Perusahaan",
+              "Tipe Layar",
+              "Resolusi",
+              "Berat",
+              "Tipe Laptop",
+              "Kebutuhan",
+              "Budget",
+              "Harga",
+              "Aksi",
+            ].map((label, i) => (
+              <TableCell key={i} size="small">
+                {label}
+              </TableCell>
+            ))}
           </TableRow>
-        ) : (
-          data.map((data) => (
+        </TableHead>
+        <TableBody>
+          {data === undefined || data.length === 0 ? (
             <TableRow>
-              <TableCell size="small">{data.name}</TableCell>
-              <TableCell>{data.cpu.name}</TableCell>
-              <TableCell>{data.gpu.name}</TableCell>
-              <TableCell size="small">{data.ram}</TableCell>
-              <TableCell>{data.memory.type}</TableCell>
-              <TableCell>{data.company.name}</TableCell>
-              <TableCell size="small">{data.screen.type}</TableCell>
-              <TableCell>{data.resolution.resolution}</TableCell>
-              <TableCell>{data.weight}</TableCell>
-              <TableCell>{data.type.name}</TableCell>
-              <TableCell size="small">{formatMoney(data.budget)}</TableCell>
               <TableCell>
-                <Button variant="outlined" color="error">
-                  Delete
-                </Button>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
+              </TableCell>
+              <TableCell>
+                <Skeleton variant="rectangular" />
               </TableCell>
             </TableRow>
-          ))
-        )}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TablePagination
-            count={results.count}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            rowsPerPageOptions={[20]}
-            onPageChange={handleChangePage}
-            ActionsComponent={TablePaginationActions}
-          />
-        </TableRow>
-      </TableFooter>
-    </Table>
+          ) : (
+            data.map((data) => (
+              <TableRow>
+                <TableCell size="small">{data.name}</TableCell>
+                <TableCell>{data.cpu.name}</TableCell>
+                <TableCell>{data.gpu.name}</TableCell>
+                <TableCell size="small">{data.ram}</TableCell>
+                <TableCell>{data.memory.type}</TableCell>
+                <TableCell>{data.company.name}</TableCell>
+                <TableCell size="small">{data.screen.type}</TableCell>
+                <TableCell>{data.resolution.resolution}</TableCell>
+                <TableCell>{data.weight}</TableCell>
+                <TableCell>{data.type.name}</TableCell>
+                <TableCell>{data.kebutuhan.name}</TableCell>
+                <TableCell size="small">{formatMoney(data.budget)}</TableCell>
+                <TableCell size="small">{formatMoney(data.price)}</TableCell>
+                <TableCell data-key={data.id}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={(e) => selectData(e)}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              count={results.count}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              rowsPerPageOptions={[20]}
+              onPageChange={handleChangePage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </>
   );
 };
 

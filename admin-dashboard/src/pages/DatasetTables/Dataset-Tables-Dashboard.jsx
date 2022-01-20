@@ -1,7 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 
 import { makeStyles } from "@mui/styles";
-import { Container, Box, Typography, Grid } from "@mui/material";
+
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+
+import {
+  FetchCompany,
+  FetchCpu,
+  FetchGpu,
+  FetchKebutuhan,
+  FetchLaptopType,
+  FetchScreenResolution,
+  FetchScreenType,
+  FetchStorage,
+} from "../../Redux/Data/fetch-action";
 
 import CpuTable from "../../components/TableComponent/cpu-table.component";
 import GpuTable from "../../components/TableComponent/gpu-table.component.jsx";
@@ -10,7 +25,9 @@ import ScreenTable from "../../components/TableComponent/screen-table.component.
 import ResolutionTable from "../../components/TableComponent/screen-resolution-table.component.jsx";
 import LaptopTypeTable from "../../components/TableComponent/laptop-type-table.component.jsx";
 import CompanyTable from "../../components/TableComponent/company-table.component.jsx";
-import ModalInput from "../../components/ModalInputComponent/modal-input.component";
+import KebutuhanTable from "../../components/TableComponent/kebutuhan-table.component";
+
+import { useDispatch } from "react-redux";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -31,6 +48,18 @@ const useStyle = makeStyles((theme) => ({
 
 const DatasetTablesDashboard = () => {
   const classes = useStyle();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(FetchCpu());
+    dispatch(FetchGpu());
+    dispatch(FetchScreenResolution());
+    dispatch(FetchScreenType());
+    dispatch(FetchCompany());
+    dispatch(FetchStorage());
+    dispatch(FetchLaptopType());
+    dispatch(FetchKebutuhan());
+  }, [dispatch]);
 
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
@@ -78,8 +107,13 @@ const DatasetTablesDashboard = () => {
             <ScreenTable />
           </Grid>
 
-          <Grid item xs={12} id="resolution">
+          <Grid item xs={6} id="resolution">
             <ResolutionTable />
+          </Grid>
+          <Grid item xs={6}></Grid>
+          <Grid item xs={6}></Grid>
+          <Grid item xs={6} id="kebutuhan">
+            <KebutuhanTable />
           </Grid>
         </Grid>
       </Box>

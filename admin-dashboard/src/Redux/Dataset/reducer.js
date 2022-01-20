@@ -1,11 +1,8 @@
 import {
   POST_DATASET,
-  UPLOAD_EXCEL,
   GET_DATASET,
-  DELETE_ALL_DATASET,
-  GET_ANALYTIC_RESULTS,
   GET_DATASET_PAGE,
-  GET_ANALYTIC_GRAPH,
+  DELETE_DATASET_ID,
 } from "./action";
 import { FAILED_REQUEST } from "../User/action";
 
@@ -13,8 +10,6 @@ import { FAILED_REQUEST } from "../User/action";
 export const DATASET_STATE = {
   dataset: [],
   results: [],
-  analytic: [],
-  graph: [],
   method: "",
   status: "",
 };
@@ -38,19 +33,13 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
         results: action.payload,
         status: "SUCCESS",
       };
-    case UPLOAD_EXCEL:
-      return {
-        ...state,
-        method: "POST upload file",
-        status: "SUCCESS",
-      };
     case POST_DATASET:
       return {
         ...state,
         method: "POST add Data",
         status: "SUCCESS",
       };
-    case DELETE_ALL_DATASET:
+    case DELETE_DATASET_ID:
       return {
         ...state,
         method: "DELETE",
@@ -61,20 +50,6 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
         ...state,
         method: "ERROR",
         status: "FAILED",
-      };
-    case GET_ANALYTIC_RESULTS:
-      return {
-        ...state,
-        analytic: action.payload,
-        method: "GET ANALYTIC",
-        status: "SUCCESS",
-      };
-    case GET_ANALYTIC_GRAPH:
-      return {
-        ...state,
-        graph: action.payload,
-        method: "GET ANALYTIC",
-        status: "SUCCESS",
       };
     default:
       return state;

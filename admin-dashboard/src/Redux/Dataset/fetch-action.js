@@ -1,10 +1,4 @@
-import {
-  getAnalyticGraph,
-  getAnalyticResults,
-  getDataset,
-  getDatasetPage,
-  uploadFile,
-} from "./action";
+import { deleteDatasetById, getDataset, getDatasetPage } from "./action";
 import axios from "axios";
 import { URL } from "../../Context/action";
 import { FailRequest } from "../User/action";
@@ -33,51 +27,14 @@ export const FetchDatasetPage = ({ path }) => {
   };
 };
 
-export const uploadDataset = ({ name, path }) => {
+export const deleteDataset = (id) => {
   return async (dispatch) => {
     try {
-      const req = await axios.get(
-        `${URL}dataset/`,
-        { name, path },
-        { credentials: true }
-      );
-      dispatch(uploadFile());
+      await axios.delete(URL + `dataset/${id}/`, { withCredentials: true });
+      dispatch(deleteDatasetById());
     } catch (e) {
       dispatch(FailRequest());
     }
   };
 };
-
-export const FetchAnalyticResults = () => {
-  return async (dispatch) => {
-    try {
-      // const req = await axios.get(URL + "ml/train-result/", {
-      //   withCredentials: true,
-      // });
-      const req = await axios.get(URL + "ml/train-result/", {
-        withCredentials: true,
-      });
-      dispatch(getAnalyticResults(req.data));
-    } catch (e) {
-      dispatch(FailRequest());
-    }
-  };
-};
-
-export const FetchAnalyticGraph = () => {
-  return async (dispatch) => {
-    try {
-      // const req = await axios.get(URL + "ml/train-result/", {
-      //   withCredentials: true,
-      // });
-      const req = await axios.get(URL + "ml/train-result/result_graph/", {
-        withCredentials: true,
-      });
-      dispatch(getAnalyticGraph(req.data));
-    } catch (e) {
-      dispatch(FailRequest());
-    }
-  };
-};
-
 // End for function

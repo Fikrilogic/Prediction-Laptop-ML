@@ -21,7 +21,7 @@ export const fetchUser = () => {
 export const deleteUser = (id) => {
   return async (dispatch) => {
     try {
-      await axios.delete(URL + `member/${id}`, { withCredentials: true });
+      await axios.delete(URL + `member/${id}/`, { withCredentials: true });
       dispatch(DeleteUser());
     } catch (e) {
       dispatch(FailRequest());

@@ -1,25 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Skeleton,
-  Button,
-  CardContent,
-  Divider,
-  Box,
-  Typography,
-  Container,
-  Card,
-} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import Skeleton from "@mui/material/Skeleton";
+import Button from "@mui/material/Button";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Card from "@mui/material/Card";
+
 import { makeStyles } from "@mui/styles";
-import { useLocation } from "react-router-dom";
-import { connect } from "react-redux";
-import { FetchCompany } from "../../Redux/Data/fetch-action";
+
+import { useDispatch, useSelector } from "react-redux";
+
 import ModalInput from "../ModalInputComponent/modal-input.component";
+import ModalDelete from "../ModalInputComponent/modal-delete.component";
+
+import { FailRequest } from "../../Redux/User/action";
+
+import axios from "axios";
+
+import { URL } from "../../Context/action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -28,25 +34,62 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const CompanyTable = ({ data, dispatch }) => {
-  const location = useLocation().pathname;
+const CompanyTable = () => {
   const classes = useStyle();
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const company = useSelector((state) => state.data.company);
+  const dispatch = useDispatch();
+  const [data, setData] = useState("");
+  const [id, setId] = useState("");
 
-  useEffect(() => {
-    dispatch(FetchCompany());
-  }, [dispatch, location]);
+  const selectData = (e) => {
+    e.preventDefault();
+    const id = e.currentTarget.parentNode.getAttribute("data-key");
+    setId(id);
+    setOpen2(true);
+  };
 
-  const saveHandler = () => {
-    // window.location.reload();
+  const deleteData = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await axios.delete(URL + `company/${id}/`, {
+        withCredentials: true,
+      });
+      if (req.status === 204) console.log("data deleted");
+    } catch (e) {
+      dispatch(FailRequest());
+    }
+    setOpen2(false);
+    window.location.reload();
+  };
+
+  const saveHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await axios.post(
+        URL + `company/`,
+        { name: data },
+        {
+          withCredentials: true,
+        }
+      );
+      if (req.status === 201) console.log("company data added");
+    } catch (e) {
+      dispatch(FailRequest());
+    }
+    setOpen(false);
+    window.location.reload();
   };
 
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
+      <ModalDelete open={open2} setOpen={setOpen2} deleteHandler={deleteData} />
       <ModalInput
         open={open}
         setOpen={setOpen}
         type="company"
+        setData={setData}
         saveHandler={saveHandler}
       />
       <Box className={classes.mainDashboard}>
@@ -88,7 +131,7 @@ const CompanyTable = ({ data, dispatch }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.length === 0 ? (
+                {company.length === 0 ? (
                   <TableRow>
                     <TableCell>
                       <Skeleton variant="rectangular" />
@@ -101,13 +144,17 @@ const CompanyTable = ({ data, dispatch }) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((data, index) => (
+                  company.map((data, index) => (
                     <TableRow key={data.id}>
                       <TableCell size="small">{index + 1}</TableCell>
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.name}</TableCell>
-                      <TableCell>
-                        <Button variant="outlined" color="error">
+                      <TableCell data-key={data.id}>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={(e) => selectData(e)}
+                        >
                           Delete
                         </Button>
                       </TableCell>
@@ -123,10 +170,4 @@ const CompanyTable = ({ data, dispatch }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  loading: state.data.loading,
-  data: state.data.company,
-  status: state.data.status,
-});
-
-export default connect(mapStateToProps)(CompanyTable);
+export default CompanyTable;
