@@ -22,10 +22,8 @@ import ModalInput from "../ModalInputComponent/modal-input.component";
 import ModalDelete from "../ModalInputComponent/modal-delete.component";
 
 import axios from "axios";
-
-import { FailRequest } from "../../Redux/User/action";
-
 import { URL } from "../../Context/action";
+import { FailRequest } from "../../Redux/User/action";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -34,14 +32,13 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const CpuTable = () => {
+const KebutuhanTable = () => {
   const classes = useStyle();
-  const cpu = useSelector((state) => state.data.cpu);
-  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [id, setId] = useState("");
   const [data, setData] = useState("");
+  const dispatch = useDispatch();
 
   const selectData = (e) => {
     e.preventDefault();
@@ -53,7 +50,7 @@ const CpuTable = () => {
   const deleteData = async (e) => {
     e.preventDefault();
     try {
-      const req = await axios.delete(URL + `cpu/${id}/`, {
+      const req = await axios.delete(URL + `kebutuhan/${id}/`, {
         withCredentials: true,
       });
       if (req.status === 204) console.log("data deleted");
@@ -64,17 +61,19 @@ const CpuTable = () => {
     window.location.reload();
   };
 
+  const kebutuhan = useSelector((state) => state.data.kebutuhan);
+
   const saveHandler = async (e) => {
     e.preventDefault();
     try {
       const req = await axios.post(
-        URL + `cpu/`,
+        URL + `kebutuhan/`,
         { name: data },
         {
           withCredentials: true,
         }
       );
-      if (req.status === 201) console.log("cpu data added");
+      if (req.status === 201) console.log("kebutuhan data added");
     } catch (e) {
       dispatch(FailRequest());
     }
@@ -87,12 +86,12 @@ const CpuTable = () => {
       <ModalDelete open={open2} setOpen={setOpen2} deleteHandler={deleteData} />
       <ModalInput
         open={open}
-        setOpen={setOpen}
-        type="cpu"
         setData={setData}
+        setOpen={setOpen}
+        type="kebutuhan"
         saveHandler={saveHandler}
       />
-      <Box className={classes.mainDashboard} component="div">
+      <Box className={classes.mainDashboard}>
         <Card sx={{ mx: "auto", my: "20px" }} raised>
           <Box
             sx={{
@@ -103,7 +102,7 @@ const CpuTable = () => {
             }}
           >
             <Box sx={{}}>
-              <Typography variant="h4">Tabel Processor</Typography>
+              <Typography variant="h4">Tabel Kebutuhan</Typography>
             </Box>
 
             <Box component="div" sx={{}}>
@@ -123,7 +122,7 @@ const CpuTable = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode CPU", "Nama CPU", "Aksi"].map(
+                  {["No", "Kode Kebutuhan", "Nama Kebutuhan", "Aksi"].map(
                     (label, index) => (
                       <TableCell key={index}>{label}</TableCell>
                     )
@@ -131,11 +130,8 @@ const CpuTable = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {cpu.length === 0 ? (
+                {kebutuhan === undefined || kebutuhan.length === 0 ? (
                   <TableRow>
-                    <TableCell>
-                      <Skeleton variant="rectangular" />
-                    </TableCell>
                     <TableCell>
                       <Skeleton variant="rectangular" />
                     </TableCell>
@@ -147,7 +143,7 @@ const CpuTable = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  cpu.map((data, index) => (
+                  kebutuhan.map((data, index) => (
                     <TableRow key={data.id}>
                       <TableCell size="small">{index + 1}</TableCell>
                       <TableCell>{data.id}</TableCell>
@@ -173,4 +169,4 @@ const CpuTable = () => {
   );
 };
 
-export default CpuTable;
+export default KebutuhanTable;

@@ -1,13 +1,13 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
-  IconButton,
-  Box,
-  Avatar,
-} from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+
 import { makeStyles } from "@mui/styles";
+
 import React from "react";
 
 const useStyle = makeStyles(() => ({
