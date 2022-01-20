@@ -2,7 +2,11 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { makeStyles } from "@mui/styles";
-import { TextField, Typography, Box } from "@mui/material";
+
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+
 import { LoadingButton } from "@mui/lab";
 
 import { AuthContext } from "../../Context/context";

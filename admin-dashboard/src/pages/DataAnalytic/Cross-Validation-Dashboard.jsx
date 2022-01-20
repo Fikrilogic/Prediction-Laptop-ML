@@ -1,18 +1,16 @@
 import { makeStyles } from "@mui/styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
-import {
-  Container,
-  Box,
-  Card,
-  Typography,
-  CardContent,
-  Skeleton,
-  Grid,
-  CardHeader,
-  Divider,
-} from "@mui/material";
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import Skeleton from "@mui/material/Skeleton";
+import Grid from "@mui/material/Grid";
 
 import { FetchCrossValidation } from "../../Redux/Analytics/fetch-action";
 

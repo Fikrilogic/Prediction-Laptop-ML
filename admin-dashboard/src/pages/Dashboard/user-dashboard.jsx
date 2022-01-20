@@ -2,15 +2,14 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
 import { makeStyles } from "@mui/styles";
-import {
-  Container,
-  Box,
-  Card,
-  Typography,
-  CardHeader,
-  CardContent,
-  Divider,
-} from "@mui/material";
+
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
 
 import { fetchUser } from "../../Redux/User/fetch-action";
 import UserTableComponent from "../../components/TableComponent/user-table.component";
@@ -37,24 +36,6 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
-
-  const data = [
-    {
-      first_name: "Anwar",
-      last_name: "Habiburahman",
-      phone: "085865854",
-    },
-    {
-      first_name: "Fikri",
-      last_name: "Sandi",
-      phone: "083267623",
-    },
-    {
-      first_name: "Dandi",
-      last_name: "Izzulhaq",
-      phone: "087346734",
-    },
-  ];
 
   return (
     <Container
@@ -83,7 +64,7 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
           />
           <Divider />
           <CardContent>
-            <UserTableComponent data={data} dispatch={dispatch} />
+            <UserTableComponent data={user} dispatch={dispatch} />
           </CardContent>
         </Card>
       </Box>
