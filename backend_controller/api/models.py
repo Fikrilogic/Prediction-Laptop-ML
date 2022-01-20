@@ -13,6 +13,13 @@ dataset_path = PathAndRename("file/dataset")
 User = get_user_model()
 
 
+class BaseDatasetComponent(models.Model):
+    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
 class Profile(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, primary_key=True)
@@ -32,101 +39,81 @@ class Profile(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-class MasterCpu(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterCpu(BaseDatasetComponent):
     name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.name
 
 
-class MasterGpu(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterGpu(BaseDatasetComponent):
     name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.name
 
 
-class MasterCompany(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterCompany(BaseDatasetComponent):
     name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.name
 
 
-class MasterScreen(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterScreen(BaseDatasetComponent):
     type = models.CharField(verbose_name=_('type'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.type
 
 
-class MasterScreenResolution(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterScreenResolution(BaseDatasetComponent):
     resolution = models.CharField(verbose_name=_('resolusi'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.resolution
 
 
-class MasterTypeLaptop(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterTypeLaptop(BaseDatasetComponent):
     name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.name
 
 
-class MasterMemory(models.Model):
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterMemory(BaseDatasetComponent):
     type = models.CharField(verbose_name=_('type'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.type
 
 
-class MasterKebutuhan(models.Model):
-    """
-        Model for kebutuhan
-    """
-
-    id = models.UUIDField(verbose_name=_('id'), primary_key=True, default=uuid.uuid4)
+class MasterKebutuhan(BaseDatasetComponent):
     name = models.CharField(verbose_name=_('name'), max_length=50, blank=False, null=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        get_latest_by = ['-created_at']
+        get_latest_by = ['created_at']
 
     def __str__(self):
         return self.name
