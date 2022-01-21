@@ -26,6 +26,8 @@ import { FailRequest } from "../../Redux/User/action";
 import axios from "axios";
 
 import { URL } from "../../Context/action";
+import { ButtonGroup } from "@mui/material";
+import ModalEdit from "../ModalInputComponent/modal-edit.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -38,6 +40,7 @@ const CompanyTable = () => {
   const classes = useStyle();
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
   const company = useSelector((state) => state.data.company);
   const dispatch = useDispatch();
   const [data, setData] = useState("");
@@ -45,9 +48,47 @@ const CompanyTable = () => {
 
   const selectData = (e) => {
     e.preventDefault();
-    const id = e.currentTarget.parentNode.getAttribute("data-key");
+    const id = e.currentTarget.parentNode.parentNode.getAttribute("data-key");
     setId(id);
-    setOpen2(true);
+    getData(id);
+    if (e.target.textContent === "Edit") {
+      setOpen3(true);
+    }
+    if (e.target.textContent === "Delete") {
+      setOpen(true);
+    }
+  };
+
+  const getData = async (id) => {
+    try {
+      const req = await axios.get(URL + `company/${id}/`, {
+        withCredentials: true,
+      });
+      if (req.status === 200) {
+        setData(req.data.name);
+      }
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
+  };
+
+  const editHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await axios.patch(
+        URL + `company/${id}/`,
+        { name: data },
+        {
+          withCredentials: true,
+        }
+      );
+      if (req.status === 200) console.log("edit data berhasil");
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
+    window.location.reload();
   };
 
   const deleteData = async (e) => {
@@ -84,10 +125,20 @@ const CompanyTable = () => {
 
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
-      <ModalDelete open={open2} setOpen={setOpen2} deleteHandler={deleteData} />
+      <ModalDelete open={open} setOpen={setOpen} deleteHandler={deleteData} />
+
+      <ModalEdit
+        open={open3}
+        data={data}
+        setOpen={setOpen3}
+        type="company"
+        setData={setData}
+        editHandler={editHandler}
+      />
+
       <ModalInput
-        open={open}
-        setOpen={setOpen}
+        open={open2}
+        setOpen={setOpen2}
         type="company"
         setData={setData}
         saveHandler={saveHandler}
@@ -112,7 +163,7 @@ const CompanyTable = () => {
                 className={classes.btnDataset}
                 variant="contained"
                 disableElevation
-                onClick={() => setOpen(true)}
+                onClick={() => setOpen2(true)}
               >
                 Input Data
               </Button>
@@ -150,13 +201,22 @@ const CompanyTable = () => {
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.name}</TableCell>
                       <TableCell data-key={data.id}>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={(e) => selectData(e)}
-                        >
-                          Delete
-                        </Button>
+                        <ButtonGroup>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={(e) => selectData(e)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={(e) => selectData(e)}
+                          >
+                            Delete
+                          </Button>
+                        </ButtonGroup>
                       </TableCell>
                     </TableRow>
                   ))

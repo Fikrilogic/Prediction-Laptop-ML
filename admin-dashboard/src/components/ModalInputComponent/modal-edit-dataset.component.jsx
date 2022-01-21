@@ -15,7 +15,7 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 
-const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
+const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
   const cpuList = useSelector((state) => state.data.cpu);
   const gpuList = useSelector((state) => state.data.gpu);
   const storageList = useSelector((state) => state.data.storage);
@@ -39,7 +39,7 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
         }}
       >
         <Typography variant="h4" sx={{ marginBottom: "30px" }}>
-          Input Data Baru
+          Edit Data
         </Typography>
 
         <Divider />
@@ -49,6 +49,7 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
             <Grid items xs={6} sx={{ margin: "12px 0" }}>
               <TextField
                 label="Nama Laptop"
+                value={data.name}
                 variant="outlined"
                 onChange={(e) => setData({ ...data, name: e.target.value })}
                 fullWidth
@@ -186,6 +187,7 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
               <TextField
                 label="Berat"
                 variant="outlined"
+                value={data.weight}
                 onChange={(e) => setData({ ...data, weight: e.target.value })}
                 fullWidth
               />
@@ -212,6 +214,7 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
               <TextField
                 label="Budget"
                 variant="outlined"
+                value={data.budget}
                 onChange={(e) =>
                   setData({ ...data, budget: parseInt(e.target.value) })
                 }
@@ -222,6 +225,7 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
               <TextField
                 label="Harga"
                 variant="outlined"
+                value={data.price}
                 onChange={(e) =>
                   setData({ ...data, price: parseInt(e.target.value) })
                 }
@@ -254,7 +258,7 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
               paddingTop: 5,
             }}
           >
-            <Button variant="contained" onClick={saveHandler}>
+            <Button variant="contained" onClick={editHandler}>
               Save
             </Button>
             <Button
@@ -271,4 +275,4 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
   );
 };
 
-export default ModalInputDataset;
+export default ModalEditDataset;

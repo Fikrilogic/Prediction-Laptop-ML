@@ -68,18 +68,6 @@ function SideMenuComponent(props) {
       <Toolbar />
       <Box component="div" className={classes.container} boxShadow={5}>
         <List>
-          <ListItemButton onClick={() => navigate("/dashboard")}>
-            <ListItemIcon sx={{ color: "white" }}>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItemButton>
-          <ListItemButton onClick={() => navigate("/user")}>
-            <ListItemIcon sx={{ color: "white" }}>
-              <GroupIcon />
-            </ListItemIcon>
-            <ListItemText primary="Master User" />
-          </ListItemButton>
           <ListItemButton onClick={() => navigate("/dataset")}>
             <ListItemIcon sx={{ color: "white" }}>
               <TableViewIcon />
@@ -131,6 +119,13 @@ function SideMenuComponent(props) {
               ))}
             </List>
           </Collapse>
+
+          <ListItemButton onClick={() => navigate("/user")}>
+            <ListItemIcon sx={{ color: "white" }}>
+              <GroupIcon />
+            </ListItemIcon>
+            <ListItemText primary="Master User" />
+          </ListItemButton>
           <ListItemButton>
             <ListItemIcon sx={{ color: "white" }}>
               <BarChartIcon />

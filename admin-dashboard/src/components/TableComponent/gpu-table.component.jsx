@@ -24,6 +24,8 @@ import ModalDelete from "../ModalInputComponent/modal-delete.component";
 import axios from "axios";
 import { FailRequest } from "../../Redux/User/action";
 import { URL } from "../../Context/action";
+import { ButtonGroup } from "@mui/material";
+import ModalEdit from "../ModalInputComponent/modal-edit.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -37,15 +39,54 @@ function GpuTable() {
   const gpuList = useSelector((state) => state.data.gpu);
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
   const [id, setId] = useState("");
   const [data, setData] = useState("");
   const dispatch = useDispatch();
 
+  const getData = async (id) => {
+    try {
+      const req = await axios.get(URL + `gpu/${id}/`, {
+        withCredentials: true,
+      });
+      if (req.status === 200) {
+        setData(req.data.name);
+      }
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
+  };
+
   const selectData = (e) => {
     e.preventDefault();
-    const id = e.currentTarget.parentNode.getAttribute("data-key");
+    const id = e.currentTarget.parentNode.parentNode.getAttribute("data-key");
     setId(id);
-    setOpen2(true);
+    getData(id);
+    if (e.target.textContent === "Edit") {
+      setOpen3(true);
+    }
+    if (e.target.textContent === "Delete") {
+      setOpen2(true);
+    }
+  };
+
+  const editHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await axios.patch(
+        URL + `gpu/${id}/`,
+        { name: data },
+        {
+          withCredentials: true,
+        }
+      );
+      if (req.status === 200) console.log("edit data berhasil");
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
+    window.location.reload();
   };
 
   const deleteData = async (e) => {
@@ -61,6 +102,7 @@ function GpuTable() {
     setOpen2(false);
     window.location.reload();
   };
+
   const saveHandler = async (e) => {
     e.preventDefault();
     try {
@@ -82,6 +124,16 @@ function GpuTable() {
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
       <ModalDelete open={open2} setOpen={setOpen2} deleteHandler={deleteData} />
+
+      <ModalEdit
+        open={open3}
+        data={data}
+        setOpen={setOpen3}
+        type="gpu"
+        setData={setData}
+        editHandler={editHandler}
+      />
+
       <ModalInput
         open={open}
         setData={setData}
@@ -150,13 +202,22 @@ function GpuTable() {
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.name}</TableCell>
                       <TableCell data-key={data.id}>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={(e) => selectData(e)}
-                        >
-                          Delete
-                        </Button>
+                        <ButtonGroup>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={(e) => selectData(e)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={(e) => selectData(e)}
+                          >
+                            Delete
+                          </Button>
+                        </ButtonGroup>
                       </TableCell>
                     </TableRow>
                   ))

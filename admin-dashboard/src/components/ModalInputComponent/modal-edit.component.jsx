@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import React from "react";
 import { ButtonGroup } from "@mui/material";
 
-const ModalInput = ({ open, setOpen, saveHandler, type, setData }) => {
+const ModalEdit = ({ open, setOpen, editHandler, type, data, setData }) => {
   const selectModal = () => {
     switch (type) {
       case "cpu":
@@ -31,33 +31,33 @@ const ModalInput = ({ open, setOpen, saveHandler, type, setData }) => {
     }
   };
 
-  const typeModal = selectModal();
+  const typeInput = selectModal();
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <Box
         sx={{
           width: "600px",
-          border: "1px solid #F3F3F3",
           height: "auto",
           backgroundColor: "#Fff",
           marginX: "auto",
           marginTop: "10%",
-          padding: "50px",
+          padding: "20px",
           borderRadius: 8,
         }}
       >
         <Typography variant="h4" sx={{ marginBottom: "30px" }}>
-          Input New Data
+          Edit Data
         </Typography>
 
         <form noValidate autoComplete="off">
           <TextField
             sx={{ margin: "12px 0", display: "block" }}
-            label={typeModal}
+            label={typeInput}
             variant="outlined"
             onChange={(e) => setData(e.target.value)}
             fullWidth
+            value={data}
             required
           />
           <ButtonGroup
@@ -67,7 +67,7 @@ const ModalInput = ({ open, setOpen, saveHandler, type, setData }) => {
               paddingTop: 5,
             }}
           >
-            <Button variant="contained" onClick={saveHandler}>
+            <Button variant="contained" onClick={editHandler}>
               Save
             </Button>
             <Button variant="outlined" onClick={() => setOpen(false)}>
@@ -80,4 +80,4 @@ const ModalInput = ({ open, setOpen, saveHandler, type, setData }) => {
   );
 };
 
-export default ModalInput;
+export default ModalEdit;

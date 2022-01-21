@@ -24,6 +24,8 @@ import ModalDelete from "../ModalInputComponent/modal-delete.component";
 import { FailRequest } from "../../Redux/User/action";
 import axios from "axios";
 import { URL } from "../../Context/action";
+import { ButtonGroup } from "@mui/material";
+import ModalEdit from "../ModalInputComponent/modal-edit.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -37,15 +39,36 @@ const ScreenTable = () => {
   const [open, setOpen] = useState(false);
   const screen = useSelector((state) => state.data.screen);
   const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
   const [id, setId] = useState("");
   const [data, setData] = useState("");
   const dispatch = useDispatch();
 
+  const getData = async (id) => {
+    try {
+      const req = await axios.get(URL + `screen-type/${id}/`, {
+        withCredentials: true,
+      });
+      if (req.status === 200) {
+        setData(req.data.type);
+      }
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
+  };
+
   const selectData = (e) => {
     e.preventDefault();
-    const id = e.currentTarget.parentNode.getAttribute("data-key");
+    const id = e.currentTarget.parentNode.parentNode.getAttribute("data-key");
     setId(id);
-    setOpen2(true);
+    getData(id);
+    if (e.target.textContent === "Edit") {
+      setOpen3(true);
+    }
+    if (e.target.textContent === "Delete") {
+      setOpen2(true);
+    }
   };
 
   const deleteData = async (e) => {
@@ -59,6 +82,24 @@ const ScreenTable = () => {
       dispatch(FailRequest());
     }
     setOpen2(false);
+    window.location.reload();
+  };
+
+  const editHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await axios.patch(
+        URL + `screen-type/${id}/`,
+        { type: data },
+        {
+          withCredentials: true,
+        }
+      );
+      if (req.status === 200) console.log("edit data berhasil");
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
     window.location.reload();
   };
 
@@ -83,6 +124,16 @@ const ScreenTable = () => {
   return (
     <Container maxWidth="100%" className={classes.containerDashboard}>
       <ModalDelete open={open2} setOpen={setOpen2} deleteHandler={deleteData} />
+
+      <ModalEdit
+        open={open3}
+        data={data}
+        setOpen={setOpen3}
+        type="screen"
+        setData={setData}
+        editHandler={editHandler}
+      />
+
       <ModalInput
         open={open}
         setData={setData}
@@ -121,7 +172,7 @@ const ScreenTable = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {["No", "Kode", "Tipe Screen"].map((label) => (
+                  {["No", "Kode", "Tipe Screen", "Aksi"].map((label) => (
                     <TableCell>{label}</TableCell>
                   ))}
                 </TableRow>
@@ -146,13 +197,22 @@ const ScreenTable = () => {
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.type}</TableCell>
                       <TableCell data-key={data.id}>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={(e) => selectData(e)}
-                        >
-                          Delete
-                        </Button>
+                        <ButtonGroup>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={(e) => selectData(e)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={(e) => selectData(e)}
+                          >
+                            Delete
+                          </Button>
+                        </ButtonGroup>
                       </TableCell>
                     </TableRow>
                   ))
