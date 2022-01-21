@@ -11,7 +11,6 @@ import UserDashboard from "./pages/Dashboard/User-Dashboard.jsx";
 import DatasetDashboard from "./pages/Dashboard/Dataset-Dashboard.jsx";
 import PrivateRoute from "./components/ProtectedRoute/protect-route.component";
 import Layout from "./pages/Layout";
-import Dashboard from "./pages/Dashboard/Dashboard";
 import DatasetTablesDashboard from "./pages/DatasetTables/Dataset-Tables-Dashboard";
 import AnalyticDashboard from "./pages/DataAnalytic/Analytic-Dashboard";
 import CrossValidationDashboard from "./pages/DataAnalytic/Cross-Validation-Dashboard";
@@ -27,14 +26,6 @@ function App(props) {
           <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="login" element={<LoginDashboard />} />
-            <Route
-              path="dashboard"
-              element={
-                <PrivateRoute>
-                  <Layout element={<Dashboard />} />
-                </PrivateRoute>
-              }
-            />
             <Route
               path="dataset/tables"
               element={
