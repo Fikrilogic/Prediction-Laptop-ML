@@ -1,0 +1,62 @@
+.header-container {
+  height: 110px;
+  background-color: #8bd1f9;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  .logo-wrapper {
+    flex: 0;
+    cursor: pointer;
+    margin-left: 50px;
+
+    .logo {
+      font-size: 36px;
+      text-decoration: none;
+    }
+  }
+
+  .nav-links {
+    flex: 2;
+
+    .nav-item {
+      text-decoration: none;
+      color: black;
+      margin-right: 30px;
+      justify-content: space-evenly;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  }
+
+  .button-container {
+    display: flex;
+    flex: 1;
+
+    .profile-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background-color: #0d89ec;
+      padding: 8px 12px;
+      border-radius: 12px;
+
+      p {
+        padding-right: 15px;
+        color: white;
+      }
+    }
+
+    .btn {
+      margin-right: 10px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+  }
+
+  .spacing {
+    flex: 3;
+  }
+}

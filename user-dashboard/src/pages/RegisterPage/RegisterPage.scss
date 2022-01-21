@@ -1,0 +1,42 @@
+/* Register Page */
+.container-register {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 20px 10px;
+  align-items: center;
+
+  .inner-container-register {
+    padding: 20px 50px;
+    height: fit-content;
+    width: 500px;
+    text-align: center;
+
+    .container-register-header {
+      p {
+        margin: 10px 0;
+
+        .link-item {
+          text-decoration: none;
+          color: #92c7e4;
+        }
+      }
+    }
+  }
+
+  .form-field {
+    margin: 12px 0;
+  }
+  .form-password {
+    margin: 20px 0;
+  }
+
+  .container-register-header,
+  .p-card-footer p:first-child {
+    font-weight: 600;
+  }
+
+  .form-group {
+    display: flex;
+    justify-content: space-between;
+  }
+}

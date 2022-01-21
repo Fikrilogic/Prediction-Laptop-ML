@@ -1,0 +1,29 @@
+.container-consult {
+  .container-consult-message {
+    background-color: #f3d774;
+    width: 60%;
+    padding: 50px;
+    margin: 50px auto;
+
+    p {
+      font-size: 18px;
+    }
+  }
+
+  .container-consult-header-title {
+    margin: 0 20%;
+    margin-top: 50px;
+  }
+
+  .container-consult-body {
+    width: 60%;
+    margin: 0 auto;
+    border-top: 1px solid black;
+    padding-top: 50px;
+
+    .form-field {
+      display: flex;
+      align-items: center;
+    }
+  }
+}

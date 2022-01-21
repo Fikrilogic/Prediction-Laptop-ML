@@ -1,0 +1,42 @@
+.container-survey {
+  width: 60%;
+  margin: 50px auto;
+  .container-survey-header {
+    text-align: center;
+    p {
+      font-size: 18px;
+    }
+  }
+
+  .dot {
+    content: "";
+    width: 30px;
+    height: 30px;
+    background-color: rgb(32, 30, 30);
+    position: absolute;
+    left: 50%;
+    top: 24%;
+    border-radius: 50%;
+  }
+
+  .container-survey-body {
+    border-top: 2px solid black;
+
+    .form-field {
+      margin: 20px 0;
+
+      .question {
+        font-size: 20px;
+        margin-bottom: 16px;
+      }
+
+      .p-field-radiobutton {
+        margin: 20px 0;
+
+        label {
+          padding-left: 10px;
+        }
+      }
+    }
+  }
+}

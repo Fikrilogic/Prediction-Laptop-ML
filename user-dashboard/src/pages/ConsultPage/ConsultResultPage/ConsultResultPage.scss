@@ -1,0 +1,23 @@
+.container-result {
+  width: 50%;
+  margin: 0 auto;
+  .container-result-header-title {
+    margin-top: 50px;
+  }
+
+  .container-result-body {
+    margin: 0 auto;
+    border-top: 1px solid black;
+    padding-top: 20px;
+
+    .container-result-message {
+      background-color: #f3d774;
+      padding: 50px;
+
+      p {
+        text-align: center;
+        font-size: 18px;
+      }
+    }
+  }
+}

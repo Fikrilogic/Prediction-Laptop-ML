@@ -1,0 +1,20 @@
+.container-result-laptop {
+  margin: 20px 0;
+  //     display: flex;
+  //   align-items: center;
+  //   border: 1px solid black;
+  //   border-radius: 20px;
+
+  //   .container-result-image {
+  //     img {
+  //       border-radius: 20px 0 0 20px;
+  //     }
+  //   }
+
+  .container-result-detail {
+    line-height: 50px;
+    .title {
+      font-weight: 700;
+    }
+  }
+}

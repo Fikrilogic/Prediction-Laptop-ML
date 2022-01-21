@@ -1,0 +1,49 @@
+.container-profile {
+  border: 1px solid black;
+  width: 70%;
+  border-radius: 12px;
+  margin: 50px auto;
+
+  .avatar-wrapper {
+    text-align: center;
+
+    .avatar {
+      width: 200px;
+      height: 200px;
+      cursor: pointer;
+    }
+  }
+
+  .profile-info {
+    padding: 40px 0;
+    width: 50%;
+    margin: 0 auto;
+
+    .edit-btn {
+      margin-bottom: 10px;
+
+      p {
+        text-decoration: underline;
+        cursor: pointer;
+        width: fit-content;
+        color: blue;
+      }
+    }
+
+    .detail {
+      border-top: 1px solid black;
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-evenly;
+
+      .right-side,
+      .left-side {
+        flex: 1;
+      }
+
+      .spacing {
+        flex: 0.2;
+      }
+    }
+  }
+}
