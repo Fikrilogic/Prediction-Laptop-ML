@@ -51,7 +51,7 @@ export default function LoginDashboard(props) {
     try {
       await login(dispatch, { email, password });
       setLoading(false);
-      return navigate("/dashboard");
+      return navigate("/dataset");
     } catch (e) {
       setLoading(false);
     }

@@ -15,12 +15,23 @@ import Stack from "@mui/material/Stack";
 import Input from "@mui/material/Input";
 
 import DatasetTable from "../../components/TableComponent/dataset-table.component";
+import {
+  FetchCompany,
+  FetchCpu,
+  FetchGpu,
+  FetchKebutuhan,
+  FetchLaptopType,
+  FetchScreenResolution,
+  FetchScreenType,
+  FetchStorage,
+} from "../../Redux/Data/fetch-action";
 import ModalInputDataset from "../../components/ModalInputComponent/modal-input-dataset.component";
 
 import axios from "axios";
 import { URL } from "../../Context/action";
 import { FailRequest } from "../../Redux/User/action";
 import { FetchDataset } from "../../Redux/Dataset/fetch-action";
+import { ButtonGroup } from "@mui/material";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -43,6 +54,15 @@ const DatasetDashboard = () => {
 
   useEffect(() => {
     dispatch(FetchDataset());
+    dispatch(FetchDataset());
+    dispatch(FetchCpu());
+    dispatch(FetchGpu());
+    dispatch(FetchScreenResolution());
+    dispatch(FetchScreenType());
+    dispatch(FetchCompany());
+    dispatch(FetchStorage());
+    dispatch(FetchLaptopType());
+    dispatch(FetchKebutuhan());
   }, [dispatch]);
 
   const [data, setData] = useState({
@@ -68,8 +88,19 @@ const DatasetDashboard = () => {
   const fileInput = useRef(null);
   const [file, setFile] = useState(null);
 
-  const saveHandler = () => {
-    // window.location.reload();
+  const saveHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await axios.post(URL + "dataset/", data, {
+        withCredentials: true,
+      });
+      if (req.status === 201) console.log("add data berhasil");
+    } catch (e) {
+      console.log(e);
+      dispatch(FailRequest());
+    }
+    console.log(data);
+    window.location.reload();
   };
 
   const handleChange = (e) => {
@@ -122,6 +153,15 @@ const DatasetDashboard = () => {
           <form>
             <label htmlFor="contained-button-file">
               <Container>
+                <Typography
+                  variant="h4"
+                  sx={{ marginBottom: "30px" }}
+                  textAlign={"center"}
+                >
+                  Upload Dataset
+                </Typography>
+
+                <Divider />
                 <Stack spacing={5}>
                   <Input
                     sx={{ display: "none" }}
@@ -135,16 +175,18 @@ const DatasetDashboard = () => {
                     Select Dataset File (.csv)
                   </Button>
                   <Box display={"flex"} justifyContent={"center"}>
-                    <Button variant="contained" onClick={uploadExcel}>
-                      Save
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => setOpen2(false)}
-                      sx={{ ml: 2 }}
-                    >
-                      Cancel
-                    </Button>
+                    <ButtonGroup>
+                      <Button variant="contained" onClick={uploadExcel}>
+                        Save
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={() => setOpen2(false)}
+                        sx={{ ml: 2 }}
+                      >
+                        Cancel
+                      </Button>
+                    </ButtonGroup>
                   </Box>
                 </Stack>
               </Container>
