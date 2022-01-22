@@ -53,13 +53,13 @@ export const Reducer = (state = AUTH_STATE, action) => {
       return {
         ...state,
         loading: false,
-        message: "REGISTER SUCCESS",
+        message: "SUCCESS",
       };
     case ACTION.REGISTER_FAIL:
       return {
         ...state,
         loading: false,
-        message: "REGISTER FAILED",
+        message: "FAIL",
       };
     case ACTION.LOGOUT:
       return {

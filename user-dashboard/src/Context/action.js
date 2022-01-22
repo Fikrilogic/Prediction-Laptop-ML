@@ -13,12 +13,14 @@ export const URL = "http://localhost:8000/api/";
 
 // Login Action
 export const login = async (dispatch, { data }) => {
+  const { password, email } = data;
   try {
     dispatch({ type: LOGIN_LOADING });
     const req = await axios.post(
       URL + "login",
       {
-        data,
+        password,
+        email,
       },
       {
         withCredentials: true,
@@ -47,19 +49,23 @@ export const logout = (dispatch) => {
 };
 
 export const register = async (dispatch, { data }) => {
+  const { username, email, password, profile } = data;
   try {
     dispatch({ type: REGISTER_LOADING });
     const req = await axios.post(
       URL + "register",
       {
-        data,
+        username,
+        email,
+        password,
+        profile,
       },
       {
         withCredentials: true,
       }
     );
     if (req.data) {
-      dispatch({ type: REGISTER_SUCCESS, payload: req.data });
+      dispatch({ type: REGISTER_SUCCESS });
       return req.data;
     }
     dispatch({ type: REGISTER_FAIL });

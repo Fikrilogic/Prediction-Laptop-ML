@@ -18,12 +18,11 @@ export const UserReducer = (state = USER_STATE, action) => {
         status: "ONGOING",
       };
     case GET_USER:
-      console.log(action.payload);
       return {
         ...state,
         loading: false,
         method: "GET",
-        users: action.payload.user,
+        users: action.payload,
         status: "SUCCESS",
       };
     case POST_USER:
@@ -31,7 +30,7 @@ export const UserReducer = (state = USER_STATE, action) => {
         ...state,
         loading: false,
         method: "POST",
-        users: action.payload.user,
+        users: action.payload,
         status: "SUCCESS",
       };
     case FAILED_REQUEST:
