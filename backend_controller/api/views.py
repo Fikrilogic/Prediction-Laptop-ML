@@ -238,7 +238,7 @@ class GpuView(viewsets.ModelViewSet):
     permission_classes = [isAdminOrMemberUser]
 
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action == 'retrieve' or self.action == 'list':
             self.permission_classes = [isAdminOrMemberUser]
         else:
             self.permission_classes = [isAdminUser]
