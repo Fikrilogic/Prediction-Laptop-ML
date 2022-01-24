@@ -17,7 +17,6 @@ import TableViewIcon from "@mui/icons-material/TableView";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
 import BarChartIcon from "@mui/icons-material/BarChart";
 
@@ -25,6 +24,7 @@ import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../../Context/context";
 
 import { logout } from "../../Context/action";
+import { LogoutAdmin } from "../../Redux/User/action";
 
 const useStyle = makeStyles((theme) => ({
   container: {
@@ -54,7 +54,9 @@ function SideMenuComponent(props) {
     e.preventDefault();
     console.log("clicked");
     const req = await logout(dispatch);
-    if (req === 200) return navigate("/login");
+    if (req === 200) {
+      return navigate("/login");
+    }
   };
 
   const scrollWithOffset = (el) => {
@@ -160,7 +162,7 @@ function SideMenuComponent(props) {
                   scroll={(el) => scrollWithOffset(el)}
                   to="../analytic/result"
                 >
-                  Analytic Results
+                  Training Model Results
                 </Link>
               </ListItemButton>
               <ListItemButton sx={{ pl: 4 }}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Table,
@@ -14,11 +14,19 @@ import {
   Typography,
 } from "@mui/material";
 
-import { deleteUser } from "../../Redux/User/fetch-action";
+import { deleteUser, fetchUser } from "../../Redux/User/fetch-action";
+import { useDispatch, useSelector } from "react-redux";
 
-function UserTableComponent({ data, dispatch }) {
+function UserTableComponent() {
+  const dispatch = useDispatch();
   const [id, setId] = useState("");
   const [open, setOpen] = useState(false);
+  const users = useSelector((state) => state.user.users);
+  console.log(users);
+
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
 
   const selectData = (e) => {
     e.preventDefault();
@@ -78,7 +86,7 @@ function UserTableComponent({ data, dispatch }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data === undefined || data.length === 0 ? (
+          {users === undefined || users.length === 0 ? (
             <TableRow>
               <TableCell>
                 <Skeleton variant="rectangular" />
@@ -97,7 +105,7 @@ function UserTableComponent({ data, dispatch }) {
               </TableCell>
             </TableRow>
           ) : (
-            data.map((data, index) => (
+            users.map((data, index) => (
               <TableRow>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{data.first_name}</TableCell>
