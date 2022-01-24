@@ -14,25 +14,32 @@ import { login } from "../../Context/action";
 
 const useStyle = makeStyles({
   login: {
-    width: "100%",
-    height: "100%",
+    width: "100vw",
+    height: "100vh",
+    background: "linear-gradient(180deg, #7AB1D0 0%, #00669F 100%)",
     padding: 0,
     margin: 0,
   },
   container: {
+    backgroundColor: "white",
     width: "400px",
     height: "230px",
     textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "nowrap",
     padding: "15px 0px",
     position: "absolute",
-    margin: "10% 35%",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     border: "1px solid rgb(0,0,0,0.3)",
   },
   textfield: {
     color: "white",
+  },
+  logo: {
+    color: "white",
+    position: "absolute",
+    left: "20px",
+    top: "10px",
   },
 });
 
@@ -63,6 +70,16 @@ export default function LoginDashboard(props) {
 
   return (
     <div className={classes.login}>
+      <Box className={classes.logo}>
+        <Typography
+          variant="h2"
+          sx={{ fontSize: 30, mb: 3 }}
+          fontFamily="Sansita, sans-serif"
+          fontWeight="bold"
+        >
+          CREAVEN
+        </Typography>
+      </Box>
       <Box className={classes.container} boxShadow={4} borderRadius={3}>
         <Typography
           variant="h2"
