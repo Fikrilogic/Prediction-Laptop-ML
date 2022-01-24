@@ -11,7 +11,6 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
 
-import { fetchUser } from "../../Redux/User/fetch-action";
 import UserTableComponent from "../../components/TableComponent/user-table.component";
 
 const useStyle = makeStyles((theme) => ({
@@ -30,12 +29,8 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const UserDashboard = ({ dispatch, user, status, theme }) => {
+const UserDashboard = ({ theme }) => {
   const classes = useStyle(theme);
-
-  useEffect(() => {
-    dispatch(fetchUser());
-  }, [dispatch]);
 
   return (
     <Container
@@ -64,7 +59,7 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
           />
           <Divider />
           <CardContent>
-            <UserTableComponent data={user} dispatch={dispatch} />
+            <UserTableComponent />
           </CardContent>
         </Card>
       </Box>
@@ -72,10 +67,4 @@ const UserDashboard = ({ dispatch, user, status, theme }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  loading: state.user.loading,
-  user: state.user.users,
-  status: state.user.status,
-});
-
-export default connect(mapStateToProps)(UserDashboard);
+export default UserDashboard;

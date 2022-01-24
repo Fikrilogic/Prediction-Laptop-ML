@@ -110,6 +110,7 @@ const DatasetDashboard = () => {
   };
 
   const uploadExcel = async () => {
+    console.log(file);
     formData.append("file", file);
     try {
       const req = await axios.post(
@@ -122,7 +123,10 @@ const DatasetDashboard = () => {
           },
         }
       );
-      if (req.status === 201) console.log("upload berhasil");
+      if (req.data) {
+        console.log("upload berhasil");
+        window.location.reload();
+      }
     } catch (e) {
       console.log(e);
       dispatch(FailRequest());
@@ -163,8 +167,8 @@ const DatasetDashboard = () => {
 
                 <Divider />
                 <Stack spacing={5}>
-                  <Input
-                    sx={{ display: "none" }}
+                  <input
+                    hidden
                     accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                     id="contained-button-file"
                     type="file"
