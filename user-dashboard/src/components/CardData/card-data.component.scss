@@ -1,20 +1,31 @@
 .container-result-laptop {
   margin: 20px 0;
-  //     display: flex;
-  //   align-items: center;
-  //   border: 1px solid black;
-  //   border-radius: 20px;
+  display: flex;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 20px;
 
-  //   .container-result-image {
-  //     img {
-  //       border-radius: 20px 0 0 20px;
-  //     }
-  //   }
+  .container-result-image {
+    img {
+      border-radius: 20px 0 0 20px;
+    }
+  }
 
   .container-result-detail {
-    line-height: 50px;
+    padding: 0 20px;
     .title {
+      margin-bottom: 20px;
       font-weight: 700;
+    }
+    .specs {
+      p {
+        margin: 20px 0;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      a {
+        margin-top: 20px;
+      }
     }
   }
 }
