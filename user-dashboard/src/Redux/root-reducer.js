@@ -12,9 +12,9 @@ const persistConfig = {
 };
 
 // Group of Reducer
-const reducers = combineReducers({
+const appReducers = combineReducers({
   user: UserReducer,
   data: DataReducer,
 });
 
-export default persistReducer(persistConfig, reducers);
+export default persistReducer(persistConfig, appReducers);

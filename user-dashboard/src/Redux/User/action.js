@@ -2,8 +2,7 @@
 export const REQUEST_USER = "REQUEST_USER";
 export const GET_USER = "GET_USER";
 export const FAILED_REQUEST = "FAILED_REQUEST";
-export const POST_USER = "POST_USER";
-export const PATCH_USER = "PATCH_USER";
+export const CONSULT_RESULT = "CONSULT_RESULT";
 
 // Function for Fetch action
 export const RequestData = () => ({
@@ -17,4 +16,9 @@ export const FailRequest = () => ({
 export const UserSuccess = (user) => ({
   type: GET_USER,
   payload: user,
+});
+
+export const ConsultResult = (results) => ({
+  type: CONSULT_RESULT,
+  payload: results,
 });
