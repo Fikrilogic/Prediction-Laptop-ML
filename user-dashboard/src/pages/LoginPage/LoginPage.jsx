@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import Image from "../../assets/img/signin-page-image.png";
 import { Card } from "primereact/card";
 import { Divider } from "primereact/divider";
@@ -10,12 +10,12 @@ import { Link, useNavigate } from "react-router-dom";
 import "./LoginPage.scss";
 import { AuthContext } from "../../Context/context";
 import { login } from "../../Context/action";
-import { getProfile } from "../../Redux/User/fetch-action";
+import { Toast } from "primereact/toast";
 
 const LoginPage = () => {
   const { user, dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  const toast = useRef(null);
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -26,9 +26,18 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(dispatch, { data });
+      const res = await login(dispatch, { data });
       setLoading(false);
-      return navigate("/");
+      if (res !== undefined) {
+        return navigate("/");
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "Login Error",
+          detail: "Email/Password Does Not Match",
+          life: 3000,
+        });
+      }
     } catch (e) {
       setLoading(false);
     }
@@ -40,6 +49,7 @@ const LoginPage = () => {
 
   return (
     <div className="container-signin">
+      <Toast ref={toast} />
       <div className="container-signin-image">
         <img src={Image} alt="background-img" />
       </div>
@@ -54,7 +64,7 @@ const LoginPage = () => {
           </p>
         </div>
         <div className="container-form p-card-content">
-          <form noValidate onSubmit={handleClick} className="p-fluid">
+          <form onSubmit={handleClick} className="p-fluid" autoComplete="off">
             <span className="p-float-label form-field">
               <InputText
                 id={"email"}

@@ -3,19 +3,30 @@ import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import "./header.component.scss";
 import { Avatar } from "primereact/avatar";
+import Avatar1 from "../../assets/img/avatar2.png";
 import { logout } from "../../Context/action";
 import { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../Context/context";
+import { getProfile } from "../../Redux/User/fetch-action";
+import { useSelector } from "react-redux";
 
-const Header = () => {
+const Header = ({ avatar }) => {
   const navigate = useNavigate();
-  const { user, dispatch } = useContext(AuthContext);
+  const { dispatch } = useContext(AuthContext);
+  const userProfile = useSelector((state) => state.user.profile);
 
   useEffect(() => {
-    // localStorage.setItem("auth", JSON.stringify(user));
-  }, [user]);
+    dispatch(getProfile());
+  }, [dispatch]);
 
-  console.log(user);
+  const checkAuth = () => {
+    const check = localStorage.getItem("auth") || "";
+    if (check.includes(`"isAuthenticated":true`)) return true;
+    return false;
+    // if (status.isAuthenticated !== true) return false;
+  };
+
+  const auth = checkAuth();
 
   const menu = useRef(null);
 
@@ -30,7 +41,7 @@ const Header = () => {
 
   const items = [
     {
-      label: "User 1",
+      label: "Options",
       items: [
         {
           label: "Profile",
@@ -53,14 +64,14 @@ const Header = () => {
       </div>
       <div className="spacing"></div>
       <div className="nav-links">
-        <Link to="/consult" className="nav-item">
+        <Link to="/consult" className="nav-item p-button p-button-text">
           CONSULT
         </Link>
-        <Link to="/contact" className="nav-item">
+        <Link to="/contact" className="nav-item p-button p-button-text">
           CONTACT US
         </Link>
       </div>
-      {user.isAuthenticated === false ? (
+      {auth === false ? (
         <div className="button-container">
           <Link to="/login" className="btn">
             <Button
@@ -78,14 +89,14 @@ const Header = () => {
       ) : (
         <div className="button-container">
           <div
-            className="profile-btn"
+            className="profile-btn p-button"
             onClick={(e) => {
               menu.current.toggle(e);
             }}
           >
-            <p>User 1</p>
+            <p>{userProfile !== null ? userProfile.first_name : "User 1"}</p>
             <Avatar
-              icon="pi pi-user"
+              image={avatar}
               shape="circle"
               className="avatar"
               size="medium"

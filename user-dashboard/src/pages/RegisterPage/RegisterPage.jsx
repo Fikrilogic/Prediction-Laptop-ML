@@ -14,18 +14,9 @@ import { register } from "../../Context/action";
 import { Password } from "primereact/password";
 
 const RegisterPage = () => {
-  const { message, dispatch } = useContext(AuthContext);
+  const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
   const toast = useRef(null);
-
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [username, setUsername] = useState("");
-  // const [profile, setProfile] = useState({
-  //   first_name: "",
-  //   last_name: "",
-  //   phone: "",
-  // });
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     username: "",
@@ -42,12 +33,33 @@ const RegisterPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await register(dispatch, {
+      const res = await register(dispatch, {
         data,
       });
-      console.log(data);
       setLoading(false);
-      // return navigate("/");
+      if (res !== undefined) {
+        setData({
+          username: "",
+          email: "",
+          password: "",
+          profile: {
+            first_name: "",
+            last_name: "",
+            phone: "",
+          },
+        });
+        toast.current.show({
+          severity: "success",
+          summary: "Register Success",
+          life: 3000,
+        });
+        return;
+      }
+      toast.current.show({
+        severity: "error",
+        summary: "Register Failed",
+        life: 3000,
+      });
     } catch (e) {
       setLoading(false);
     }
@@ -55,7 +67,7 @@ const RegisterPage = () => {
 
   return (
     <div className="container-register">
-      <Toast ref={toast}></Toast>
+      <Toast ref={toast} />
       <div className="container-register-image">
         <img src={Image} alt="background-img" />
       </div>
@@ -76,6 +88,7 @@ const RegisterPage = () => {
               <span className="p-float-label form-field">
                 <InputText
                   required
+                  value={data.profile.first_name}
                   className="p-inputtext p-component"
                   onChange={(e) =>
                     setData({
@@ -89,6 +102,7 @@ const RegisterPage = () => {
               <span className="p-float-label form-field">
                 <InputText
                   required
+                  value={data.profile.last_name}
                   className="p-inputtext p-component"
                   onChange={(e) =>
                     setData({
@@ -103,6 +117,7 @@ const RegisterPage = () => {
             <div className="form-group">
               <span className="p-float-label form-field">
                 <InputText
+                  value={data.username}
                   required
                   className="p-inputtext p-component"
                   onChange={(e) =>
@@ -113,6 +128,7 @@ const RegisterPage = () => {
               </span>
               <span className="p-float-label form-field">
                 <InputText
+                  value={data.email}
                   required
                   type="email"
                   className="p-inputtext p-component"
@@ -124,6 +140,7 @@ const RegisterPage = () => {
             <span className="p-float-label form-field">
               <InputText
                 required
+                value={data.profile.phone}
                 className="p-inputtext p-component"
                 onChange={(e) =>
                   setData({
@@ -136,6 +153,7 @@ const RegisterPage = () => {
             </span>
             <span className="p-float-label form-password">
               <Password
+                value={data.password}
                 required
                 toggleMask="true"
                 id="password"

@@ -1,8 +1,15 @@
+import { Button } from "primereact/button";
 import React from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import CardData from "../../../components/CardData/card-data.component";
 import "./ConsultResultPage.scss";
 
 const ConsultResultPage = () => {
+  const consults = useSelector((state) => state.user.results);
+  const navigate = useNavigate();
+  console.log(consults);
+
   return (
     <div className="container-result">
       <div className="container-result-header">
@@ -18,29 +25,22 @@ const ConsultResultPage = () => {
           </p>
         </div>
         <div className="container-result-list">
-          <CardData
-            cpu="AMD Ryzen 3 5300U"
-            gpu="Integrated AMD Radeon Graphics"
-            storage="SSD 256GB"
-            ram="4GB"
-            screen={`4" HD`}
-            name="HP 245 G8 56K70PA"
-          />
-          <CardData
-            cpu="AMD Ryzen 5 5500U"
-            gpu="Integrated AMD Radeon Graphics"
-            storage="SSD 512GB"
-            ram="8GB"
-            screen={`14" HD`}
-            name="HP 245 G8 56K72PA"
-          />
-          <CardData
-            cpu="AMD Ryzen 5 3200U"
-            gpu="Integrated AMD Radeon Graphics"
-            storage="SSD 256GB"
-            ram="4GB"
-            screen={`14" HD`}
-            name="HP 245 G8 61G55PA"
+          {consults.map((consult, i) => {
+            console.log(consult);
+            return (
+              <CardData
+                key={i}
+                name={consult.name}
+                predict={consult.predict[0]}
+              />
+            );
+          })}
+        </div>
+        <div className="btn-wrapper">
+          <Button
+            label="Back to homepage"
+            className="btn-back"
+            onClick={() => navigate("/")}
           />
         </div>
       </div>

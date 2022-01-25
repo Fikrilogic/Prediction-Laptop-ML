@@ -15,7 +15,7 @@
     background-color: rgb(32, 30, 30);
     position: absolute;
     left: 50%;
-    top: 24%;
+    top: 235px;
     border-radius: 50%;
   }
 
@@ -23,19 +23,11 @@
     border-top: 2px solid black;
 
     .form-field {
-      margin: 20px 0;
+      margin: 20px auto;
 
       .question {
         font-size: 20px;
         margin-bottom: 16px;
-      }
-
-      .p-field-radiobutton {
-        margin: 20px 0;
-
-        label {
-          padding-left: 10px;
-        }
       }
     }
   }

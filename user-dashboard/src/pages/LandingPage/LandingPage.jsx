@@ -1,19 +1,20 @@
 import { Icon } from "@iconify/react";
 import { Button } from "primereact/button";
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import WelcomeImage from "../../assets/img/landing-page-image.png";
+import { getProfile } from "../../Redux/User/fetch-action";
 import "./LandingPage.scss";
 
 const LandingPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const algorithm = [
-  //   {name: "K-Nearest Neighbors", link: ''},
-  //   {name: "Decision Tree", link: ''},
-  //   {name: "Gradient Boost Decision Tree", link: ''},
-  //   {name: "Naive Bayes", link: ''},
-  // ]
+
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
 
   return (
     <div className="container-landing">
@@ -21,10 +22,13 @@ const LandingPage = () => {
         <div className="welcome-wrapper">
           <p className="title">CREAVEN</p>
           <p className="sub">
-            Gives you the best prediction for laptop’s recommendation
+            Memberikanmu prediksi terbaik dalam hal rekomendasi laptop
           </p>
           <div className="browse">
-            <Button label="Consult Now" onClick={() => navigate("/consult")} />
+            <Button
+              label="Ayo Konsultasi Sekarang"
+              onClick={() => navigate("/consult")}
+            />
           </div>
         </div>
         <div className="welcome-image">
@@ -37,30 +41,32 @@ const LandingPage = () => {
       </div>
       <div className="detail-section">
         <div className="what-section">
-          <h2>WHAT IS CREAVEN ?</h2>
+          <h2>APA ITU CREAVEN ?</h2>
           <p>
-            <strong>Creaven</strong> is a website that uses some sort of machine
-            learning algorithm, such as{" "}
+            <strong>Creaven</strong> adalah sebuah website yang menggunakan
+            semacam algoritma <em>machine learning</em>, seperti{" "}
             <span className="algorithm">K-Nearest Neighbors</span>,{" "}
             <span className="algorithm">Decision Tree</span>,{" "}
-            <span className="algorithm">Gradient Boost Decision Tree</span> and{" "}
-            <span className="algorithm">Naive Bayes</span>. These algorithm will
-            gives you the best laptop's recommendation for you day to day needs.
+            <span className="algorithm">Gradient Boost Decision Tree</span> dan{" "}
+            <span className="algorithm">Naive Bayes</span>. Algoritma-algortima
+            tersebut akan memberikanmu prediksi terbaik dalam hal rekomendasi
+            laptop untuk pemakaian sehari-hari.
           </p>
         </div>
         <div className="goal-section">
-          <h2>WHAT IS THE GOAL ?</h2>
+          <h2>APAKAH TUJUAN DARI CREAVEN ?</h2>
           <p>
-            The goal of the creation of this website is to find which is the
-            best machine learning algorithm to use for prediction. In this case,{" "}
-            <strong>Creaven</strong> uses these algorithm to predict the best
-            laptop recommendation based on user's needs.
+            Tujuan dari pembuatan website ini yaitu untuk menentukan yang mana
+            merupakan algoritma <em>machine learning</em> terbaik yang digunakan
+            untuk prediksi. Dalam hal ini, <strong>Creaven</strong> menggunakan
+            algoritma-algoritma tersebut untuk memberikan rekomendasi laptop
+            berdasarkan kebutuhan-kebutuhan dari pengguna.
           </p>
         </div>
       </div>
       <div className="algorithm-section">
         <div className="title">
-          <h2>ALGORITHM CREAVEN USES</h2>
+          <h2>ALGORITMA YANG DIGUNAKAN</h2>
         </div>
         <div className="card-list">
           {[
@@ -77,12 +83,13 @@ const LandingPage = () => {
         </div>
       </div>
       <div className="survey-section">
-        <h1>Have Time For A Little Survey ?</h1>
+        <h1>Memiliki Waktu Untuk Sedikit Survey ?</h1>
         <p>
-          By doing this survey, you are contributing to help our machine
-          learning algorithm to give the best prediction for you. If you already
-          logged in and want to participate in this survey, You can click the
-          link below.
+          Dengan melakukan survey ini, kamu telah memberikan kontribusi dalam
+          membantu algoritma <em>machine learning</em> kami untuk memberikan
+          pilihan rekomendasi terbaik untuk kamu. Jika kamu telah memiliki akun
+          dan ingin mengikuti survey ini, kamu bisa melakukan login dan juga
+          klik tombol dibawah.
         </p>
         <Link to="/survey">Go To Survey</Link>
       </div>

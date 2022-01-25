@@ -5,37 +5,171 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Dropdown } from "primereact/dropdown";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { FailRequest, PostConsult } from "../../Redux/User/action";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  ConsultResult,
+  FailRequest,
+  PostConsult,
+} from "../../Redux/User/action";
 import { URL } from "../../Context/action";
+import {
+  FetchCompany,
+  FetchCpu,
+  FetchGpu,
+  FetchKebutuhan,
+  FetchLaptopType,
+  FetchScreenResolution,
+  FetchScreenType,
+  FetchStorage,
+} from "../../Redux/Data/fetch-action";
 
 const ConsultPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const cpuList = useSelector((state) => state.data.cpu).map(
+    (data) => data.name
+  );
+  const gpuList = useSelector((state) => state.data.gpu).map(
+    (data) => data.name
+  );
+  const storageList = useSelector((state) => state.data.storage).map(
+    (data) => data.type
+  );
+  const screenList = useSelector((state) => state.data.screen).map(
+    (data) => data.type
+  );
+  const resolutionList = useSelector((state) => state.data.resolution).map(
+    (data) => data.resolution
+  );
+  const typeList = useSelector((state) => state.data.laptop_type).map(
+    (data) => data.name
+  );
+  const kebutuhanList = useSelector((state) => state.data.kebutuhan).map(
+    (data) => data.name
+  );
+  const companyList = useSelector((state) => state.data.company).map(
+    (data) => data.name
+  );
+
+  // const cpuList = [
+  //   "Intel Core i7",
+  //   "Intel Core i5",
+  //   "Intel Core i3",
+  //   "Intel Celeron",
+  //   "Intel Atom",
+  //   "AMD E-Series",
+  //   "AMD FX",
+  //   "AMD Ryzen",
+  // ];
+
+  // const gpuList = [
+  //   "Intel Iris Plus Graphic",
+  //   "AMD Radeon 5xx",
+  //   "AMD Radeon RX",
+  //   "AMD Radeon 520",
+  //   "AMD Radeon R",
+  //   "Nvidia GeForce",
+  //   "Intel HD Graphics",
+  //   "AMD Radeon Pro",
+  //   "Intel UHD Graphics",
+  //   "Intel Iris Pro Graphics",
+  //   "Intel UHD Graphic",
+  //   "Nvidia GeForce GTX",
+  //   "Intel Iris Graphics",
+  //   "AMD Radeon Pro 555",
+  // ];
+
+  // const laptopType = [
+  //   "ultrabook",
+  //   "gaming",
+  //   "notebook",
+  //   "netbook",
+  //   "2 in 1 convertible",
+  // ];
+
+  // const screenList = [
+  //   "IPS Panel Retina Display",
+  //   "IPS Panel Full HD / Touchscreen",
+  //   "IPS Panel Full HD",
+  //   "HD",
+  //   "JD",
+  //   "Full HD",
+  // ];
+
+  // const kebutuhanList = [
+  //   "Kerja Kantor",
+  //   "Gaming",
+  //   "Penggunaan Biasa",
+  //   "Desain",
+  // ];
+
+  // const storageList = ["HDD", "SSD", "SSD + HDD", "Flash Storage"];
+
+  // const companyList = ["Dell", "HP", "Lenovo", "MSI", "Asus", "Apple", "Acer"];
+
+  // const resolutionList = [
+  //   "1920x1080",
+  //   "2560x1600",
+  //   "1440x900",
+  //   "1920x1080",
+  //   "1366x768",
+  // ];
+
   const [data, setData] = useState({
+    kebutuhan: "",
+    budget: 0,
     cpu: "",
     gpu: "",
+    ram: 0,
     memory: "",
     company: "",
     screen: "",
     sc_res: "",
-    kebutuhan: "",
-    type: "",
-    budget: 0,
-    ram: 0,
-    price: 0,
     weight: "",
+    type: "",
+    price: 0,
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const {
+      kebutuhan,
+      budget,
+      cpu,
+      gpu,
+      weight,
+      memory,
+      company,
+      screen,
+      sc_res,
+      type,
+      ram,
+      price,
+    } = data;
     try {
       const req = await axios.post(
-        `${URL}ml/konsultasi/all_method_predict/`,
-        { data },
-        { credentials: true }
+        URL + 'ml/konsultasi/all_method_predict/',
+        {
+          kebutuhan,
+          budget,
+          cpu,
+          gpu,
+          ram,
+          memory,
+          company,
+          screen,
+          resolution: sc_res,
+          weight,
+          type_laptop: type,
+          price
+        },
+        { withCredentials: true }
       );
+      if (req.data) {
+        dispatch(ConsultResult(req.data));
+        return navigate("/consult/results");
+      }
       console.log(req);
     } catch (e) {
       dispatch(FailRequest());
@@ -43,69 +177,16 @@ const ConsultPage = () => {
     console.log(data);
   };
 
-  const cpuList = [
-    "Intel Core i7",
-    "Intel Core i5",
-    "Intel Core i3",
-    "Intel Celeron",
-    "Intel Atom",
-    "AMD E-Series",
-    "AMD FX",
-    "AMD Ryzen",
-  ];
-
-  const gpuList = [
-    "Intel Iris Plus Graphic",
-    "AMD Radeon 5xx",
-    "AMD Radeon RX",
-    "AMD Radeon 520",
-    "AMD Radeon R",
-    "Nvidia GeForce",
-    "Intel HD Graphics",
-    "AMD Radeon Pro",
-    "Intel UHD Graphics",
-    "Intel Iris Pro Graphics",
-    "Intel UHD Graphic",
-    "Nvidia GeForce GTX",
-    "Intel Iris Graphics",
-    "AMD Radeon Pro 555",
-  ];
-
-  const laptopType = [
-    "ultrabook",
-    "gaming",
-    "notebook",
-    "netbook",
-    "2 in 1 convertible",
-  ];
-
-  const screenList = [
-    "IPS Panel Retina Display",
-    "IPS Panel Full HD / Touchscreen",
-    "IPS Panel Full HD",
-    "HD",
-    "JD",
-    "Full HD",
-  ];
-
-  const kebutuhanList = [
-    "Kerja Kantor",
-    "Gaming",
-    "Penggunaan Biasa",
-    "Desain",
-  ];
-
-  const storageList = ["HDD", "SSD", "SSD + HDD", "Flash Storage"];
-
-  const companyList = ["Dell", "HP", "Lenovo", "MSI", "Asus", "Apple", "Acer"];
-
-  const resolutionList = [
-    "1920x1080",
-    "2560x1600",
-    "1440x900",
-    "1920x1080",
-    "1366x768",
-  ];
+  useEffect(() => {
+    dispatch(FetchCompany());
+    dispatch(FetchStorage());
+    dispatch(FetchScreenType());
+    dispatch(FetchScreenResolution());
+    dispatch(FetchLaptopType());
+    dispatch(FetchKebutuhan());
+    dispatch(FetchGpu());
+    dispatch(FetchCpu());
+  }, [dispatch]);
 
   return (
     <div className="container-consult">
@@ -123,25 +204,14 @@ const ConsultPage = () => {
         </div>
       </div>
       <div className="container-consult-body">
-        <form className="" noValidate autoComplete="false">
-          <div className="form-field grid p-fluid">
-            <label htmlFor="name" className="col-12 md:col-2 ">
-              Name
-            </label>
-            <div className="col-12 md:col-10">
-              <InputText
-                id="name"
-                type="text"
-                className="p-inputtext p-component"
-              />
-            </div>
-          </div>
+        <form className="" autoComplete="off">
           <div className="form-field grid p-fluid">
             <label htmlFor="kebutuhan" className="col-12 md:col-2 ">
               Needs
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="kebutuhan"
                 options={kebutuhanList}
                 value={data.kebutuhan}
@@ -159,6 +229,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <InputText
+              required
                 id="Budget"
                 type="text"
                 className="p-inputtext p-component"
@@ -174,6 +245,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="CPU"
                 options={cpuList}
                 value={data.cpu}
@@ -189,6 +261,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="GPU"
                 options={gpuList}
                 className="p-component"
@@ -204,6 +277,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="Memory"
                 options={storageList}
                 className="p-component"
@@ -219,6 +293,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="RAM"
                 value={data.ram}
                 placeholder="Select How Many RAM"
@@ -234,14 +309,13 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="Type"
-                options={laptopType}
+                options={typeList}
                 className="p-component"
-                value={data.type_laptop}
+                value={data.type}
                 placeholder="Select Laptop Type"
-                onChange={(e) =>
-                  setData({ ...data, type_laptop: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, type: e.target.value })}
               />
             </div>
           </div>
@@ -251,6 +325,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="company"
                 options={companyList}
                 className="p-component"
@@ -266,6 +341,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="screen"
                 options={screenList}
                 className="p-component"
@@ -281,14 +357,13 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
+              required
                 id="resolution"
                 options={resolutionList}
                 className="p-component"
-                value={data.resolution}
+                value={data.sc_res}
                 placeholder="Select Screen Resolution"
-                onChange={(e) =>
-                  setData({ ...data, resolution: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, sc_res: e.target.value })}
               />
             </div>
           </div>
@@ -298,6 +373,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <InputText
+              required
                 id="weight"
                 type="text"
                 className="p-inputtext p-component"
@@ -311,6 +387,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <InputText
+              required
                 id="price"
                 type="text"
                 onChange={(e) =>

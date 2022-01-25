@@ -16,6 +16,10 @@ import LandingPage from "./pages/LandingPage/LandingPage";
 import ContactPage from "./pages/ContactPage/ContactPage";
 import ConsultPage from "./pages/ConsultPage/ConsultPage";
 import SurveyPage from "./pages/SurveyPage/SurveyPage";
+import Avatar1 from "./assets/img/avatar1.png";
+import Avatar2 from "./assets/img/avatar2.png";
+import Avatar3 from "./assets/img/avatar3.png";
+import Avatar4 from "./assets/img/avatar4.png";
 import PostSurveyPage from "./pages/SurveyPage/PostSurveyPage/PostSurveyPage";
 import ConsultResultPage from "./pages/ConsultPage/ConsultResultPage/ConsultResultPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
@@ -23,7 +27,11 @@ import PrivateRoute from "./components/ProtectedRoute/protect-route.component";
 
 const App = (props) => {
   const [user, dispatch] = useReducer(Reducer, AUTH_STATE);
-  console.log("app:", props);
+  const pictureList = [Avatar1, Avatar2, Avatar3, Avatar4];
+  let random = Math.floor(Math.random() * 4);
+  const profilePic = pictureList[random];
+  console.log(profilePic);
+  console.log("app:", user);
 
   return (
     <AuthContext.Provider value={{ user, dispatch }}>
@@ -33,29 +41,43 @@ const App = (props) => {
             <Route
               path="/"
               exact
-              element={<Layout element={<LandingPage />} />}
+              element={<Layout element={<LandingPage />} avatar={profilePic} />}
             />
             <Route path="/login" element={<Layout element={<LoginPage />} />} />
             <Route
               path="/register"
-              element={<Layout element={<RegisterPage />} />}
+              element={
+                <Layout element={<RegisterPage />} avatar={profilePic} />
+              }
             />
             <Route
               path="/contact"
-              element={<Layout element={<ContactPage />} />}
+              element={<Layout element={<ContactPage />} avatar={profilePic} />}
             />
             <Route
               path="/consult"
-              element={<Layout element={<ConsultPage />} />}
+              element={
+                <Layout
+                  avatar={profilePic}
+                  element={
+                    <PrivateRoute>
+                      <ConsultPage />
+                    </PrivateRoute>
+                  }
+                />
+              }
             />
             <Route
               path="/consult/results"
-              element={<Layout element={<ConsultResultPage />} />}
+              element={
+                <Layout element={<ConsultResultPage />} avatar={profilePic} />
+              }
             />
             <Route
               path="/survey"
               element={
                 <Layout
+                  avatar={profilePic}
                   element={
                     <PrivateRoute>
                       <SurveyPage />
@@ -68,6 +90,7 @@ const App = (props) => {
               path="/survey/success"
               element={
                 <Layout
+                  avatar={profilePic}
                   element={
                     <PrivateRoute>
                       <PostSurveyPage />
@@ -80,9 +103,10 @@ const App = (props) => {
               path="/profile"
               element={
                 <Layout
+                  avatar={profilePic}
                   element={
                     <PrivateRoute>
-                      <ProfilePage />
+                      <ProfilePage avatar={profilePic} />
                     </PrivateRoute>
                   }
                 />
