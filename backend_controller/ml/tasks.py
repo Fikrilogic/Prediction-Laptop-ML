@@ -46,12 +46,16 @@ gb_pipeline = Pipeline(steps=[('preprocessing', column_trans),
 
 # Helper Function
 def get_dataset():
-    query = MasterDataset.objects.all()
-    data = query.values('kebutuhan_id__name', 'budget', 'cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type',
-                        'company_id__name', 'screen_id__type', 'resolution_id__resolution', 'weight', 'type_id__name',
-                        'price',
-                        'name')
-    df = pd.DataFrame(data)
+    try:
+        query = MasterDataset.objects.all()
+        data = query.values('kebutuhan_id__name', 'budget', 'cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type',
+                            'company_id__name', 'screen_id__type', 'resolution_id__resolution', 'weight',
+                            'type_id__name',
+                            'price',
+                            'name')
+        df = pd.DataFrame(data)
+    except:
+        return "Data not Exist or Something Error"
     return df
 
 
@@ -79,18 +83,10 @@ def save_result(x_test, y_test, model, file):
 def cross_validation_testing(x, y, model, file):
     try:
         list_score = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='accuracy')
-        kfold_f1 = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='f1_weighted')
-        kfold_recall = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='recall_weighted')
-        kfold_precision = cross_val_score(file, x, y, cv=KFold(n_splits=10), scoring='precision_weighted')
+
     except ValueError as e:
         print(str(e))
 
-    kfold_result = [
-        {'name': model[0].name, 'precision': kfold_precision},
-        {'name': model[0].name, 'recall': kfold_recall},
-        {'name': model[0].name, 'f1': kfold_f1},
-    ]
-    print('10 KFOLD Result :\n {}'.format(kfold_result))
 
     try:
         data = MasterCrossvalResult.objects.get(model_id=model[0].id)
@@ -126,12 +122,15 @@ def cross_validation_testing(x, y, model, file):
 # Task for Training Model
 
 # K-Nearest Neighbors
-@periodic_task(crontab(minute='*/1'))
+@periodic_task(crontab(minute='*/1'), retries=2, delay=5)
 def retrain_knn_model():
-    df = get_dataset()
+    try:
+        df = get_dataset()
+        target = df['name']
+        data = df.drop('name', axis='columns')
+    except:
+        return "Data Empty"
 
-    target = df['name']
-    data = df.drop('name', axis='columns')
 
     x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=20)
     m = knn_pipeline
@@ -145,13 +144,18 @@ def retrain_knn_model():
     save_result(x_test, y_test, model, m)
     cross_validation_testing(data, target, model, m)
 
+    return "success";
+
 
 # DECISION TREE
-@periodic_task(crontab(minute='*/1'))
+@periodic_task(crontab(minute='*/1'), retries=2, delay=5)
 def retrain_dt_model():
-    df = get_dataset()
-    target = df['name']
-    data = df.drop('name', axis='columns')
+    try:
+        df = get_dataset()
+        target = df['name']
+        data = df.drop('name', axis='columns')
+    except:
+        return "Data Empty"
 
     x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=20)
     m = dt_pipeline
@@ -169,9 +173,12 @@ def retrain_dt_model():
 # gdbt
 @periodic_task(crontab(minute='*/1'), retries=2, delay=5)
 def retrain_gbdt_model():
-    df = get_dataset()
-    target = df['name']
-    data = df.drop('name', axis='columns')
+    try:
+        df = get_dataset()
+        target = df['name']
+        data = df.drop('name', axis='columns')
+    except:
+        return "Data Empty"
 
     x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=20)
     m = gb_pipeline
@@ -187,11 +194,14 @@ def retrain_gbdt_model():
 
 
 # Naive Bayes
-@periodic_task(crontab(minute='*/1'))
+@periodic_task(crontab(minute='*/1'), retries=2, delay=5)
 def retrain_nb_model():
-    df = get_dataset()
-    target = df['name']
-    data = df.drop('name', axis='columns')
+    try:
+        df = get_dataset()
+        target = df['name']
+        data = df.drop('name', axis='columns')
+    except:
+        return "Data Empty"
 
     x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.1, random_state=20)
     m = nb_pipeline
