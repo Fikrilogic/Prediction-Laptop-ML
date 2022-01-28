@@ -108,7 +108,7 @@ const ScreenTable = () => {
     try {
       const req = await axios.post(
         URL + `screen-type/`,
-        { name: data },
+        { type: data },
         {
           withCredentials: true,
         }

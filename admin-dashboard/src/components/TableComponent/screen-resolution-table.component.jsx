@@ -108,7 +108,7 @@ const ResolutionTable = () => {
     try {
       const req = await axios.post(
         URL + `screen-reso/`,
-        { name: data },
+        { resolution: data },
         {
           withCredentials: true,
         }

@@ -108,7 +108,7 @@ const StorageTable = () => {
     try {
       const req = await axios.post(
         URL + `memory-type/`,
-        { name: data },
+        { type: data },
         {
           withCredentials: true,
         }
