@@ -20,7 +20,6 @@ import Avatar1 from "./assets/img/avatar1.png";
 import Avatar2 from "./assets/img/avatar2.png";
 import Avatar3 from "./assets/img/avatar3.png";
 import Avatar4 from "./assets/img/avatar4.png";
-import PostSurveyPage from "./pages/SurveyPage/PostSurveyPage/PostSurveyPage";
 import ConsultResultPage from "./pages/ConsultPage/ConsultResultPage/ConsultResultPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import PrivateRoute from "./components/ProtectedRoute/protect-route.component";
@@ -81,19 +80,6 @@ const App = (props) => {
                   element={
                     <PrivateRoute>
                       <SurveyPage />
-                    </PrivateRoute>
-                  }
-                />
-              }
-            />
-            <Route
-              path="/survey/success"
-              element={
-                <Layout
-                  avatar={profilePic}
-                  element={
-                    <PrivateRoute>
-                      <PostSurveyPage />
                     </PrivateRoute>
                   }
                 />
