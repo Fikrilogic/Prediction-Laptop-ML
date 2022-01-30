@@ -149,7 +149,7 @@ const ConsultPage = () => {
     } = data;
     try {
       const req = await axios.post(
-        URL + 'ml/konsultasi/all_method_predict/',
+        URL + "ml/konsultasi/all_method_predict/",
         {
           kebutuhan,
           budget,
@@ -162,7 +162,7 @@ const ConsultPage = () => {
           resolution: sc_res,
           weight,
           type_laptop: type,
-          price
+          price,
         },
         { withCredentials: true }
       );
@@ -207,11 +207,11 @@ const ConsultPage = () => {
         <form className="" autoComplete="off">
           <div className="form-field grid p-fluid">
             <label htmlFor="kebutuhan" className="col-12 md:col-2 ">
-              Needs
+              Kebutuhan
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="kebutuhan"
                 options={kebutuhanList}
                 value={data.kebutuhan}
@@ -229,7 +229,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <InputText
-              required
+                required
                 id="Budget"
                 type="text"
                 className="p-inputtext p-component"
@@ -245,7 +245,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="CPU"
                 options={cpuList}
                 value={data.cpu}
@@ -261,7 +261,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="GPU"
                 options={gpuList}
                 className="p-component"
@@ -273,11 +273,11 @@ const ConsultPage = () => {
           </div>
           <div className="form-field grid p-fluid">
             <label htmlFor="Memory" className="col-12 md:col-2 ">
-              Storage
+              Penyimpanan
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="Memory"
                 options={storageList}
                 className="p-component"
@@ -293,7 +293,7 @@ const ConsultPage = () => {
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="RAM"
                 value={data.ram}
                 placeholder="Select How Many RAM"
@@ -305,11 +305,11 @@ const ConsultPage = () => {
           </div>
           <div className="form-field grid p-fluid">
             <label htmlFor="Type" className="col-12 md:col-2 ">
-              Laptop Type
+              Tipe Laptop
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="Type"
                 options={typeList}
                 className="p-component"
@@ -321,11 +321,11 @@ const ConsultPage = () => {
           </div>
           <div className="form-field grid p-fluid">
             <label htmlFor="company" className="col-12 md:col-2 ">
-              Company
+              Produsen Laptop
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="company"
                 options={companyList}
                 className="p-component"
@@ -337,11 +337,11 @@ const ConsultPage = () => {
           </div>
           <div className="form-field grid p-fluid">
             <label htmlFor="screen" className="col-12 md:col-2 ">
-              Screen Type
+              Tipe Layar
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="screen"
                 options={screenList}
                 className="p-component"
@@ -353,11 +353,11 @@ const ConsultPage = () => {
           </div>
           <div className="form-field grid p-fluid">
             <label htmlFor="resolution" className="col-12 md:col-2 ">
-              Resolution Screen
+              Resolusi Layar
             </label>
             <div className="col-12 md:col-10">
               <Dropdown
-              required
+                required
                 id="resolution"
                 options={resolutionList}
                 className="p-component"
@@ -369,11 +369,11 @@ const ConsultPage = () => {
           </div>
           <div className="form-field grid p-fluid">
             <label htmlFor="weight" className="col-12 md:col-2 ">
-              Weight (in Kg)
+              Berat (dalam Kg)
             </label>
             <div className="col-12 md:col-10">
               <InputText
-              required
+                required
                 id="weight"
                 type="text"
                 className="p-inputtext p-component"
@@ -383,11 +383,11 @@ const ConsultPage = () => {
           </div>
           <div className="form-field grid p-fluid">
             <label htmlFor="price" className="col-12 md:col-2 ">
-              Price
+              Harga
             </label>
             <div className="col-12 md:col-10">
               <InputText
-              required
+                required
                 id="price"
                 type="text"
                 onChange={(e) =>

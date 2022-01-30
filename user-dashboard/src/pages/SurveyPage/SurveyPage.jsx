@@ -23,6 +23,11 @@ import "./SurveyPage.scss";
 const SurveyPage = () => {
   const dispatch = useDispatch();
   const toast = useRef(null);
+  const [kebutuhan, setKebutuhan] = useState(false);
+  const [cpu, setCpu] = useState(false);
+  const [gpu, setGpu] = useState(false);
+  const [company, setCompany] = useState(false);
+
   const cpuList = useSelector((state) => state.data.cpu).map(
     (data) => data.name
   );
@@ -48,8 +53,25 @@ const SurveyPage = () => {
     (data) => data.name
   );
 
+  // cpuList.push("Lainnya..");
+  // gpuList.push("Lainnya..");
+  // kebutuhanList.push("Lainnya..");
+  // companyList.push("Lainnya..");
+
   const saveHandler = async (e) => {
     e.preventDefault();
+    // if (cpu) {
+    //   addNewCpu();
+    // }
+    // if (gpu) {
+    //   addNewGpu();
+    // }
+    // if (kebutuhan) {
+    //   addNewKebutuhan();
+    // }
+    // if (company) {
+    //   addNewCompany();
+    // }
     try {
       const req = await axios.post(URL + "dataset/", data, {
         withCredentials: true,
@@ -70,6 +92,82 @@ const SurveyPage = () => {
     }
   };
 
+  // const addNewCpu = async () => {
+  //   const { cpu } = data;
+  //   try {
+  //     const req = await axios.post(
+  //       URL + "cpu/",
+  //       { name: cpu },
+  //       {
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     if (req.data) {
+  //       console.log("add cpu baru berhasil");
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //     dispatch(FailRequest());
+  //   }
+  // };
+
+  // const addNewGpu = async () => {
+  //   const { gpu } = data;
+  //   try {
+  //     const req = await axios.post(
+  //       URL + "gpu/",
+  //       { name: gpu },
+  //       {
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     if (req.data) {
+  //       console.log("add gpu baru berhasil");
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //     dispatch(FailRequest());
+  //   }
+  // };
+
+  // const addNewCompany = async () => {
+  //   const { company } = data;
+  //   try {
+  //     const req = await axios.post(
+  //       URL + "company/",
+  //       { name: company },
+  //       {
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     if (req.data) {
+  //       console.log("add company baru berhasil");
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //     dispatch(FailRequest());
+  //   }
+  // };
+
+  // const addNewKebutuhan = async () => {
+  //   const { kebutuhan } = data;
+  //   try {
+  //     const req = await axios.post(
+  //       URL + "kebutuhan/",
+  //       { name: kebutuhan },
+  //       {
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     if (req.data) {
+  //       console.log("add kebutuhan baru berhasil");
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //     dispatch(FailRequest());
+  //   }
+  // };
+
   const [data, setData] = useState({
     kebutuhan: "",
     budget: 0,
@@ -85,6 +183,8 @@ const SurveyPage = () => {
     price: 0,
     name: "",
   });
+
+  console.log(data);
 
   useEffect(() => {
     dispatch(FetchCompany());
@@ -129,12 +229,31 @@ const SurveyPage = () => {
                 required
                 id="kebutuhan"
                 options={kebutuhanList}
-                value={data.kebutuhan}
+                value={kebutuhan === true ? "Lainnya.." : data.kebutuhan}
                 className="p-component"
-                onChange={(e) =>
-                  setData({ ...data, kebutuhan: e.target.value })
-                }
+                onChange={(e) => {
+                  if (e.target.value === "Lainnya..") {
+                    setKebutuhan(true);
+                  } else {
+                    setKebutuhan(false);
+                    setData({ ...data, kebutuhan: e.target.value });
+                  }
+                }}
               />
+              {kebutuhan === true ? (
+                <InputText
+                  required
+                  id="kebutuhan"
+                  type="text"
+                  placeholder="Kebutuhan"
+                  className="p-inputtext p-component"
+                  onChange={(e) =>
+                    setData({ ...data, kebutuhan: e.target.value })
+                  }
+                />
+              ) : (
+                <></>
+              )}
             </div>
           </div>
           <div className="form-field p-fluid">
@@ -162,10 +281,29 @@ const SurveyPage = () => {
                 required
                 id="CPU"
                 options={cpuList}
-                value={data.cpu}
+                value={cpu === true ? "Lainnya.." : data.cpu}
                 className="p-component"
-                onChange={(e) => setData({ ...data, cpu: e.target.value })}
+                onChange={(e) => {
+                  if (e.target.value === "Lainnya..") {
+                    setCpu(true);
+                  } else {
+                    setCpu(false);
+                    setData({ ...data, cpu: e.target.value });
+                  }
+                }}
               />
+              {cpu === true ? (
+                <InputText
+                  required
+                  id="CPU"
+                  type="text"
+                  placeholder="Processor"
+                  className="p-inputtext p-component"
+                  onChange={(e) => setData({ ...data, cpu: e.target.value })}
+                />
+              ) : (
+                <></>
+              )}
             </div>
           </div>
           <div className="form-field p-fluid">
@@ -178,9 +316,28 @@ const SurveyPage = () => {
                 id="GPU"
                 options={gpuList}
                 className="p-component"
-                value={data.gpu}
-                onChange={(e) => setData({ ...data, gpu: e.target.value })}
+                value={gpu === true ? "Lainnya.." : data.gpu}
+                onChange={(e) => {
+                  if (e.target.value === "Lainnya..") {
+                    setGpu(true);
+                  } else {
+                    setGpu(false);
+                    setData({ ...data, gpu: e.target.value });
+                  }
+                }}
               />
+              {gpu === true ? (
+                <InputText
+                  required
+                  id="GPU"
+                  type="text"
+                  placeholder="Graphic Card"
+                  className="p-inputtext p-component"
+                  onChange={(e) => setData({ ...data, gpu: e.target.value })}
+                />
+              ) : (
+                <></>
+              )}
             </div>
           </div>
           <div className="form-field p-fluid">
@@ -238,9 +395,30 @@ const SurveyPage = () => {
                 id="company"
                 options={companyList}
                 className="p-component"
-                value={data.company}
-                onChange={(e) => setData({ ...data, company: e.target.value })}
+                value={company === true ? "Lainnya.." : data.company}
+                onChange={(e) => {
+                  if (e.target.value === "Lainnya..") {
+                    setCompany(true);
+                  } else {
+                    setCompany(false);
+                    setData({ ...data, company: e.target.value });
+                  }
+                }}
               />
+              {company === true ? (
+                <InputText
+                  required
+                  id="company"
+                  type="text"
+                  placeholder="Produsen Laptop"
+                  className="p-inputtext p-component"
+                  onChange={(e) =>
+                    setData({ ...data, company: e.target.value })
+                  }
+                />
+              ) : (
+                <></>
+              )}
             </div>
           </div>
           <div className="form-field p-fluid">
