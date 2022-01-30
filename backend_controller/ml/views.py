@@ -16,7 +16,7 @@ from rest_framework.exceptions import (
 )
 
 from .serializers import ModelSerializers, KonsultasiSerializers, TrainingResultSerializers, CrossValidationSerializers
-from .models import MasterModel, MasterKonsultasi, MasterTrainingResult, MasterCrossvalResult
+from .models import MasterModel, MasterKonsultasi, MasterTrainingResult, MasterCrossvalResult, MasterHasil
 from .utils import convert_to__dict_graph, create_cross_val_dict
 
 from sklearn.metrics import accuracy_score
@@ -72,9 +72,13 @@ class KonsultasiView(viewsets.ModelViewSet):
         except ValueError as e:
             raise ParseError(str(e))
 
-        MasterKonsultasi.objects.create(
-            name=predict,
+        konsul = MasterKonsultasi.objects.create(
             **request.data
+        )
+
+        MasterHasil.objects.create(
+            konsultasi_id=konsul.id,
+
         )
 
         return Response({'prediction': predict}, status=status.HTTP_200_OK)

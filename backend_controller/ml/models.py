@@ -7,8 +7,6 @@ from .utils import PathAndRename
 
 import uuid
 
-
-
 model_path = PathAndRename('file/model')
 
 User = get_user_model()
@@ -61,7 +59,6 @@ class MasterKonsultasi(models.Model):
         get_latest_by = ['-created_at']
 
 
-
 class MasterHasil(models.Model):
     id = models.UUIDField(verbose_name=_('kode_test_hasil'), primary_key=True, default=uuid.uuid4)
     konsultasi = models.ForeignKey(MasterKonsultasi, on_delete=models.CASCADE)
@@ -87,6 +84,7 @@ class MasterTrainingResult(models.Model):
 
     class Meta:
         get_latest_by = ['train_at']
+
 
 class MasterCrossvalResult(models.Model):
     model = models.OneToOneField(MasterModel, on_delete=models.CASCADE, unique=True)
