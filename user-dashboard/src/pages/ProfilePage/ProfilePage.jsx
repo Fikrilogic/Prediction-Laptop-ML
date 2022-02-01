@@ -17,10 +17,14 @@ const ProfilePage = ({ avatar }) => {
   const userProfile = useSelector((state) => state.user.profile);
   const [editable, setEditable] = useState(false);
   const [data, setData] = useState({
-    first_name: userProfile.first_name ?? "",
-    last_name: userProfile.last_name ?? "",
-    phone: userProfile.phone ?? "",
+    first_name: userProfile !== null ? userProfile.first_name : "",
+    last_name: userProfile !== null ? userProfile.last_name : "",
+    phone: userProfile !== null ? userProfile.phone : "",
   });
+
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
 
   const handleEdit = () => {
     setEditable(!editable);
@@ -37,12 +41,14 @@ const ProfilePage = ({ avatar }) => {
           withCredentials: true,
         }
       );
-      if (req.status === 200) console.log("edit data berhasil");
+      if (req.data) {
+        console.log("edit data berhasil");
+        window.location.reload();
+      }
     } catch (e) {
       console.log(e);
       dispatch(FailRequest());
     }
-    window.location.reload();
   };
 
   return (
@@ -76,7 +82,7 @@ const ProfilePage = ({ avatar }) => {
               <InputText
                 type="text"
                 className="p-inputtext p-component"
-                value={data.first_name}
+                value={userProfile !== null ? userProfile.first_name : ""}
                 disabled
               />
             )}
@@ -96,7 +102,7 @@ const ProfilePage = ({ avatar }) => {
               <InputText
                 type="text"
                 className="p-inputtext p-component"
-                value={data.last_name}
+                value={userProfile !== null ? userProfile.last_name : ""}
                 disabled
               />
             )}
@@ -114,7 +120,7 @@ const ProfilePage = ({ avatar }) => {
               <InputText
                 type="text"
                 className="p-inputtext p-component"
-                value={data.phone}
+                value={userProfile !== null ? userProfile.phone : ""}
                 disabled
               />
             )}
