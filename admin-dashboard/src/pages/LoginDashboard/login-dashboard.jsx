@@ -6,8 +6,9 @@ import { makeStyles } from "@mui/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
 import { LoadingButton } from "@mui/lab";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 import { AuthContext } from "../../Context/context";
 import { login } from "../../Context/action";
@@ -51,17 +52,26 @@ export default function LoginDashboard(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClick = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      await login(dispatch, { email, password });
+    const fetch = await login(dispatch, { email, password });
+    console.log("fetching",fetch)
+
+    if(fetch){
       setLoading(false);
       return navigate("/dataset");
-    } catch (e) {
-      setLoading(false);
     }
+
+    setLoading(false);
+    setOpen(true);
+    return;
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -70,6 +80,19 @@ export default function LoginDashboard(props) {
 
   return (
     <div className={classes.login}>
+      <Snackbar
+        open={open}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
+      >
+        <Alert onClose={handleCloseSnackbar}
+               severity="error" sx={{width: '100%'}}
+               variant="filled"
+        >
+          Email or Password Invalid
+        </Alert>
+      </Snackbar>
       <Box className={classes.logo}>
         <Typography
           variant="h2"
