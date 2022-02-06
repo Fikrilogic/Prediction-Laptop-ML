@@ -59,6 +59,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
               <FormControl fullWidth>
                 <InputLabel id="cpu-select">CPU</InputLabel>
                 <Select
+                  disabled
                   labelId="cpu-select"
                   defaultValue=""
                   value={data.cpu}
@@ -77,6 +78,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
               <FormControl fullWidth>
                 <InputLabel id="gpu-select">GPU</InputLabel>
                 <Select
+                  disabled
                   labelId="gpu-select"
                   defaultValue=""
                   value={data.gpu}
@@ -113,6 +115,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
               <FormControl fullWidth>
                 <InputLabel id="storage-select">Tipe Storage</InputLabel>
                 <Select
+                  disabled
                   labelId="storage-select"
                   defaultValue=""
                   value={data.memory}
@@ -131,6 +134,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
               <FormControl fullWidth>
                 <InputLabel id="company-select">Perusahaan</InputLabel>
                 <Select
+                  disabled
                   labelId="company-select"
                   defaultValue=""
                   value={data.company}
@@ -151,6 +155,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
               <FormControl fullWidth>
                 <InputLabel id="screen-select">Tipe Layar</InputLabel>
                 <Select
+                  disabled
                   labelId="screen-select"
                   defaultValue=""
                   value={data.screen}
@@ -169,6 +174,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
               <FormControl fullWidth>
                 <InputLabel id="resolution-select">Resolusi Layar</InputLabel>
                 <Select
+                  disabled
                   labelId="resolution-select"
                   defaultValue=""
                   value={data.sc_res}
@@ -196,6 +202,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
               <FormControl fullWidth>
                 <InputLabel id="type-select">Tipe Laptop</InputLabel>
                 <Select
+                  disabled
                   labelId="type-select"
                   defaultValue=""
                   value={data.type}
@@ -235,6 +242,7 @@ const ModalEditDataset = ({ open, setOpen, editHandler, setData, data }) => {
             <FormControl fullWidth>
               <InputLabel id="kebutuhan-select">Kebutuhan</InputLabel>
               <Select
+                disabled
                 labelId="kebutuhan-select"
                 defaultValue=""
                 value={data.kebutuhan}

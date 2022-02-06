@@ -6,9 +6,9 @@ import { useReducer } from "react";
 import { AuthContext } from "./Context/context";
 import { Reducer, AUTH_STATE } from "./Context/reducer";
 
-import LoginDashboard from "./pages/LoginDashboard/Login-Dashboard";
-import UserDashboard from "./pages/Dashboard/User-Dashboard.jsx";
-import DatasetDashboard from "./pages/Dashboard/Dataset-Dashboard.jsx";
+import LoginDashboard from "./pages/LoginDashboard/login-dashboard";
+import UserDashboard from "./pages/Dashboard/user-dashboard";
+import DatasetDashboard from "./pages/Dashboard/dataset-dashboard";
 import PrivateRoute from "./components/ProtectedRoute/protect-route.component";
 import Layout from "./pages/Layout";
 import DatasetTablesDashboard from "./pages/DatasetTables/Dataset-Tables-Dashboard";
