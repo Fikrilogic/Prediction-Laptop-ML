@@ -2,8 +2,10 @@ import pickle
 
 from django.shortcuts import render
 from api.permissions import isAdminUser, isAdminOrMemberUser, isMemberUser
+from api.models import MasterLaptop
 
 from django.contrib.auth import get_user_model
+from django.db.models import Max
 
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -78,10 +80,11 @@ class KonsultasiView(viewsets.ModelViewSet):
 
         MasterHasil.objects.create(
             konsultasi_id=konsul.id,
-
         )
 
-        return Response({'prediction': predict}, status=status.HTTP_200_OK)
+        name = MasterLaptop.objects.filter(name=predict).first()
+
+        return Response({'prediction': predict, "laptop": f"api/laptop/{name.id}"}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
     def all_method_predict(self, request):
@@ -96,11 +99,30 @@ class KonsultasiView(viewsets.ModelViewSet):
             for model in query:
                 file = joblib.load(model.path.open('rb'))
                 predict = file.predict(data)
-                result.append({"name": model.name, 'predict': predict})
+                name = MasterLaptop.objects.filter(name=predict).first()
+                result.append({"name": model.name, 'predict': predict, "laptop": f"/api/laptop/{name.id}"})
         except ValueError as e:
             raise ParseError(str(e))
 
         return Response(result, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def knn(self, request):
+        data = request.data
+
+        knn_higher_acc = MasterTrainingResult.objects.exclude(knn_k=0).order_by('-accuracy').first()
+
+        query = MasterModel.objects.filter(id=knn_higher_acc.method_id).first()
+        data = list(data.values())
+        data = [[data for data in data]]
+
+        try:
+            file = joblib.load(query.path.open('rb'))
+            predict = file.predict(data)
+            name = MasterLaptop.objects.filter(name=predict).first()
+            return Response({"name": query.name, "predict": predict, "laptop": f"/api/laptop/{name.id}"})
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class TrainingResultView(viewsets.GenericViewSet):
@@ -119,7 +141,7 @@ class TrainingResultView(viewsets.GenericViewSet):
     @action(detail=False, methods=['get'])
     def result_graph(self, request):
         query = self.get_queryset()
-        data = pd.DataFrame(query.values('method_id__name', 'accuracy', 'precision', 'recall', 'f1_score'))
+        data = pd.DataFrame(query.filter(knn_k=0).values('method_id__name', 'accuracy', 'precision', 'recall', 'f1_score'))
 
         try:
             list_graph = convert_to__dict_graph(data)
@@ -127,6 +149,17 @@ class TrainingResultView(viewsets.GenericViewSet):
             raise ParseError(str(e))
 
         return Response(list_graph, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def knn(self, request):
+        query = self.get_queryset()
+        data = pd.DataFrame(query.exclude(knn_k=0).values('method_id__name', 'accuracy', 'precision', 'recall', 'f1_score'))
+        try:
+            graph = convert_to__dict_graph(data)
+        except ValueError as e:
+            raise ParseError(str(e))
+
+        return Response(graph)
 
 
 class CrossValidationView(viewsets.GenericViewSet):
@@ -145,7 +178,7 @@ class CrossValidationView(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['get'])
     def get_graph(self, request):
-        query = self.get_queryset()
+        query = self.get_queryset().exclude(name__icontains="K-Nearest")
         data_filter = query.values(
             'name',
             'test1',
@@ -166,4 +199,30 @@ class CrossValidationView(viewsets.GenericViewSet):
             raise ParseError(str(e))
 
         return Response(result, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def knn(self, request):
+        query = self.get_queryset().filter(name__icontains="K-Nearest")
+        data_filter = query.values(
+            'name',
+            'test1',
+            'test2',
+            'test3',
+            'test4',
+            'test5',
+            'test6',
+            'test7',
+            'test8',
+            'test9',
+            'test10',
+        )
+        df = pd.DataFrame(data_filter)
+        try:
+            result = create_cross_val_dict(df)
+        except ValueError as e:
+            raise ParseError(str(e))
+
+        return Response(result, status=status.HTTP_200_OK)
+    
+    
 

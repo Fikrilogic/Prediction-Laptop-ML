@@ -121,7 +121,6 @@ class DatasetSerializers(serializers.ModelSerializer):
             'gpu',
             'ram',
             'memory',
-            'company',
             'screen',
             'resolution',
             'weight',
@@ -129,4 +128,11 @@ class DatasetSerializers(serializers.ModelSerializer):
             'price',
             'name'
         ]
+        depth = 1
+
+
+class LaptopSerializers(serializers.Serializer):
+    class Meta:
+        model = models.MasterLaptop
+        fields = '__all__'
         depth = 1

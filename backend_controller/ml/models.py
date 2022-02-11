@@ -80,6 +80,7 @@ class MasterTrainingResult(models.Model):
     precision = models.DecimalField(max_digits=10, decimal_places=7)
     recall = models.DecimalField(max_digits=10, decimal_places=7)
     f1_score = models.DecimalField(max_digits=10, decimal_places=7)
+    knn_k = models.IntegerField(default=0)
     train_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

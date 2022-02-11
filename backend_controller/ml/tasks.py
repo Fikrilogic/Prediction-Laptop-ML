@@ -21,7 +21,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 column_trans = ColumnTransformer(remainder="passthrough",
                                  transformers=[('encode', OrdinalEncoder(handle_unknown="use_encoded_value",
                                                                          unknown_value=30),
-                                                [0, 2, 3, 5, 6, 7, 8, 10])],
+                                                [0, 2, 3, 5, 6, 7, 9])],
                                  sparse_threshold=0
                                  )
 
@@ -49,7 +49,7 @@ def get_dataset():
     try:
         query = MasterDataset.objects.all()
         data = query.values('kebutuhan_id__name', 'budget', 'cpu_id__name', 'gpu_id__name', 'ram', 'memory_id__type',
-                            'company_id__name', 'screen_id__type', 'resolution_id__resolution', 'weight',
+                            'screen_id__type', 'resolution_id__resolution', 'weight',
                             'type_id__name',
                             'price',
                             'name')
@@ -59,7 +59,7 @@ def get_dataset():
     return df
 
 
-def save_result(x_test, y_test, model, file):
+def save_result(x_test, y_test, model, file, knn_k=0):
     method = file
     predict = method.predict(x_test)
 
@@ -69,6 +69,7 @@ def save_result(x_test, y_test, model, file):
         data.recall = recall_score(y_test, predict, average='weighted', zero_division=0)
         data.precision = precision_score(y_test, predict, average='weighted', zero_division=0)
         data.f1_score = f1_score(y_test, predict, average='weighted', zero_division=0)
+        data.knn_k = knn_k
         data.save()
     except MasterTrainingResult.DoesNotExist:
         MasterTrainingResult.objects.create(
@@ -77,6 +78,7 @@ def save_result(x_test, y_test, model, file):
             recall=recall_score(y_test, predict, average='weighted'),
             precision=precision_score(y_test, predict, average='weighted'),
             f1_score=f1_score(y_test, predict, average='weighted'),
+            knn_k=knn_k
         )
 
 
@@ -86,7 +88,6 @@ def cross_validation_testing(x, y, model, file):
 
     except ValueError as e:
         print(str(e))
-
 
     try:
         data = MasterCrossvalResult.objects.get(model_id=model[0].id)
@@ -131,18 +132,23 @@ def retrain_knn_model():
     except:
         return "Data Empty"
 
-
     x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=20)
-    m = knn_pipeline
-    m.fit(x_train, y_train)
-    model = MasterModel.objects.get_or_create(
-        name='K-Nearest Neighbors',
-        desc='Model with KNN Algorithm'
-    )
-    model[0].path.delete(save=False)
-    model[0].path.save(content=ContentFile(pickle.dumps(m)), name='knn_model.pkl')
-    save_result(x_test, y_test, model, m)
-    cross_validation_testing(data, target, model, m)
+    k = [3, 5, 7, 9]
+
+    for num in k:
+        m = Pipeline(steps=[('preprocessing', column_trans),
+                            ('K-Nearest Neighbors Classifier',
+                             KNeighborsClassifier(n_neighbors=num, weights='distance', algorithm='kd_tree'))
+                            ])
+        m.fit(x_train, y_train)
+        model = MasterModel.objects.get_or_create(
+            name=f"K-Nearest Neighbors with k:{num}",
+            desc=f"Model with KNN Algorithm with k:{num}"
+        )
+        model[0].path.delete(save=False)
+        model[0].path.save(content=ContentFile(pickle.dumps(m)), name=f"knn_model_k{num}.pkl")
+        save_result(x_test, y_test, model, m, num)
+        cross_validation_testing(data, target, model, m)
 
     return "success";
 

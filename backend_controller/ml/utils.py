@@ -40,7 +40,6 @@ def convert_to__dict_graph(data):
     for n in df.columns:
         graph = createplot(n, df[n], name)
         result.append({n: graph})
-
     return result
 
 
@@ -48,7 +47,7 @@ def convert_to__dict_graph(data):
 def createplot(label, data, name):
     df = pd.DataFrame({'Metode': name, label: [int(n*100) for n in data]})
     plt.switch_backend('AGG')
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(10, 10))
     plt.title(f"{label} report".upper())
     sns.set_theme(style='whitegrid')
     ax = sns.barplot(data=df, x=name, y=label)
@@ -78,7 +77,7 @@ def create_cross_val_dict(data):
 
 def create_crossval_plot(data_dict, name):
     plt.switch_backend('AGG')
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(10, 10))
     plt.title(f"{name} Method")
     sns.lineplot(data=data_dict, x=data_dict['turn'], y='accuracy')
     plt.xticks(np.linspace(1, 10, 10))

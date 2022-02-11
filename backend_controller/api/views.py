@@ -26,7 +26,8 @@ from .serializers import (
     ResolutionSerializers,
     TypeLaptopSerializers,
     DatasetSerializers,
-    KebutuhanSerializers
+    KebutuhanSerializers,
+    LaptopSerializers
 
 )
 from .models import (
@@ -39,7 +40,8 @@ from .models import (
     MasterTypeLaptop,
     MasterScreenResolution,
     MasterDataset,
-    MasterKebutuhan
+    MasterKebutuhan,
+    MasterLaptop
 )
 from .permissions import isAdminUser, isAdminOrMemberUser, isMemberUser
 
@@ -323,6 +325,18 @@ class KebutuhanView(viewsets.ModelViewSet):
         return super(self.__class__, self).get_permissions()
 
 
+class LaptopView(viewsets.ModelViewSet):
+    queryset= MasterLaptop.objects.all()
+    serializer_class = LaptopSerializers
+
+    def get_permissions(self):
+        if self.action == 'retrieve' or self.action == 'list':
+            self.permission_classes = [isAdminOrMemberUser]
+        else:
+            self.permission_classes = [isAdminUser]
+        return super(self.__class__, self).get_permissions()
+
+
 class DatasetView(viewsets.ModelViewSet):
     queryset = MasterDataset.objects.all()
     serializer_class = DatasetSerializers
@@ -347,7 +361,6 @@ class DatasetView(viewsets.ModelViewSet):
             cpu = MasterCpu.objects.get(name=data['cpu'])
             gpu = MasterGpu.objects.get(name=data['gpu'])
             memory = MasterMemory.objects.get(type=data['memory'])
-            company = MasterCompany.objects.get(name=data['company'])
             screen = MasterScreen.objects.get(type=data['screen'])
             sc_res = MasterScreenResolution.objects.get(resolution=data['sc_res'])
             type = MasterTypeLaptop.objects.get(name=data['type'])
@@ -358,7 +371,6 @@ class DatasetView(viewsets.ModelViewSet):
                 gpu_id=gpu.id,
                 memory_id=memory.id,
                 resolution_id=sc_res.id,
-                company_id=company.id,
                 screen_id=screen.id,
                 type_id=type.id,
                 kebutuhan_id=kebutuhan.id,
@@ -390,7 +402,6 @@ class DatasetView(viewsets.ModelViewSet):
                 cpu = MasterCpu.objects.get_or_create(name=data[2])
                 gpu = MasterGpu.objects.get_or_create(name=data[3])
                 memory = MasterMemory.objects.get_or_create(type=data[5])
-                company = MasterCompany.objects.get_or_create(name=data[6])
                 screen = MasterScreen.objects.get_or_create(type=data[7])
                 resolution = MasterScreenResolution.objects.get_or_create(resolution=data[8])
                 type = MasterTypeLaptop.objects.get_or_create(name=data[10])
@@ -402,7 +413,6 @@ class DatasetView(viewsets.ModelViewSet):
                     gpu_id=gpu[0].id,
                     memory_id=memory[0].id,
                     resolution_id=resolution[0].id,
-                    company_id=company[0].id,
                     screen_id=screen[0].id,
                     type_id=type[0].id,
                     budget=data[1],
