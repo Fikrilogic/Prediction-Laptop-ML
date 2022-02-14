@@ -24,7 +24,6 @@ import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../../Context/context";
 
 import { logout } from "../../Context/action";
-import { LogoutAdmin } from "../../Redux/User/action";
 
 const useStyle = makeStyles((theme) => ({
   container: {
@@ -91,7 +90,6 @@ function SideMenuComponent(props) {
                 "CPU",
                 "GPU",
                 "storage",
-                "company",
                 "type",
                 "screen",
                 "resolution",
