@@ -1,5 +1,4 @@
 import {
-  GET_COMPANY_DATA,
   GET_CPU_DATA,
   GET_GPU_DATA,
   GET_KEBUTUHAN_DATA,
@@ -17,7 +16,6 @@ export const DATA_STATE = {
   storage: [],
   screen: [],
   resolution: [],
-  company: [],
   laptop_type: [],
   kebutuhan: [],
   method: "",
@@ -60,13 +58,6 @@ export const DataReducer = (state = DATA_STATE, action) => {
         ...state,
         resolution: action.payload.results,
         method: "GET RESOLUTION DATA",
-        status: "SUCCESS",
-      };
-    case GET_COMPANY_DATA:
-      return {
-        ...state,
-        company: action.payload.results,
-        method: "GET COMPANY DATA",
         status: "SUCCESS",
       };
     case GET_TYPE_DATA:
