@@ -120,6 +120,12 @@ function SideMenuComponent(props) {
             </List>
           </Collapse>
 
+          <ListItemButton onClick={() => navigate("/laptop")}>
+            <ListItemIcon sx={{ color: "white" }}>
+              {/* <GroupIcon /> */}
+            </ListItemIcon>
+            <ListItemText primary="Master Laptop" />
+          </ListItemButton>
           <ListItemButton onClick={() => navigate("/user")}>
             <ListItemIcon sx={{ color: "white" }}>
               <GroupIcon />
