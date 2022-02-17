@@ -34,7 +34,7 @@ router.register(r'memory-type', MemoryTypeView, basename='memory-type')
 router.register(r'screen-reso', ResolutionView, basename='screen-reso')
 router.register(r'dataset', DatasetView, basename='dataset')
 router.register(r'kebutuhan', KebutuhanView, basename='kebutuhan')
-router.register(r'laptop', KebutuhanView, basename='laptop')
+router.register(r'laptop', LaptopView, basename='laptop')
 
 urlpatterns = [
     path('register', Register.as_view(), name='user-register'),
