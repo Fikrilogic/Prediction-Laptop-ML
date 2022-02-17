@@ -14,6 +14,7 @@ import Toolbar from "@mui/material/Toolbar";
 import { HashLink as Link } from "react-router-hash-link";
 
 import TableViewIcon from "@mui/icons-material/TableView";
+import LaptopIcon from '@mui/icons-material/Laptop';
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -94,6 +95,7 @@ function SideMenuComponent(props) {
                 "screen",
                 "resolution",
                 "kebutuhan",
+                "company"
               ].map((item, index) => (
                 <ListItemButton sx={{ pl: 4 }} key={index}>
                   <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
@@ -122,7 +124,7 @@ function SideMenuComponent(props) {
 
           <ListItemButton onClick={() => navigate("/laptop")}>
             <ListItemIcon sx={{ color: "white" }}>
-              {/* <GroupIcon /> */}
+              <LaptopIcon />
             </ListItemIcon>
             <ListItemText primary="Master Laptop" />
           </ListItemButton>

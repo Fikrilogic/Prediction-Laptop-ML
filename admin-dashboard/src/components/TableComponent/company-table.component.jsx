@@ -41,7 +41,7 @@ const CompanyTable = () => {
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
-  const company = useSelector((state) => state.data.company);
+  const company = useSelector((state) => state.data.company) || [];
   const dispatch = useDispatch();
   const [data, setData] = useState("");
   const [id, setId] = useState("");
@@ -193,8 +193,12 @@ const CompanyTable = () => {
                     <TableCell>
                       <Skeleton variant="rectangular" />
                     </TableCell>
+                    <TableCell>
+                      <Skeleton variant="rectangular" />
+                    </TableCell>
                   </TableRow>
                 ) : (
+                  company !== [] ? 
                   company.map((data, index) => (
                     <TableRow key={data.id}>
                       <TableCell size="small">{index + 1}</TableCell>
@@ -220,7 +224,10 @@ const CompanyTable = () => {
                       </TableCell>
                     </TableRow>
                   ))
-                )}
+                  :
+                null
+                ) 
+              }
               </TableBody>
             </Table>
           </CardContent>

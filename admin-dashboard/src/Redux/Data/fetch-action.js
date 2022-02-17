@@ -1,4 +1,5 @@
 import {
+  getCompanyData,
   getCpuData,
   getGpuData,
   getKebutuhanData,
@@ -57,16 +58,17 @@ export const FetchLaptopType = () => {
     }
   };
 };
-// export const FetchCompany = () => {
-//   return async (dispatch) => {
-//     try {
-//       const req = await axios.get(URL + "company/", { withCredentials: true });
-//       dispatch(getCompanyData(req.data));
-//     } catch (e) {
-//       dispatch(FailRequest());
-//     }
-//   };
-// };
+export const FetchCompany = () => {
+  return async (dispatch) => {
+    try {
+      const req = await axios.get(URL + "company/", { withCredentials: true });
+      dispatch(getCompanyData(req.data));
+    } catch (e) {
+      dispatch(FailRequest());
+    }
+  };
+};
+
 export const FetchScreenType = () => {
   return async (dispatch) => {
     try {

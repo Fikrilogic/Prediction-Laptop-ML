@@ -15,7 +15,7 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 
-const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
+const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data, laptop }) => {
   const cpuList = useSelector((state) => state.data.cpu);
   const gpuList = useSelector((state) => state.data.gpu);
   const storageList = useSelector((state) => state.data.storage);
@@ -23,6 +23,7 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
   const resolutionList = useSelector((state) => state.data.resolution);
   const typeList = useSelector((state) => state.data.laptop_type);
   const kebutuhanList = useSelector((state) => state.data.kebutuhan);
+  const companyList = useSelector((state) => state.data.company)
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
@@ -125,6 +126,18 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
                 </Select>
               </FormControl>
             </Grid>
+            {
+              laptop && (
+              <Grid items xs={6} sx={{ margin: "12px 0" }}>
+                <TextField
+                  label="Size Storage"
+                  variant="outlined"
+                  onChange={(e) => setData({ ...data, memory_size: e.target.value })}
+                  fullWidth
+                />
+              </Grid>
+              )
+            }
             <Grid items xs={6} sx={{ margin: "12px 0" }}>
               <FormControl fullWidth>
                 <InputLabel id="screen-select">Tipe Layar</InputLabel>
@@ -143,57 +156,115 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid items xs={6} sx={{ margin: "12px 0" }}>
-              <FormControl fullWidth>
-                <InputLabel id="resolution-select">Resolusi Layar</InputLabel>
-                <Select
-                  labelId="resolution-select"
-                  defaultValue=""
-                  value={data.sc_res}
-                  label="Screen Resolution"
-                  onChange={(e) => setData({ ...data, sc_res: e.target.value })}
-                >
-                  {resolutionList.map((data) => (
-                    <MenuItem key={data.id} value={data.resolution}>
-                      {data.resolution}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+            {
+              !laptop && 
+              (
+              <Grid items xs={6} sx={{ margin: "12px 0" }}>
+                <FormControl fullWidth>
+                  <InputLabel id="resolution-select">Resolusi Layar</InputLabel>
+                  <Select
+                    labelId="resolution-select"
+                    defaultValue=""
+                    value={data.sc_res}
+                    label="Screen Resolution"
+                    onChange={(e) => setData({ ...data, sc_res: e.target.value })}
+                  >
+                    {resolutionList.map((data) => (
+                      <MenuItem key={data.id} value={data.resolution}>
+                        {data.resolution}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              )
+            }
+            
+            {
+              laptop ?
+              (
+                <Grid items xs={6} sx={{ margin: "12px 0" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="company-select">Perusahaan</InputLabel>
+                    <Select
+                      labelId="company-select"
+                      defaultValue=""
+                      value={data.company}
+                      label="Perusahaan"
+                      onChange={(e) => setData({ ...data, company: e.target.value })}
+                    >
+                      {companyList !== [] ?
+                        companyList.map((data) => (
+                        <MenuItem key={data.id} value={data.name}>
+                          {data.name}
+                        </MenuItem>
+                      ))
+                        :
+                        null
+                      }
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )
+              :
+              (
+                <>
+                <Grid items xs={6} sx={{ margin: "12px 0" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="type-select">Tipe Laptop</InputLabel>
+                    <Select
+                      labelId="type-select"
+                      defaultValue=""
+                      value={data.type}
+                      label="Laptop Type"
+                      onChange={(e) => setData({ ...data, type: e.target.value })}
+                    >
+                      {typeList.map((data) => (
+                        <MenuItem key={data.id} value={data.name}>
+                          {data.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid items xs={6} sx={{ margin: "12px 0" }}>
+                  <TextField
+                    label="Budget"
+                    variant="outlined"
+                    onChange={(e) =>
+                      setData({ ...data, budget: parseInt(e.target.value) })
+                    }
+                    fullWidth
+                  />
+                </Grid>
+                <Grid items xs={6} sx={{ margin: "12px 0" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="kebutuhan-select">Kebutuhan</InputLabel>
+                    <Select
+                      labelId="kebutuhan-select"
+                      defaultValue=""
+                      value={data.kebutuhan}
+                      label="Kebutuhan"
+                      onChange={(e) =>
+                        setData({ ...data, kebutuhan: e.target.value })
+                      }
+                    >
+                      {kebutuhanList.map((data) => (
+                        <MenuItem key={data.id} value={data.name}>
+                          {data.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                </>
+              )
+            }
             <Grid items xs={6} sx={{ margin: "12px 0" }}>
               <TextField
                 label="Berat"
                 variant="outlined"
                 onChange={(e) => setData({ ...data, weight: e.target.value })}
-                fullWidth
-              />
-            </Grid>
-            <Grid items xs={6} sx={{ margin: "12px 0" }}>
-              <FormControl fullWidth>
-                <InputLabel id="type-select">Tipe Laptop</InputLabel>
-                <Select
-                  labelId="type-select"
-                  defaultValue=""
-                  value={data.type}
-                  label="Laptop Type"
-                  onChange={(e) => setData({ ...data, type: e.target.value })}
-                >
-                  {typeList.map((data) => (
-                    <MenuItem key={data.id} value={data.name}>
-                      {data.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid items xs={6} sx={{ margin: "12px 0" }}>
-              <TextField
-                label="Budget"
-                variant="outlined"
-                onChange={(e) =>
-                  setData({ ...data, budget: parseInt(e.target.value) })
-                }
                 fullWidth
               />
             </Grid>
@@ -207,27 +278,20 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data }) => {
                 fullWidth
               />
             </Grid>
-            <Grid items xs={6} sx={{ margin: "12px 0" }}>
-              <FormControl fullWidth>
-                <InputLabel id="kebutuhan-select">Kebutuhan</InputLabel>
-                <Select
-                  labelId="kebutuhan-select"
-                  defaultValue=""
-                  value={data.kebutuhan}
-                  label="Kebutuhan"
-                  onChange={(e) =>
-                    setData({ ...data, kebutuhan: e.target.value })
-                  }
-                >
-                  {kebutuhanList.map((data) => (
-                    <MenuItem key={data.id} value={data.name}>
-                      {data.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
           </Grid>
+          {
+            laptop && 
+            <TextField
+                label="Deskripsi"
+                variant="outlined"
+                onChange={(e) =>
+                  setData({ ...data, description: e.target.value })
+                }
+                multiline
+                rows={4}
+                fullWidth
+            />
+          }
           <ButtonGroup
             sx={{
               display: "flex",

@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 
 import {
+  FetchCompany,
   FetchCpu,
   FetchGpu,
   FetchKebutuhan,
@@ -26,6 +27,7 @@ import LaptopTypeTable from "../../components/TableComponent/laptop-type-table.c
 import KebutuhanTable from "../../components/TableComponent/kebutuhan-table.component";
 
 import { useDispatch } from "react-redux";
+import CompanyTable from "../../components/TableComponent/company-table.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -49,6 +51,7 @@ const DatasetTablesDashboard = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(FetchCompany())
     dispatch(FetchCpu());
     dispatch(FetchGpu());
     dispatch(FetchScreenResolution());
@@ -108,6 +111,7 @@ const DatasetTablesDashboard = () => {
             <KebutuhanTable />
           </Grid>
         </Grid>
+        <CompanyTable id="company"/>
       </Box>
     </Container>
   );
