@@ -131,7 +131,7 @@ class DatasetSerializers(serializers.ModelSerializer):
         depth = 1
 
 
-class LaptopSerializers(serializers.Serializer):
+class LaptopSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.MasterLaptop
         fields = '__all__'

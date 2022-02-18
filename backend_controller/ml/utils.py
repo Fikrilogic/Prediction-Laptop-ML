@@ -35,11 +35,15 @@ def convert_to__dict_graph(data):
     result = []
     label = [x for x in data]
     label.pop(0)
+
     name = [x[0] for x in data.values]
+
     df = data.iloc[:, 1:5]
     for n in df.columns:
+
         graph = createplot(n, df[n], name)
         result.append({n: graph})
+    print(result)
     return result
 
 

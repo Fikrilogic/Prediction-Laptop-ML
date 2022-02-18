@@ -154,6 +154,7 @@ class TrainingResultView(viewsets.GenericViewSet):
     def knn(self, request):
         query = self.get_queryset()
         data = pd.DataFrame(query.exclude(knn_k=0).values('method_id__name', 'accuracy', 'precision', 'recall', 'f1_score'))
+
         try:
             graph = convert_to__dict_graph(data)
         except ValueError as e:

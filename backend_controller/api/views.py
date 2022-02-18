@@ -326,7 +326,7 @@ class KebutuhanView(viewsets.ModelViewSet):
 
 
 class LaptopView(viewsets.ModelViewSet):
-    queryset= MasterLaptop.objects.all()
+    queryset = MasterLaptop.objects.all()
     serializer_class = LaptopSerializers
 
     def get_permissions(self):
