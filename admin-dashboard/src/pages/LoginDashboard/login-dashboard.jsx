@@ -117,7 +117,7 @@ export default function LoginDashboard(props) {
           <Box component="div" sx={{ mb: 2 }}>
             <TextField
               id="email"
-              label="email"
+              label="Email"
               type="text"
               size="small"
               variant="outlined"

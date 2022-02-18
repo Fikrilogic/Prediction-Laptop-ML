@@ -7,6 +7,7 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Modal from "@mui/material/Modal";
@@ -15,7 +16,6 @@ import Stack from "@mui/material/Stack";
 
 import DatasetTable from "../../components/TableComponent/dataset-table.component";
 import {
-  FetchCompany,
   FetchCpu,
   FetchGpu,
   FetchKebutuhan,
@@ -53,12 +53,10 @@ const DatasetDashboard = () => {
 
   useEffect(() => {
     dispatch(FetchDataset());
-    dispatch(FetchDataset());
     dispatch(FetchCpu());
     dispatch(FetchGpu());
     dispatch(FetchScreenResolution());
     dispatch(FetchScreenType());
-    dispatch(FetchCompany());
     dispatch(FetchStorage());
     dispatch(FetchLaptopType());
     dispatch(FetchKebutuhan());
@@ -68,7 +66,6 @@ const DatasetDashboard = () => {
     cpu: "",
     gpu: "",
     memory: "",
-    company: "",
     screen: "",
     sc_res: "",
     type: "",
@@ -86,6 +83,7 @@ const DatasetDashboard = () => {
   const formData = new FormData();
   const fileInput = useRef(null);
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const saveHandler = async (e) => {
     e.preventDefault();
@@ -109,7 +107,7 @@ const DatasetDashboard = () => {
   };
 
   const uploadExcel = async () => {
-    console.log(file);
+    setLoading(true);
     formData.append("file", file);
     try {
       const req = await axios.post(
@@ -123,11 +121,13 @@ const DatasetDashboard = () => {
         }
       );
       if (req.data) {
+        setLoading(false);
         console.log("upload berhasil");
         window.location.reload();
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      setLoading(false);
       dispatch(FailRequest());
     }
   };
@@ -179,9 +179,13 @@ const DatasetDashboard = () => {
                   </Button>
                   <Box display={"flex"} justifyContent={"center"}>
                     <ButtonGroup>
-                      <Button variant="contained" onClick={uploadExcel}>
+                      <LoadingButton
+                        loading={loading}
+                        variant="contained"
+                        onClick={uploadExcel}
+                      >
                         Save
-                      </Button>
+                      </LoadingButton>
                       <Button
                         variant="outlined"
                         onClick={() => setOpen2(false)}

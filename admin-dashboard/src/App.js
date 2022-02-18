@@ -14,6 +14,7 @@ import Layout from "./pages/Layout";
 import DatasetTablesDashboard from "./pages/DatasetTables/Dataset-Tables-Dashboard";
 import AnalyticDashboard from "./pages/DataAnalytic/Analytic-Dashboard";
 import CrossValidationDashboard from "./pages/DataAnalytic/Cross-Validation-Dashboard";
+import LaptopDashboard from "./pages/Dashboard/laptop-dashboard";
 
 function App(props) {
   const [user, dispatch] = useReducer(Reducer, AUTH_STATE);
@@ -63,6 +64,14 @@ function App(props) {
               element={
                 <PrivateRoute>
                   <Layout element={<CrossValidationDashboard />} />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="laptop"
+              element={
+                <PrivateRoute>
+                  <Layout element={<LaptopDashboard />} />
                 </PrivateRoute>
               }
             />

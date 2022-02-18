@@ -5,8 +5,8 @@ export const GET_STORAGE_DATA = "GET_STORAGE_DATA";
 export const GET_TYPE_DATA = "GET_LAPTOP_TYPE_DATA";
 export const GET_SCREEN_DATA = "GET_SCREEN_DATA";
 export const GET_RESOLUTION_DATA = "GET_RESOLUTION_DATA";
-export const GET_COMPANY_DATA = "GET_COMPANY_DATA";
 export const GET_KEBUTUHAN_DATA = "GET_KEBUTUHAN_DATA";
+export const GET_COMPANY_DATA = "GET_COMPANY_DATA";
 
 // action function for fetch action
 

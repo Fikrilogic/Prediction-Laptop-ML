@@ -68,6 +68,7 @@ export const FetchCompany = () => {
     }
   };
 };
+
 export const FetchScreenType = () => {
   return async (dispatch) => {
     try {

@@ -24,10 +24,10 @@ import StorageTable from "../../components/TableComponent/storage-table.componen
 import ScreenTable from "../../components/TableComponent/screen-table.component.jsx";
 import ResolutionTable from "../../components/TableComponent/screen-resolution-table.component.jsx";
 import LaptopTypeTable from "../../components/TableComponent/laptop-type-table.component.jsx";
-import CompanyTable from "../../components/TableComponent/company-table.component.jsx";
 import KebutuhanTable from "../../components/TableComponent/kebutuhan-table.component";
 
 import { useDispatch } from "react-redux";
+import CompanyTable from "../../components/TableComponent/company-table.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -51,11 +51,11 @@ const DatasetTablesDashboard = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(FetchCompany())
     dispatch(FetchCpu());
     dispatch(FetchGpu());
     dispatch(FetchScreenResolution());
     dispatch(FetchScreenType());
-    dispatch(FetchCompany());
     dispatch(FetchStorage());
     dispatch(FetchLaptopType());
     dispatch(FetchKebutuhan());
@@ -94,28 +94,24 @@ const DatasetTablesDashboard = () => {
           </Grid>
           <Grid item xs={6}></Grid>
           <Grid item xs={6}></Grid>
-          <Grid item xs={6} id="company">
-            <CompanyTable />
-          </Grid>
-
           <Grid item xs={6} id="type">
             <LaptopTypeTable />
           </Grid>
-          <Grid item xs={6}></Grid>
-          <Grid item xs={6}></Grid>
+
           <Grid item xs={6} id="screen">
             <ScreenTable />
           </Grid>
-
+          <Grid item xs={6}></Grid>
+          <Grid item xs={6}></Grid>
           <Grid item xs={6} id="resolution">
             <ResolutionTable />
           </Grid>
-          <Grid item xs={6}></Grid>
-          <Grid item xs={6}></Grid>
+
           <Grid item xs={6} id="kebutuhan">
             <KebutuhanTable />
           </Grid>
         </Grid>
+        <CompanyTable id="company"/>
       </Box>
     </Container>
   );

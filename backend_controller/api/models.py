@@ -179,5 +179,4 @@ class MasterLaptop(models.Model):
     description = models.CharField(verbose_name=_("description"), max_length=150)
 
     def __str__(self):
-        return self.name;
-
+        return self.name

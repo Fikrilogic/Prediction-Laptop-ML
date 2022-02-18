@@ -14,6 +14,7 @@ import Toolbar from "@mui/material/Toolbar";
 import { HashLink as Link } from "react-router-hash-link";
 
 import TableViewIcon from "@mui/icons-material/TableView";
+import LaptopIcon from '@mui/icons-material/Laptop';
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -24,7 +25,6 @@ import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../../Context/context";
 
 import { logout } from "../../Context/action";
-import { LogoutAdmin } from "../../Redux/User/action";
 
 const useStyle = makeStyles((theme) => ({
   container: {
@@ -91,11 +91,11 @@ function SideMenuComponent(props) {
                 "CPU",
                 "GPU",
                 "storage",
-                "company",
                 "type",
                 "screen",
                 "resolution",
                 "kebutuhan",
+                "company"
               ].map((item, index) => (
                 <ListItemButton sx={{ pl: 4 }} key={index}>
                   <ListItemIcon sx={{ color: "white" }}></ListItemIcon>
@@ -122,6 +122,12 @@ function SideMenuComponent(props) {
             </List>
           </Collapse>
 
+          <ListItemButton onClick={() => navigate("/laptop")}>
+            <ListItemIcon sx={{ color: "white" }}>
+              <LaptopIcon />
+            </ListItemIcon>
+            <ListItemText primary="Master Laptop" />
+          </ListItemButton>
           <ListItemButton onClick={() => navigate("/user")}>
             <ListItemIcon sx={{ color: "white" }}>
               <GroupIcon />

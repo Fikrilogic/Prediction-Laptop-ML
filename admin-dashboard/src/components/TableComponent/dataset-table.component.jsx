@@ -84,7 +84,6 @@ const DatasetTable = () => {
     cpu: "",
     gpu: "",
     memory: "",
-    company: "",
     screen: "",
     sc_res: "",
     type: "",
@@ -114,7 +113,6 @@ const DatasetTable = () => {
           cpu: req.data.cpu.name,
           gpu: req.data.gpu.name,
           memory: req.data.memory.type,
-          company: req.data.company.name,
           screen: req.data.screen.type,
           sc_res: req.data.resolution.resolution,
           type: req.data.type.name,
@@ -195,7 +193,6 @@ const DatasetTable = () => {
               "GPU",
               "RAM",
               "Tipe Storage",
-              "Perusahaan",
               "Tipe Layar",
               "Resolusi",
               "Berat",
@@ -253,9 +250,6 @@ const DatasetTable = () => {
               <TableCell>
                 <Skeleton variant="rectangular" />
               </TableCell>
-              <TableCell>
-                <Skeleton variant="rectangular" />
-              </TableCell>
             </TableRow>
           ) : (
             dataset.map((data, i) => (
@@ -274,9 +268,6 @@ const DatasetTable = () => {
                 </TableCell>
                 <TableCell sx={{ fontSize: 12 }}>
                   {data.memory === null ? "" : data.memory.type}
-                </TableCell>
-                <TableCell sx={{ fontSize: 12 }}>
-                  {data.company === null ? "" : data.company.name}
                 </TableCell>
                 <TableCell sx={{ fontSize: 12 }} size="small">
                   {data.screen === null ? "" : data.screen.type}
