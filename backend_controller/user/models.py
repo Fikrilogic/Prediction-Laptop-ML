@@ -42,7 +42,7 @@ class CustomUserManager(BaseUserManager):
             **extra_fields
         )
         user.password = make_password(password)
-        user.groups = Group.objects.get(pk=2)
+        user.groups = Group.objects.get_or_create(pk=2, name="admin")[0]
         user.save(using=self._db)
         return user
 

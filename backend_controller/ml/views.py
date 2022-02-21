@@ -99,10 +99,11 @@ class KonsultasiView(viewsets.ModelViewSet):
             for model in query:
                 file = joblib.load(model.path.open('rb'))
                 predict = file.predict(data)
-                name = MasterLaptop.objects.filter(name=predict).first()
+                name = get_object_or_404(MasterLaptop.objects.filter(name=predict).first())
+                if name is None: raise NotFound("sorry, laptop is not found!")
                 result.append({"name": model.name, 'predict': predict, "laptop": f"/api/laptop/{name.id}"})
         except ValueError as e:
-            raise ParseError(str(e))
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(result, status=status.HTTP_200_OK)
 
@@ -120,6 +121,7 @@ class KonsultasiView(viewsets.ModelViewSet):
             file = joblib.load(query.path.open('rb'))
             predict = file.predict(data)
             name = MasterLaptop.objects.filter(name=predict).first()
+            if name is None: raise NotFound("sorry, laptop is not found!")
             return Response({"name": query.name, "predict": predict, "laptop": f"/api/laptop/{name.id}"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
