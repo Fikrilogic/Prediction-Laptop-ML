@@ -336,7 +336,6 @@ class LaptopView(viewsets.ModelViewSet):
             self.permission_classes = [isAdminUser]
         return super(self.__class__, self).get_permissions()
 
-
 class DatasetView(viewsets.ModelViewSet):
     queryset = MasterDataset.objects.all()
     serializer_class = DatasetSerializers

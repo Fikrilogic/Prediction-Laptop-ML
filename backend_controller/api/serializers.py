@@ -135,4 +135,3 @@ class LaptopSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.MasterLaptop
         fields = '__all__'
-        depth = 1

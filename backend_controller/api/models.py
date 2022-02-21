@@ -166,14 +166,14 @@ class MasterLaptop(models.Model):
         VHG = 32, '32GB'
 
     id = models.UUIDField(verbose_name=_("id"), default=uuid.uuid4, primary_key=True, null=False, unique=False)
-    name = models.CharField(verbose_name=_("name"), null=False, blank=False, max_length=150)
+    name = models.CharField(verbose_name=_("name"), null=False, blank=False, max_length=150, unique=True)
     processor = models.CharField(verbose_name=_("processor"), null=False, blank=False, max_length=150)
     gpu = models.CharField(verbose_name=_("gpu"), null=False, blank=False, max_length=150)
     ram = models.BigIntegerField(choices=Ram.choices, default=Ram.IM, null=False, blank=False)
     memory = models.CharField(verbose_name=_("memory_type"), null=False, blank=False, max_length=150)
     memory_size = models.CharField(verbose_name=_("memory_size"), null=False, blank=False, max_length=150)
     screen = models.CharField(verbose_name=_("screen"), null=False, blank=False, max_length=150)
-    company = models.ForeignKey(MasterCompany, on_delete=models.SET_NULL, null=True)
+    company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE, null=True)
     weight = models.DecimalField(max_digits=3, decimal_places=2)
     price = models.BigIntegerField()
     description = models.CharField(verbose_name=_("description"), max_length=150)
