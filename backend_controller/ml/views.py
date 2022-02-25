@@ -89,7 +89,7 @@ class KonsultasiView(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def all_method_predict(self, request):
         data = request.data
-        query = MasterModel.objects.all()
+        query = MasterModel.objects.all().exclude(name__contains='K-Nearest Neighbors')
 
         data = list(data.values())
         data = [[data for data in data]]
