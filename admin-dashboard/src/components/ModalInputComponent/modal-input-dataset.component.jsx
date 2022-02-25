@@ -23,7 +23,36 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data, laptop }
   const resolutionList = useSelector((state) => state.data.resolution);
   const typeList = useSelector((state) => state.data.laptop_type);
   const kebutuhanList = useSelector((state) => state.data.kebutuhan);
-  const companyList = useSelector((state) => state.data.company)
+  const companyList = useSelector((state) => state.data.company);
+
+  const getCompanyId = (name) => {
+    if(companyList){
+      const company =  companyList.filter(data => data.name === name) || []
+      return company.map(item => item.id)
+    }
+  }
+
+  const closeHandle = () => {
+    setOpen(false)
+    setData({
+      cpu: "",
+      processor: "",
+      gpu: "",
+      memory_size: "",
+      memory: "",
+      screen: "",
+      sc_res: "",
+      type: "",
+      kebutuhan: "",
+      company: "",
+      budget: 0,
+      weight: "",
+      ram: "",
+      price: 0,
+      name: "",
+      description: ""
+    });
+  }
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
@@ -56,13 +85,16 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data, laptop }
             </Grid>
             <Grid items xs={6} sx={{ margin: "12px 0" }}>
               <FormControl fullWidth>
-                <InputLabel id="cpu-select">CPU</InputLabel>
+                <InputLabel id="cpu-select">{laptop ? 'Processor' : 'CPU'}</InputLabel>
                 <Select
                   labelId="cpu-select"
                   defaultValue=""
-                  value={data.cpu}
+                  value={laptop ? data.processor : data.cpu}
                   label="CPU"
-                  onChange={(e) => setData({ ...data, cpu: e.target.value })}
+                  onChange={(e) => {
+                    if(laptop) setData({ ...data, processor: e.target.value })
+                    else setData({...data, cpu: e.target.value })
+                  }}
                 >
                   {cpuList.map((data) => (
                     <MenuItem key={data.id} value={data.name}>
@@ -299,12 +331,15 @@ const ModalInputDataset = ({ open, setOpen, saveHandler, setData, data, laptop }
               paddingTop: 5,
             }}
           >
-            <Button variant="contained" onClick={saveHandler}>
+            <Button variant="contained" onClick={(e) => {
+              data.company = getCompanyId(data.company).toString();
+              saveHandler(e);
+            }}>
               Save
             </Button>
             <Button
               variant="outlined"
-              onClick={() => setOpen(false)}
+              onClick={closeHandle}
               sx={{ ml: 2 }}
             >
               Cancel

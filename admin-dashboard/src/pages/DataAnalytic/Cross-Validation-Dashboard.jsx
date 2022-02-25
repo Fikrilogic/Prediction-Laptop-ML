@@ -43,8 +43,8 @@ const useStyle = makeStyles((theme) => ({
 
 const CrossValDashboard = () => {
   const classes = useStyle();
-  const [data, setData] = useState(null)
-  const [data2, setData2] = useState(null);
+  const [method, setMethod] = useState([])
+  const [knnMethod, setKnnMethod] = useState([])
 
   useEffect(() => {
     getCrossVal();
@@ -56,7 +56,9 @@ const CrossValDashboard = () => {
       const req = await axios.get(URL + "ml/cross-val/knn/", {
         withCredentials: true,
       });
-      if(req.data) setData2(req.data)
+      if(req.data){
+        setKnnMethod(req.data)
+      }
     } catch (e) {
       console.log(e)
     }
@@ -67,43 +69,45 @@ const CrossValDashboard = () => {
       const req = await axios.get(URL + "ml/cross-val/get_graph/", {
         withCredentials: true,
       });
-      if(req.data) setData(req.data)
+      if(req.data){
+        setMethod(req.data)
+      }
     } catch (e) {
       console.log(e)
     }
   }
 
-  const method1 = {
-    graph: data !== null ? data[0].graph : "",
-    name: data !== null ? data[0].metode : "",
-  };
-  const method2 = {
-    graph: data !== null ? data[1].graph : "",
-    name: data !== null ? data[1].metode : "",
-  };
-  const method3 = {
-    graph: data !== null ? data[2].graph : "",
-    name: data !== null ? data[2].metode : "",
-  };
+  // const method1 = {
+  //   graph: data !== null ? data[0].graph : "",
+  //   name: data !== null ? data[0].metode : "",
+  // };
+  // const method2 = {
+  //   graph: data !== null ? data[1].graph : "",
+  //   name: data !== null ? data[1].metode : "",
+  // };
+  // const method3 = {
+  //   graph: data !== null ? data[2].graph : "",
+  //   name: data !== null ? data[2].metode : "",
+  // };
 
-  const knnMethod1 = {
-    graph: data2 !== null ? data2[0].graph : "",
-    name: data2 !== null ? data2[0].metode : "",
-  };
-  const knnMethod2 = {
-    graph: data2 !== null ? data2[1].graph : "",
-    name: data2 !== null ? data2[1].metode : "",
-  };
-  const knnMethod3 = {
-    graph: data2 !== null ? data2[2].graph : "",
-    name: data2 !== null ? data2[2].metode : "",
-  };
-  const knnMethod4 = {
-    graph: data2 !== null ? data2[3].graph : "",
-    name: data2 !== null ? data2[3].metode : "",
-  };
+  // const knnMethod1 = {
+  //   graph: data2 !== null ? data2[0].graph : "",
+  //   name: data2 !== null ? data2[0].metode : "",
+  // };
+  // const knnMethod2 = {
+  //   graph: data2 !== null ? data2[1].graph : "",
+  //   name: data2 !== null ? data2[1].metode : "",
+  // };
+  // const knnMethod3 = {
+  //   graph: data2 !== null ? data2[2].graph : "",
+  //   name: data2 !== null ? data2[2].metode : "",
+  // };
+  // const knnMethod4 = {
+  //   graph: data2 !== null ? data2[3].graph : "",
+  //   name: data2 !== null ? data2[3].metode : "",
+  // };
 
-  console.log(data2);
+  console.log(method)
 
   return (
     <Container
@@ -128,56 +132,45 @@ const CrossValDashboard = () => {
         </Container>
 
         <Stack spacing={4} justifyContent="center" alignItems="center">
-          <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
-            <CardHeader
-              title={method1.name}
-              subheader={`Hasil perbandingan cross validation akurasi pada ${method1.name}`}
-            />
-            <Divider />
-            <CardContent>
-              {method1.graph === undefined || method1.graph === "" ? (
+          {
+            method !== [] ?
+            method.map((item, i) => (
+              <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised key={i}>
+                <CardHeader
+                  title={item.name}
+                  subheader={`Hasil perbandingan cross validation akurasi pada ${item.name}`}
+                />
+                <Divider />
+                <CardContent>
+                  <img
+                    sx={{ width: "500px", height: "500px" }}
+                    className={classes.imgAnalytic}
+                    src={`data:image/png;base64,${item.graph}`}
+                    alt="Accuracy Model"
+                  />
+                </CardContent>
+              </Card>
+            ))
+            :
+            <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
+              <CardHeader
+                title=""
+                subheader=""
+              />
+              <Divider />
+              <CardContent>
                 <Skeleton
                   variant="rectangular"
                   animation="pulse"
                   height={510}
                 />
-              ) : (
-                <img
-                  sx={{ width: "500px", height: "500px" }}
-                  className={classes.imgAnalytic}
-                  src={`data:image/png;base64,${method1.graph}`}
-                  alt="Accuracy Model"
-                />
-              )}
-            </CardContent>
-          </Card>
-          <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
+              </CardContent>
+            </Card>
+          }
+          {/* <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
             <CardHeader
-              title={method2.name}
-              subheader={`Hasil perbandingan cross validation akurasi pada ${method2.name}`}
-            />
-            <Divider />
-            <CardContent>
-              {method2.graph === undefined || method2.graph === "" ? (
-                <Skeleton
-                  variant="rectangular"
-                  animation="pulse"
-                  height={510}
-                />
-              ) : (
-                <img
-                  sx={{ width: "500px", height: "500px" }}
-                  className={classes.imgAnalytic}
-                  src={`data:image/png;base64,${method2.graph}`}
-                  alt="Precision Model"
-                />
-              )}
-            </CardContent>
-          </Card>
-          <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
-            <CardHeader
-              title={method3.name}
-              subheader={`Hasil perbandingan cross validation akurasi pada ${method3.name}`}
+              title={method3.metode}
+              subheader={`Hasil perbandingan cross validation akurasi pada ${method3.metode}`}
             />
             <Divider />
             <CardContent>
@@ -196,7 +189,7 @@ const CrossValDashboard = () => {
                 />
               )}
             </CardContent>
-          </Card>
+          </Card> */}
         </Stack>
 
         <Typography
@@ -213,11 +206,52 @@ const CrossValDashboard = () => {
           </Typography>
 
         <Grid container spacing={4}>
-          <Grid item xs={6}>
-          <Card sx={{ width: '800px' }} raised>
+          {
+            knnMethod !== undefined ?
+            knnMethod.map((item, i) => (
+            <Grid item xs={6} key={i}>
+              <Card sx={{ width: '800px' }} raised>
+                <CardHeader
+                  title={item.name}
+                  subheader={`Hasil perbandingan cross validation akurasi pada ${item.name}`}
+                />
+                <Divider />
+                <CardContent>
+                  <img
+                    sx={{ width: "500px", height: "500px" }}
+                    className={classes.imgAnalytic}
+                    src={`data:image/png;base64,${item.graph}`}
+                    alt="F1 Score Model"
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+            ))
+            :
+            (
+            <Grid item xs={6}>
+              <Card sx={{ width: '800px' }} raised>
+                <CardHeader
+                  title=""
+                  subheader=""
+                />
+                <Divider />
+                <CardContent>
+                    <Skeleton
+                      variant="rectangular"
+                      animation="pulse"
+                      height={510}
+                    />
+                </CardContent>
+              </Card>
+            </Grid>
+            )
+          }
+          {/* <Grid item xs={6}>
+            <Card sx={{ width: '800px' }} raised>
               <CardHeader
-                title={knnMethod1.name}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod1.name}`}
+                title={knnMethod1.metode}
+                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod1.metode}`}
               />
               <Divider />
               <CardContent>
@@ -241,8 +275,8 @@ const CrossValDashboard = () => {
           <Grid item xs={6}>
           <Card sx={{ width: '800px' }} raised>
               <CardHeader
-                title={knnMethod2.name}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod2.name}`}
+                title={knnMethod2.metode}
+                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod2.metode}`}
               />
               <Divider />
               <CardContent>
@@ -266,8 +300,8 @@ const CrossValDashboard = () => {
           <Grid item xs={6}>
           <Card sx={{ width: '800px' }} raised>
               <CardHeader
-                title={knnMethod3.name}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod3.name}`}
+                title={knnMethod3.metode}
+                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod3.metode}`}
               />
               <Divider />
               <CardContent>
@@ -291,8 +325,8 @@ const CrossValDashboard = () => {
           <Grid item xs={6}>
             <Card sx={{ width: '800px' }} raised>
               <CardHeader
-                title={knnMethod4.name}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod4.name}`}
+                title={knnMethod4.metode}
+                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod4.metode}`}
               />
               <Divider />
               <CardContent>
@@ -312,7 +346,7 @@ const CrossValDashboard = () => {
                 )}
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Box>
     </Container>

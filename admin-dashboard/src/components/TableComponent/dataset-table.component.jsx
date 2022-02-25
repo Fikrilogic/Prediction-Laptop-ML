@@ -22,7 +22,6 @@ import { useTheme } from "@mui/styles";
 import {
   deleteDataset,
   FetchDataset,
-  FetchDatasetPage,
 } from "../../Redux/Dataset/fetch-action";
 
 import ModalDelete from "../ModalInputComponent/modal-delete.component";
@@ -39,12 +38,12 @@ function TablePaginationActions(props) {
   const { count, page, rowsPerPage, onPageChange } = props;
 
   const handleBackButtonClick = (event) => {
-    dispatch(FetchDatasetPage({ path: results.previous }));
+    dispatch(FetchDataset({ path: results.previous }));
     onPageChange(event, page - 1);
   };
 
   const handleNextButtonClick = (event) => {
-    dispatch(FetchDatasetPage({ path: results.next }));
+    dispatch(FetchDataset({ path: results.next }));
     onPageChange(event, page + 1);
   };
 

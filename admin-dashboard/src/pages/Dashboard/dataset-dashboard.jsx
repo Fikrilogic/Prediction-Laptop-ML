@@ -31,6 +31,7 @@ import { URL } from "../../Context/action";
 import { FailRequest } from "../../Redux/User/action";
 import { FetchDataset } from "../../Redux/Dataset/fetch-action";
 import { ButtonGroup } from "@mui/material";
+import UploadFile from "../../components/UploadFile/upload-file.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -141,7 +142,7 @@ const DatasetDashboard = () => {
         setData={setData}
         data={data}
       />
-      <Modal open={open2} onClose={() => setOpen2(false)}>
+      {/* <Modal open={open2} onClose={() => setOpen2(false)}>
         <Box
           sx={{
             width: "500px",
@@ -200,7 +201,16 @@ const DatasetDashboard = () => {
             </label>
           </form>
         </Box>
-      </Modal>
+      </Modal> */}
+
+      <UploadFile 
+        handleChange={handleChange} 
+        uploadExcel={uploadExcel} 
+        open={open2} 
+        setOpen={setOpen2}
+        loading={loading}
+        fileInput={fileInput}
+      />
 
       <Box className={classes.mainDashboard}>
         <Typography
