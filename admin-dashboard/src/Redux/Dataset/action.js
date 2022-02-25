@@ -1,7 +1,8 @@
 // Action type
 export const GET_DATASET = "GET_DATASET";
+export const GET_LAPTOP = "GET_LAPTOP";
 export const POST_DATASET = "POST_DATASET";
-export const GET_DATASET_PAGE = "GET_DATASET_PAGE";
+// export const GET_DATASET_PAGE = "GET_DATASET_PAGE";
 export const DELETE_DATASET_ID = "DELETE_DATASET_ID";
 
 // action function for fetch action
@@ -10,10 +11,15 @@ export const getDataset = (Dataset) => ({
   payload: Dataset,
 });
 
-export const getDatasetPage = (Dataset) => ({
-  type: GET_DATASET_PAGE,
-  payload: Dataset,
+export const getLaptop = (Laptop) => ({
+  type: GET_LAPTOP,
+  payload: Laptop,
 });
+
+// export const getDatasetPage = (Dataset) => ({
+//   type: GET_DATASET_PAGE,
+//   payload: Dataset,
+// });
 
 export const deleteDatasetById = () => ({
   type: DELETE_DATASET_ID,

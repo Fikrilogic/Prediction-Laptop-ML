@@ -43,7 +43,6 @@ def convert_to__dict_graph(data):
 
         graph = createplot(n, df[n], name)
         result.append({n: graph})
-    print(result)
     return result
 
 

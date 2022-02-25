@@ -23,6 +23,7 @@ import Avatar4 from "./assets/img/avatar4.png";
 import ConsultResultPage from "./pages/ConsultPage/ConsultResultPage/ConsultResultPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import PrivateRoute from "./components/ProtectedRoute/protect-route.component";
+import LaptopPage from "./pages/LaptopPage/LaptopPage";
 
 const App = (props) => {
   const [user, dispatch] = useReducer(Reducer, AUTH_STATE);
@@ -70,6 +71,12 @@ const App = (props) => {
               path="/consult/results"
               element={
                 <Layout element={<ConsultResultPage />} avatar={profilePic} />
+              }
+            />
+            <Route
+              path="/laptop/:id"
+              element={
+                <Layout element={<LaptopPage />} avatar={profilePic} />
               }
             />
             <Route

@@ -2,30 +2,72 @@
   margin: 20px 0;
   display: flex;
   align-items: center;
-  border: 1px solid black;
+  height: auto;
+  // border: 1px solid black;
   border-radius: 20px;
+  border: 1px solid #0002;
 
   .container-result-image {
+    padding: 20px;
     img {
-      border-radius: 20px 0 0 20px;
+      border-radius: 18px;
+      max-width: 250px;
+    }
+
+    .price {
+      margin-top: 10px;
+      font-size: 18px;
+      text-align: center;
     }
   }
 
   .container-result-detail {
-    padding: 0 20px;
+    flex: 1;
+    padding: 20px;
     .title {
-      margin-bottom: 20px;
-      font-weight: 700;
+      margin: 10px 0;
+      font-size: 24px;
+      font-weight: 600;
     }
     .specs {
+      max-height: 150px;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
       p {
-        margin: 20px 0;
+        margin: 10px 0;
         font-size: 18px;
-        font-weight: 600;
-      }
-      a {
-        margin-top: 20px;
       }
     }
+
+    .description {
+      width: 500px;
+      p {
+        margin: 10px 0;
+        font-size: 18px;
+        text-align: justify;
+      }
+    }
+
+    .button-wrapper {
+      background-color: rgba(221, 221, 221, 0.425);
+      border-radius: 8px;
+      .btn-details {
+        cursor: pointer;
+        text-align: center;
+        outline: none;
+        border: none;
+        font-size: 18px;
+        // position: relative;
+        // left: 850px;
+        // top: 25px;
+        padding: 10px;
+      }
+    }
+  }
+
+  .responsive {
+    width: 100%;
+    height: auto;
   }
 }

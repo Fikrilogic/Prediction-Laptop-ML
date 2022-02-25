@@ -18,9 +18,6 @@ import {
   FetchCompany,
   FetchCpu,
   FetchGpu,
-  FetchKebutuhan,
-  FetchLaptopType,
-  FetchScreenResolution,
   FetchScreenType,
   FetchStorage,
 } from "../../Redux/Data/fetch-action";
@@ -35,6 +32,9 @@ import { useTheme } from "@emotion/react";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import ModalInputDataset from "../../components/ModalInputComponent/modal-input-dataset.component";
+import { FetchDatasetPage, FetchLaptop } from "../../Redux/Dataset/fetch-action";
+import { deleteDatasetById } from "../../Redux/Dataset/action";
+import UploadFile from "../../components/UploadFile/upload-file.component";
 
 const useStyle = makeStyles((theme) => ({
   mainDashboard: {
@@ -59,6 +59,9 @@ const LaptopDashboard = () => {
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [loading, setLoading] = useState(false);
+  const formData = new FormData();
+  const fileInput = useRef(null);
+  const [file, setFile] = useState(null);
   
     useEffect(() => {
       dispatch(FetchCpu());
@@ -69,7 +72,7 @@ const LaptopDashboard = () => {
     }, [dispatch]);
     
     const [data, setData] = useState({
-      cpu: "",
+      processor: "",
       gpu: "",
       memory: "",
       memory_size: "",
@@ -93,8 +96,39 @@ const LaptopDashboard = () => {
         console.log(e);
         dispatch(FailRequest());
       }
-      console.log(data);
-      // window.location.reload();
+      window.location.reload();
+    };
+
+    const handleChange = (e) => {
+      setFile(null);
+      const fileUploaded = e.target.files[0];
+      setFile(fileUploaded);
+    };
+  
+    const uploadExcel = async () => {
+      setLoading(true);
+      formData.append("file", file);
+      try {
+        const req = await axios.post(
+          URL + "laptop/upload/",
+          formData,
+          { withCredentials: true },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (req.data) {
+          setLoading(false);
+          console.log("upload berhasil");
+          window.location.reload();
+        }
+      } catch (e) {
+        console.error(e);
+        setLoading(false);
+        dispatch(FailRequest());
+      }
     };
     
     return (
@@ -106,6 +140,15 @@ const LaptopDashboard = () => {
           setData={setData}
           data={data}
           laptop={true}
+        />
+
+        <UploadFile 
+          handleChange={handleChange} 
+          uploadExcel={uploadExcel} 
+          open={open2} 
+          setOpen={setOpen2}
+          loading={loading}
+          fileInput={fileInput}
         />
     
         <Box className={classes.mainDashboard}>
@@ -146,6 +189,15 @@ const LaptopDashboard = () => {
                 >
                   Input Data
                 </Button>
+                <Button
+                  sx={{ flexGrow: 0 }}
+                  className={classes.btnDataset}
+                  variant="outlined"
+                  disableElevation
+                  onClick={() => setOpen2(true)}
+                >
+                  Upload Dataset
+                </Button>
               </Box>
             </Box>
             <Divider />
@@ -163,31 +215,26 @@ const LaptopTable = ({data, setData}) => {
     const [id, setId] = useState("");
     const [open, setOpen] = useState(false);
     const [open2, setOpen2] = useState(false);
-    const [laptopData, setLaptopData] = useState([])
-    const dataset = [];
+    const laptopData = useSelector((state) => state.dataset.laptop);
+    const results = useSelector((state) => state.dataset.results);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
-
-    const getLaptopData = async () => {
-      try {
-        const req = await axios.get(URL + "laptop/", {
-          withCredentials: true,
-        })
-        if(req.data) setLaptopData(req.data.results)
-        ;
-      } catch (e) {
-        console.log(e);
-        dispatch(FailRequest());
+    const companyList = useSelector(state => state.data.company);
+    
+    const getCompany = (id) => {
+      if(companyList){
+        const company =  companyList.filter(data => data.id === id) || []
+        return company.map(item => item.name)
       }
     }
-
-    useEffect(() => {
-      getLaptopData()
-    }, [])
     
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
     };
+
+    useEffect(() => {
+      dispatch(FetchLaptop())
+    }, [dispatch])
   
     const getData = async (id) => {
       try {
@@ -196,18 +243,17 @@ const LaptopTable = ({data, setData}) => {
         });
         if (req.status === 200) {
           setData({
-            // cpu: req.data.cpu.name,
-            // gpu: req.data.gpu.name,
-            // memory: req.data.memory.type,
-            // screen: req.data.screen.type,
-            // sc_res: req.data.resolution.resolution,
-            // type: req.data.type.name,
-            // kebutuhan: req.data.kebutuhan.name,
-            // budget: req.data.budget,
-            // weight: req.data.weight,
-            // ram: req.data.ram,
-            // price: req.data.price,
-            // name: req.data.name,
+            processor: req.data.processor,
+            gpu: req.data.gpu,
+            memory: req.data.memory,
+            screen: req.data.screen,
+            description: req.data.description,
+            memory_size: req.data.memory_size,
+            company: req.data.company,
+            weight: req.data.weight,
+            ram: req.data.ram,
+            price: req.data.price,
+            name: req.data.name
           });
         }
       } catch (e) {
@@ -215,7 +261,7 @@ const LaptopTable = ({data, setData}) => {
         dispatch(FailRequest());
       }
     };
-  
+    
     const selectData = (e) => {
       e.preventDefault();
       const id = e.currentTarget.parentNode.parentNode.getAttribute("data-key");
@@ -240,13 +286,17 @@ const LaptopTable = ({data, setData}) => {
         console.log(e);
         dispatch(FailRequest());
       }
-      console.log(data);
       window.location.reload();
     };
   
-    const deleteData = (e) => {
+    const deleteData = async (e) => {
       e.preventDefault();
-    //   dispatch(deleteDataset(id));
+      try {
+        await axios.delete(URL + `laptop/${id}/`, { withCredentials: true });
+        dispatch(deleteDatasetById());
+      } catch (e) {
+        dispatch(FailRequest());
+      }
       setOpen(false);
       window.location.reload();
     };
@@ -263,6 +313,7 @@ const LaptopTable = ({data, setData}) => {
       <>
         <ModalDelete open={open} deleteHandler={deleteData} setOpen={setOpen} />
         <ModalEditDataset
+          laptop={true}
           open={open2}
           data={data}
           editHandler={editHandler}
@@ -294,7 +345,7 @@ const LaptopTable = ({data, setData}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {dataset === undefined || dataset.length === 0 ? (
+            {laptopData === undefined || laptopData.length === 0 ? (
               <TableRow>
                 <TableCell>
                   <Skeleton variant="rectangular" />
@@ -334,41 +385,40 @@ const LaptopTable = ({data, setData}) => {
                 </TableCell>
               </TableRow>
             ) : (
-              dataset.map((data, i) => (
+              laptopData.map((data, i) => (
                 <TableRow key={i} hover>
                   <TableCell size="small" sx={{ fontSize: 12 }}>
                     {data.name}
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }}>
-                    {data.cpu === null ? "" : data.cpu.name}
+                    {data.processor === null ? "" : data.processor}
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }}>
-                    {data.gpu === null ? "" : data.gpu.name}
+                    {data.gpu === null ? "" : data.gpu}
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }} size="small">
                     {data.ram}
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }}>
-                    {data.memory === null ? "" : data.memory.type}
+                    {data.memory === null ? "" : data.memory}
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }} size="small">
-                    {data.screen === null ? "" : data.screen.type}
+                    {data.memory_size === null ? "" : data.memory_size}
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }}>
-                    {data.resolution === null ? "" : data.resolution.resolution}
+                    {data.screen === null ? "" : data.screen}
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }}>{data.weight}</TableCell>
                   <TableCell sx={{ fontSize: 12 }}>
-                    {data.type === null ? "" : data.type.name}
-                  </TableCell>
-                  <TableCell sx={{ fontSize: 12 }}>
-                    {data.kebutuhan === null ? "" : data.kebutuhan.name}
-                  </TableCell>
-                  <TableCell sx={{ fontSize: 12 }} size="small">
-                    {formatMoney(data.budget)}
+                    {
+                      getCompany(data.company)
+                    }
                   </TableCell>
                   <TableCell sx={{ fontSize: 12 }} size="small">
                     {formatMoney(data.price)}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: 12 }}>
+                    {data.description === null ? "" : data.description}
                   </TableCell>
                   <TableCell data-key={data.id}>
                     <ButtonGroup>
@@ -395,7 +445,7 @@ const LaptopTable = ({data, setData}) => {
           <TableFooter>
             <TableRow>
               <TablePagination
-                count={laptopData.length}
+                count={results.count}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 rowsPerPageOptions={[20]}
@@ -416,12 +466,12 @@ const LaptopTable = ({data, setData}) => {
     const { count, page, rowsPerPage, onPageChange } = props;
   
     const handleBackButtonClick = (event) => {
-    //   dispatch(FetchDatasetPage({ path: results.previous }));
+      dispatch(FetchLaptop({ path: results.previous }));
       onPageChange(event, page - 1);
     };
   
     const handleNextButtonClick = (event) => {
-    //   dispatch(FetchDatasetPage({ path: results.next }));
+      dispatch(FetchLaptop({ path: results.next }));
       onPageChange(event, page + 1);
     };
   

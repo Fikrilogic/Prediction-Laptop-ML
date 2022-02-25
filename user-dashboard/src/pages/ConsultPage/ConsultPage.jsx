@@ -188,6 +188,8 @@ const ConsultPage = () => {
     dispatch(FetchCpu());
   }, [dispatch]);
 
+  console.log(data)
+
   return (
     <div className="container-consult">
       <div className="container-consult-header">

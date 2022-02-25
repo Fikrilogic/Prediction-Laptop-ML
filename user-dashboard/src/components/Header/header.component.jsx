@@ -3,7 +3,6 @@ import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import "./header.component.scss";
 import { Avatar } from "primereact/avatar";
-import Avatar1 from "../../assets/img/avatar2.png";
 import { logout } from "../../Context/action";
 import { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../Context/context";
@@ -13,7 +12,7 @@ import { useSelector } from "react-redux";
 const Header = ({ avatar }) => {
   const navigate = useNavigate();
   const { dispatch } = useContext(AuthContext);
-  const userProfile = useSelector((state) => state.user.profile);
+  const userProfile = useSelector((state) => state.user.profile) || [];
 
   useEffect(() => {
     dispatch(getProfile());

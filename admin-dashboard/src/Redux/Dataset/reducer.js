@@ -1,8 +1,9 @@
 import {
   POST_DATASET,
   GET_DATASET,
-  GET_DATASET_PAGE,
+  // GET_DATASET_PAGE,
   DELETE_DATASET_ID,
+  GET_LAPTOP,
 } from "./action";
 import { FAILED_REQUEST } from "../User/action";
 
@@ -10,6 +11,7 @@ import { FAILED_REQUEST } from "../User/action";
 export const DATASET_STATE = {
   dataset: [],
   results: [],
+  laptop: [],
   method: "",
   status: "",
 };
@@ -25,14 +27,22 @@ export const DatasetReducer = (state = DATASET_STATE, action) => {
         results: action.payload,
         status: "SUCCESS",
       };
-    case GET_DATASET_PAGE:
+    case GET_LAPTOP:
       return {
         ...state,
-        method: "GET PAGE",
-        dataset: action.payload.results,
+        method: "GET",
+        laptop: action.payload.results,
         results: action.payload,
         status: "SUCCESS",
       };
+    // case GET_DATASET_PAGE:
+    //   return {
+    //     ...state,
+    //     method: "GET PAGE",
+    //     dataset: action.payload.results,
+    //     results: action.payload,
+    //     status: "SUCCESS",
+    //   };
     case POST_DATASET:
       return {
         ...state,

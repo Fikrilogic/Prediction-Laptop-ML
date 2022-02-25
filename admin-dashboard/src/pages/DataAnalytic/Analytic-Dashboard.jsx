@@ -1,6 +1,5 @@
 import { makeStyles } from "@mui/styles";
 import React, { useEffect } from "react";
-import { connect, useDispatch } from "react-redux";
 
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
