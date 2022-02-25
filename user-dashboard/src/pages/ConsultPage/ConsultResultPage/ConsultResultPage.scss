@@ -1,5 +1,5 @@
 .container-result {
-  width: 50%;
+  width: 60vw;
   margin: 0 auto;
   .container-result-header-title {
     margin-top: 50px;
@@ -19,9 +19,61 @@
         font-size: 18px;
       }
     }
+
+    .container-result-list {
+      .card-list,
+      .recommendation {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      .recommendation {
+        box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9,
+          7px 7px 20px 0px #0002, 4px 4px 5px 0px #0001,
+          inset 0px 0px 0px 0px #fff9, inset 0px 0px 0px 0px #0001,
+          inset 0px 0px 0px 0px #fff9, inset 0px 0px 0px 0px #0001;
+        border-radius: 20px;
+        border: 1px solid #0002;
+        background-color: #fff9;
+        padding: 50px 0;
+
+        .recommendation-left {
+          flex: 0.5;
+          text-align: center;
+        }
+
+        .recommendation-right {
+          flex: 1;
+          padding-right: 20px;
+
+          .info-nama {
+            font-size: 24px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+
+      .other-recommendation {
+        margin-top: 20px;
+        .card-list {
+          background-color: #fcfcfc;
+          padding: 20px;
+          width: 60vw;
+          margin: 0 auto;
+          box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9,
+            7px 7px 20px 0px #0002, 4px 4px 5px 0px #0001,
+            inset 0px 0px 0px 0px #fff9, inset 0px 0px 0px 0px #0001,
+            inset 0px 0px 0px 0px #fff9, inset 0px 0px 0px 0px #0001;
+          border-radius: 20px;
+          border: 1px solid #0002;
+        }
+      }
+    }
   }
   .btn-wrapper {
-    margin: 0 auto;
+    margin: 20px auto;
     text-align: center;
     padding-bottom: 40px;
   }

@@ -8,7 +8,6 @@ import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { URL } from "../../Context/action";
 import {
-  FetchCompany,
   FetchCpu,
   FetchGpu,
   FetchKebutuhan,
@@ -47,9 +46,6 @@ const SurveyPage = () => {
     (data) => data.name
   );
   const kebutuhanList = useSelector((state) => state.data.kebutuhan).map(
-    (data) => data.name
-  );
-  const companyList = useSelector((state) => state.data.company).map(
     (data) => data.name
   );
 
@@ -175,7 +171,6 @@ const SurveyPage = () => {
     gpu: "",
     ram: 0,
     memory: "",
-    company: "",
     screen: "",
     sc_res: "",
     weight: "",
@@ -187,7 +182,6 @@ const SurveyPage = () => {
   console.log(data);
 
   useEffect(() => {
-    dispatch(FetchCompany());
     dispatch(FetchStorage());
     dispatch(FetchScreenType());
     dispatch(FetchScreenResolution());
@@ -385,7 +379,7 @@ const SurveyPage = () => {
               />
             </div>
           </div>
-          <div className="form-field p-fluid">
+          {/* <div className="form-field p-fluid">
             <label htmlFor="company" className="col-12  ">
               Apakah Merk Atau Produsen Laptop Yand Anda Punya?
             </label>
@@ -420,7 +414,7 @@ const SurveyPage = () => {
                 <></>
               )}
             </div>
-          </div>
+          </div> */}
           <div className="form-field p-fluid">
             <label htmlFor="screen" className="col-12  ">
               Apakah Tipe Layar Laptop Yang Anda Punya?
