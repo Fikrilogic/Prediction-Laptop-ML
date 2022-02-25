@@ -76,39 +76,7 @@ const CrossValDashboard = () => {
       console.log(e)
     }
   }
-
-  // const method1 = {
-  //   graph: data !== null ? data[0].graph : "",
-  //   name: data !== null ? data[0].metode : "",
-  // };
-  // const method2 = {
-  //   graph: data !== null ? data[1].graph : "",
-  //   name: data !== null ? data[1].metode : "",
-  // };
-  // const method3 = {
-  //   graph: data !== null ? data[2].graph : "",
-  //   name: data !== null ? data[2].metode : "",
-  // };
-
-  // const knnMethod1 = {
-  //   graph: data2 !== null ? data2[0].graph : "",
-  //   name: data2 !== null ? data2[0].metode : "",
-  // };
-  // const knnMethod2 = {
-  //   graph: data2 !== null ? data2[1].graph : "",
-  //   name: data2 !== null ? data2[1].metode : "",
-  // };
-  // const knnMethod3 = {
-  //   graph: data2 !== null ? data2[2].graph : "",
-  //   name: data2 !== null ? data2[2].metode : "",
-  // };
-  // const knnMethod4 = {
-  //   graph: data2 !== null ? data2[3].graph : "",
-  //   name: data2 !== null ? data2[3].metode : "",
-  // };
-
-  console.log(method)
-
+  
   return (
     <Container
       maxWidth="100%"
@@ -167,29 +135,6 @@ const CrossValDashboard = () => {
               </CardContent>
             </Card>
           }
-          {/* <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
-            <CardHeader
-              title={method3.metode}
-              subheader={`Hasil perbandingan cross validation akurasi pada ${method3.metode}`}
-            />
-            <Divider />
-            <CardContent>
-              {method3.graph === undefined || method3.graph === "" ? (
-                <Skeleton
-                  variant="rectangular"
-                  animation="pulse"
-                  height={510}
-                />
-              ) : (
-                <img
-                  sx={{ width: "500px", height: "500px" }}
-                  className={classes.imgAnalytic}
-                  src={`data:image/png;base64,${method3.graph}`}
-                  alt="Recall Model"
-                />
-              )}
-            </CardContent>
-          </Card> */}
         </Stack>
 
         <Typography
@@ -247,106 +192,6 @@ const CrossValDashboard = () => {
             </Grid>
             )
           }
-          {/* <Grid item xs={6}>
-            <Card sx={{ width: '800px' }} raised>
-              <CardHeader
-                title={knnMethod1.metode}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod1.metode}`}
-              />
-              <Divider />
-              <CardContent>
-                {knnMethod1.graph === undefined || knnMethod1.graph === "" ? (
-                  <Skeleton
-                    variant="rectangular"
-                    animation="pulse"
-                    height={510}
-                  />
-                ) : (
-                  <img
-                    sx={{ width: "500px", height: "500px" }}
-                    className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${knnMethod1.graph}`}
-                    alt="F1 Score Model"
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6}>
-          <Card sx={{ width: '800px' }} raised>
-              <CardHeader
-                title={knnMethod2.metode}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod2.metode}`}
-              />
-              <Divider />
-              <CardContent>
-                {knnMethod2.graph === undefined || knnMethod2.graph === "" ? (
-                  <Skeleton
-                    variant="rectangular"
-                    animation="pulse"
-                    height={510}
-                  />
-                ) : (
-                  <img
-                    sx={{ width: "500px", height: "500px" }}
-                    className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${knnMethod2.graph}`}
-                    alt="F1 Score Model"
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6}>
-          <Card sx={{ width: '800px' }} raised>
-              <CardHeader
-                title={knnMethod3.metode}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod3.metode}`}
-              />
-              <Divider />
-              <CardContent>
-                {knnMethod3.graph === undefined || knnMethod3.graph === "" ? (
-                  <Skeleton
-                    variant="rectangular"
-                    animation="pulse"
-                    height={510}
-                  />
-                ) : (
-                  <img
-                    sx={{ width: "500px", height: "500px" }}
-                    className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${knnMethod3.graph}`}
-                    alt="F1 Score Model"
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6}>
-            <Card sx={{ width: '800px' }} raised>
-              <CardHeader
-                title={knnMethod4.metode}
-                subheader={`Hasil perbandingan cross validation akurasi pada ${knnMethod4.metode}`}
-              />
-              <Divider />
-              <CardContent>
-                {knnMethod4.graph === undefined || knnMethod4.graph === "" ? (
-                  <Skeleton
-                    variant="rectangular"
-                    animation="pulse"
-                    height={510}
-                  />
-                ) : (
-                  <img
-                    sx={{ width: "500px", height: "500px" }}
-                    className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${knnMethod4.graph}`}
-                    alt="F1 Score Model"
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </Grid> */}
         </Grid>
       </Box>
     </Container>
