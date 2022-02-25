@@ -336,6 +336,33 @@ class LaptopView(viewsets.ModelViewSet):
             self.permission_classes = [isAdminUser]
         return super(self.__class__, self).get_permissions()
 
+    @action(detail=False, methods=['post'])
+    def upload(self, request):
+        file = pd.read_excel(request.FILES.get('file'))
+        
+        try:
+            for index, data in file.iterrows():
+                company = MasterCompany.objects.get_or_create(name=data[7])
+
+                MasterLaptop.objects.create(
+                    company_id=company[0].id,
+                    processor=data[0],
+                    gpu=data[1],
+                    ram=data[2],
+                    memory=data[3],
+                    screen=data[4],
+                    memory_size=data[5],
+                    weight=data[6],
+                    description=data[8],
+                    price=data[9],
+                    name=data[10]
+                )
+
+        except ValueError as e:
+            raise ParseError(str(e))
+
+        return Response({"message": "success add laptop data"}, status=status.HTTP_200_OK)
+
 class DatasetView(viewsets.ModelViewSet):
     queryset = MasterDataset.objects.all()
     serializer_class = DatasetSerializers
@@ -401,9 +428,9 @@ class DatasetView(viewsets.ModelViewSet):
                 cpu = MasterCpu.objects.get_or_create(name=data[2])
                 gpu = MasterGpu.objects.get_or_create(name=data[3])
                 memory = MasterMemory.objects.get_or_create(type=data[5])
-                screen = MasterScreen.objects.get_or_create(type=data[7])
-                resolution = MasterScreenResolution.objects.get_or_create(resolution=data[8])
-                type = MasterTypeLaptop.objects.get_or_create(name=data[10])
+                screen = MasterScreen.objects.get_or_create(type=data[6])
+                resolution = MasterScreenResolution.objects.get_or_create(resolution=data[7])
+                type = MasterTypeLaptop.objects.get_or_create(name=data[9])
 
                 MasterDataset.objects.create(
                     created_by_id=user.id,
@@ -416,9 +443,9 @@ class DatasetView(viewsets.ModelViewSet):
                     type_id=type[0].id,
                     budget=data[1],
                     ram=data[4],
-                    weight=data[9],
-                    price=data[11],
-                    name=data[12]
+                    weight=data[8],
+                    price=data[10],
+                    name=data[11]
                 )
 
         except ValueError as e:

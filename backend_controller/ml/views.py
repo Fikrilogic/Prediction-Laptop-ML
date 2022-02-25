@@ -99,9 +99,9 @@ class KonsultasiView(viewsets.ModelViewSet):
             for model in query:
                 file = joblib.load(model.path.open('rb'))
                 predict = file.predict(data)
-                name = get_object_or_404(MasterLaptop.objects.filter(name=predict).first())
+                name = MasterLaptop.objects.filter(name=predict[0]).first()
                 if name is None: raise NotFound("sorry, laptop is not found!")
-                result.append({"name": model.name, 'predict': f"{name.company.name} {predict}", "laptop": f"/api/laptop/{name.id}"})
+                result.append({"name": model.name, 'predict': f"{name.company.name} {predict[0]}", "laptop": f"/api/laptop/{name.id}"})
         except ValueError as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -120,9 +120,9 @@ class KonsultasiView(viewsets.ModelViewSet):
         try:
             file = joblib.load(query.path.open('rb'))
             predict = file.predict(data)
-            name = MasterLaptop.objects.filter(name=predict).first()
+            name = MasterLaptop.objects.filter(name=predict[0]).first()
             if name is None: raise NotFound("sorry, laptop is not found!")
-            return Response({"name": query.name, "predict": f"{name.company.name} {predict}", "laptop": f"/api/laptop/{name.id}"})
+            return Response({"name": query.name, "predict": f"{name.company.name} {predict[0]}", "laptop": f"/api/laptop/{name.id}"})
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
