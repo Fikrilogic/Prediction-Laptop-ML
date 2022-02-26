@@ -3,6 +3,7 @@ import {
   FAILED_REQUEST,
   GET_USER,
   CONSULT_RESULT,
+  KNN_CONSULT_RESULT,
 } from "./action";
 
 // initial state
@@ -10,6 +11,7 @@ export const USER_STATE = {
   loading: false,
   profile: [],
   results: [],
+  knnResult: [],
   method: "",
   status: "",
 };
@@ -37,6 +39,14 @@ export const UserReducer = (state = USER_STATE, action) => {
         loading: false,
         method: "GET",
         results: action.payload,
+        status: "SUCCESS",
+      };
+    case KNN_CONSULT_RESULT:
+      return {
+        ...state,
+        loading: false,
+        method: "GET",
+        knnResult: action.payload,
         status: "SUCCESS",
       };
     case FAILED_REQUEST:

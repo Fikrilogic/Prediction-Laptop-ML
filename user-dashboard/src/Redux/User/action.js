@@ -3,6 +3,7 @@ export const REQUEST_USER = "REQUEST_USER";
 export const GET_USER = "GET_USER";
 export const FAILED_REQUEST = "FAILED_REQUEST";
 export const CONSULT_RESULT = "CONSULT_RESULT";
+export const KNN_CONSULT_RESULT = "KNN_CONSULT_RESULT";
 
 // Function for Fetch action
 export const RequestData = () => ({
@@ -20,5 +21,10 @@ export const UserSuccess = (user) => ({
 
 export const ConsultResult = (results) => ({
   type: CONSULT_RESULT,
+  payload: results,
+});
+
+export const KnnConsultResult = (results) => ({
+  type: KNN_CONSULT_RESULT,
   payload: results,
 });

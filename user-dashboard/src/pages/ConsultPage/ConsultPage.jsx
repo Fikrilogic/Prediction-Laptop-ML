@@ -9,11 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   ConsultResult,
   FailRequest,
-  PostConsult,
+  KnnConsultResult,
 } from "../../Redux/User/action";
 import { URL } from "../../Context/action";
 import {
-  FetchCompany,
   FetchCpu,
   FetchGpu,
   FetchKebutuhan,
@@ -46,9 +45,6 @@ const ConsultPage = () => {
     (data) => data.name
   );
   const kebutuhanList = useSelector((state) => state.data.kebutuhan).map(
-    (data) => data.name
-  );
-  const companyList = useSelector((state) => state.data.company).map(
     (data) => data.name
   );
 
@@ -123,7 +119,6 @@ const ConsultPage = () => {
     gpu: "",
     ram: 0,
     memory: "",
-    company: "",
     screen: "",
     sc_res: "",
     weight: "",
@@ -140,7 +135,6 @@ const ConsultPage = () => {
       gpu,
       weight,
       memory,
-      company,
       screen,
       sc_res,
       type,
@@ -157,7 +151,6 @@ const ConsultPage = () => {
           gpu,
           ram,
           memory,
-          company,
           screen,
           resolution: sc_res,
           weight,
@@ -168,17 +161,34 @@ const ConsultPage = () => {
       );
       if (req.data) {
         dispatch(ConsultResult(req.data));
+      }
+      const reqKnn = await axios.post(
+        URL + "ml/konsultasi/knn/",
+        {
+          kebutuhan,
+          budget,
+          cpu,
+          gpu,
+          ram,
+          memory,
+          screen,
+          resolution: sc_res,
+          weight,
+          type_laptop: type,
+          price,
+        },
+        { withCredentials: true }
+      );
+      if (reqKnn.data) {
+        dispatch(KnnConsultResult(reqKnn.data));
         return navigate("/consult/results");
       }
-      console.log(req);
     } catch (e) {
       dispatch(FailRequest());
     }
-    console.log(data);
   };
 
   useEffect(() => {
-    dispatch(FetchCompany());
     dispatch(FetchStorage());
     dispatch(FetchScreenType());
     dispatch(FetchScreenResolution());
@@ -188,7 +198,7 @@ const ConsultPage = () => {
     dispatch(FetchCpu());
   }, [dispatch]);
 
-  console.log(data)
+  console.log(data);
 
   return (
     <div className="container-consult">
@@ -318,22 +328,6 @@ const ConsultPage = () => {
                 value={data.type}
                 placeholder="Select Laptop Type"
                 onChange={(e) => setData({ ...data, type: e.target.value })}
-              />
-            </div>
-          </div>
-          <div className="form-field grid p-fluid">
-            <label htmlFor="company" className="col-12 md:col-2 ">
-              Produsen Laptop
-            </label>
-            <div className="col-12 md:col-10">
-              <Dropdown
-                required
-                id="company"
-                options={companyList}
-                className="p-component"
-                value={data.company}
-                placeholder="Select Company"
-                onChange={(e) => setData({ ...data, company: e.target.value })}
               />
             </div>
           </div>
