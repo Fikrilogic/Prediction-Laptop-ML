@@ -1,6 +1,5 @@
 import { makeStyles } from "@mui/styles";
 import React, { useEffect } from "react";
-import { connect } from "react-redux";
 
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
@@ -43,8 +42,8 @@ const useStyle = makeStyles((theme) => ({
 
 const CrossValDashboard = () => {
   const classes = useStyle();
-  const [method, setMethod] = useState([])
-  const [knnMethod, setKnnMethod] = useState([])
+  const [method, setMethod] = useState([]);
+  const [knnMethod, setKnnMethod] = useState([]);
 
   useEffect(() => {
     getCrossVal();
@@ -56,27 +55,27 @@ const CrossValDashboard = () => {
       const req = await axios.get(URL + "ml/cross-val/knn/", {
         withCredentials: true,
       });
-      if(req.data){
-        setKnnMethod(req.data)
+      if (req.data) {
+        setKnnMethod(req.data);
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
 
   const getCrossVal = async () => {
     try {
       const req = await axios.get(URL + "ml/cross-val/get_graph/", {
         withCredentials: true,
       });
-      if(req.data){
-        setMethod(req.data)
+      if (req.data) {
+        setMethod(req.data);
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
-  
+  };
+
   return (
     <Container
       maxWidth="100%"
@@ -100,13 +99,17 @@ const CrossValDashboard = () => {
         </Container>
 
         <Stack spacing={4} justifyContent="center" alignItems="center">
-          {
-            method !== [] ?
+          {method !== [] ? (
             method.map((item, i) => (
-              <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised key={i}>
+              <Card
+                sx={{ mx: "auto" }}
+                className={classes.cardAnalytic}
+                raised
+                key={i}
+              >
                 <CardHeader
-                  title={item.name}
-                  subheader={`Hasil perbandingan cross validation akurasi pada ${item.name}`}
+                  title={item.metode}
+                  subheader={`Hasil perbandingan cross validation akurasi pada ${item.metode}`}
                 />
                 <Divider />
                 <CardContent>
@@ -119,12 +122,9 @@ const CrossValDashboard = () => {
                 </CardContent>
               </Card>
             ))
-            :
+          ) : (
             <Card sx={{ mx: "auto" }} className={classes.cardAnalytic} raised>
-              <CardHeader
-                title=""
-                subheader=""
-              />
+              <CardHeader title="" subheader="" />
               <Divider />
               <CardContent>
                 <Skeleton
@@ -134,64 +134,58 @@ const CrossValDashboard = () => {
                 />
               </CardContent>
             </Card>
-          }
+          )}
         </Stack>
 
         <Typography
-            variant="h3"
-            component="h1"
-            className={classes.titlePage}
-            sx={{
-              fontFamily: "Montserrat, sans-serif",
-              fontWeight: 700,
-              fontSize: 64,
-            }}
-          >
-            Cross Validation on KNN
-          </Typography>
+          variant="h3"
+          component="h1"
+          className={classes.titlePage}
+          sx={{
+            fontFamily: "Montserrat, sans-serif",
+            fontWeight: 700,
+            fontSize: 64,
+          }}
+        >
+          Cross Validation on KNN
+        </Typography>
 
         <Grid container spacing={4}>
-          {
-            knnMethod !== undefined ?
+          {knnMethod !== undefined ? (
             knnMethod.map((item, i) => (
-            <Grid item xs={6} key={i}>
-              <Card sx={{ width: '800px' }} raised>
-                <CardHeader
-                  title={item.name}
-                  subheader={`Hasil perbandingan cross validation akurasi pada ${item.name}`}
-                />
+              <Grid item xs={6} key={i}>
+                <Card sx={{ width: "800px" }} raised>
+                  <CardHeader
+                    title={item.metode}
+                    subheader={`Hasil perbandingan cross validation akurasi pada ${item.metode}`}
+                  />
+                  <Divider />
+                  <CardContent>
+                    <img
+                      sx={{ width: "500px", height: "500px" }}
+                      className={classes.imgAnalytic}
+                      src={`data:image/png;base64,${item.graph}`}
+                      alt="F1 Score Model"
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            <Grid item xs={6}>
+              <Card sx={{ width: "800px" }} raised>
+                <CardHeader title="" subheader="" />
                 <Divider />
                 <CardContent>
-                  <img
-                    sx={{ width: "500px", height: "500px" }}
-                    className={classes.imgAnalytic}
-                    src={`data:image/png;base64,${item.graph}`}
-                    alt="F1 Score Model"
+                  <Skeleton
+                    variant="rectangular"
+                    animation="pulse"
+                    height={510}
                   />
                 </CardContent>
               </Card>
             </Grid>
-            ))
-            :
-            (
-            <Grid item xs={6}>
-              <Card sx={{ width: '800px' }} raised>
-                <CardHeader
-                  title=""
-                  subheader=""
-                />
-                <Divider />
-                <CardContent>
-                    <Skeleton
-                      variant="rectangular"
-                      animation="pulse"
-                      height={510}
-                    />
-                </CardContent>
-              </Card>
-            </Grid>
-            )
-          }
+          )}
         </Grid>
       </Box>
     </Container>
